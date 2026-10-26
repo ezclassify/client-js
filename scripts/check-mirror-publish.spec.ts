@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import semver from 'semver';
+import { load } from 'js-yaml';
 // @ts-expect-error - plain ESM script, no type declarations
 import { auditMirrorPublish } from './check-mirror-publish.mjs';
 
@@ -208,12 +209,34 @@ describe('the CI install lane', () => {
     );
 
     it('routes @ezclassify at the mirror before anything is installed', () => {
-        const route = ci.indexOf(
-            '@ezclassify:registry=https://npm.pkg.github.com',
+        const document = load(ci) as {
+            jobs: {
+                'build-and-test': {
+                    steps: Array<{
+                        run?: string;
+                        uses?: string;
+                        with?: Record<string, string>;
+                    }>;
+                };
+            };
+        };
+        const steps = document.jobs['build-and-test'].steps;
+        const route = steps.findIndex((step) =>
+            step.run?.includes(
+                '@ezclassify:registry=https://npm.pkg.github.com',
+            ),
         );
-        const install = ci.indexOf('npm run deps:relock && npm ci');
+        const install = steps.findIndex((step) =>
+            /^ezclassify\/\.github\/actions\/install-node-dependencies@[a-f0-9]{40}$/.test(
+                step.uses ?? '',
+            ),
+        );
         expect(route).toBeGreaterThan(-1);
         expect(install).toBeGreaterThan(route);
+        expect(steps[install].with).toMatchObject({
+            'mode': 'generated',
+            'relock-installs': 'false',
+        });
         expect(ci).toContain('NPM_CONFIG_USERCONFIG=$RUNNER_TEMP/ci-npmrc');
     });
 
