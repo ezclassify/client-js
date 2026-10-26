@@ -4,6 +4,10 @@ name: vendor-readonly
 # are written only by the `ezclassify-spec-bot` GitHub App, which vendors the
 # published contract from ezclassify/contracts.
 #
+# Exact admitted bot author addresses: the App-created short address and
+# 348097708+ezclassify-spec-bot[bot]@users.noreply.github.com on GitHub squash.
+# Both require the exact bot name; other numeric IDs/addresses are refused.
+#
 # Two gates run in series:
 #   1. Identity gate, every commit touching vendor/ must be authored as
 #      `ezclassify-spec-bot[bot]
@@ -159,6 +163,9 @@ jobs:
           # per-commit gate matches name AND email against it; a name on its
           # own is settable by anyone.
           ALLOWED_BOT_EMAIL: ezclassify-spec-bot[bot]@users.noreply.github.com
+          # GitHub preserves this verified bot account when squash-merging its PR.
+          # Admit only this exact ID/address, never an arbitrary numeric prefix.
+          ALLOWED_BOT_CANONICAL_EMAIL: 348097708+ezclassify-spec-bot[bot]@users.noreply.github.com
           OVERRIDE_LABEL: spec-mirror-override
         run: |
           set -euo pipefail
@@ -272,7 +279,8 @@ jobs:
             WRONG_AUTHOR=""
             for SHA in $VENDOR_COMMITS; do
               AUTHOR=$(git log -1 --format='%an <%ae>' "$SHA")
-              if [ "$AUTHOR" != "$ALLOWED_BOT_LOGIN <$ALLOWED_BOT_EMAIL>" ]; then
+              if [ "$AUTHOR" != "$ALLOWED_BOT_LOGIN <$ALLOWED_BOT_EMAIL>" ] &&
+                 [ "$AUTHOR" != "$ALLOWED_BOT_LOGIN <$ALLOWED_BOT_CANONICAL_EMAIL>" ]; then
                 WRONG_AUTHOR="$WRONG_AUTHOR  $SHA  $AUTHOR"$'\n'
               fi
             done
@@ -293,7 +301,7 @@ jobs:
               echo "use the '${OVERRIDE_LABEL}' label there."
               exit 1
             fi
-            echo "Identity gate: all vendor/ commits authored by ${ALLOWED_BOT_LOGIN} <${ALLOWED_BOT_EMAIL}> ✓"
+            echo "Identity gate: all vendor/ commits authored by ${ALLOWED_BOT_LOGIN} <${ALLOWED_BOT_EMAIL}> or <${ALLOWED_BOT_CANONICAL_EMAIL}> ✓"
           fi
 
           # ---------- Commit-subject gate ----------

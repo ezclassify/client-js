@@ -320,6 +320,37 @@ afterAll(() => {
 });
 
 describe('vendor-readonly gate, executed', () => {
+    it.each([
+        [
+            BOT_NAME,
+            '348097708+ezclassify-spec-bot[bot]@users.noreply.github.com',
+            0,
+        ],
+        [BOT_NAME, `348097709+${BOT_EMAIL}`, 1],
+        [BOT_NAME, '348097708+other-bot[bot]@users.noreply.github.com', 1],
+        [
+            'Other Bot',
+            '348097708+ezclassify-spec-bot[bot]@users.noreply.github.com',
+            1,
+        ],
+    ])('checks GitHub squash identity %s <%s>', (name, email, expected) => {
+        const repo = newRepo(`squash-${name}-${email}`);
+        const before = baseCommit(repo);
+        const head = commit(repo, {
+            name: String(name),
+            email: String(email),
+            subject: 'chore(spec): vendor contracts@deadbeef (#9)',
+            files: VENDOR_FILES,
+        });
+        const { range, gate } = runGate(repo, {
+            EVENT_NAME: 'push',
+            PUSH_BEFORE: before,
+            PUSH_AFTER: head,
+        });
+        expect(range.status, range.output).toBe(0);
+        expect(gate.status, gate.output).toBe(expected);
+    });
+
     it('admits a genuine bot commit pushed with a resolvable before', () => {
         const repo = newRepo('bot-normal-before');
         const before = baseCommit(repo);
