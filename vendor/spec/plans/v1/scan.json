@@ -1,0 +1,65 @@
+{
+    "cases": [
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "count": 1,
+                "firstMarking": "HIGH",
+                "firstStart": 0
+            },
+            "fixture": "ref-scheme-1",
+            "method": "scan",
+            "name": "scan-standalone-marking-found"
+        },
+        {
+            "args": ["LOW\nHIGH"],
+            "expect": {
+                "count": 2
+            },
+            "fixture": "ref-scheme-1",
+            "method": "scan",
+            "name": "scan-two-line-document"
+        },
+        {
+            "args": [""],
+            "expect": {
+                "count": 0
+            },
+            "fixture": "ref-scheme-1",
+            "method": "scan",
+            "name": "scan-empty-text-returns-empty"
+        },
+        {
+            "args": ["no markings in this prose sentence"],
+            "expect": {
+                "count": 0
+            },
+            "fixture": "ref-scheme-1",
+            "method": "scan",
+            "name": "scan-no-matching-text-returns-empty"
+        },
+        {
+            "args": ["HIGH/CTRL-A"],
+            "expect": {
+                "count": 1,
+                "firstMarking": "HIGH/CTRL-A",
+                "firstRendered": "HIGH/CTRL-A"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "scan",
+            "name": "scan-composite-marking-found"
+        },
+        {
+            "args": ["HEADER\nHIGH\nsome text\nLOW"],
+            "expect": {
+                "count": 2,
+                "firstMarking": "HIGH",
+                "firstStart": 7
+            },
+            "fixture": "ref-scheme-1",
+            "method": "scan",
+            "name": "scan-marking-at-nonzero-offset"
+        }
+    ],
+    "slice": "engine"
+}

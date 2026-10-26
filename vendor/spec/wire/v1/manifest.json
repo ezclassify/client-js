@@ -1,0 +1,52 @@
+{
+    "contractDivergences": [],
+    "corpusVersion": "v1",
+    "coverage": {
+        "cases": 119,
+        "operationsCovered": 40
+    },
+    "determinism": {
+        "objectKeyOrder": "Object keys are ordered on serialization, recursively, including inside recorded response bodies. Array order is the server's own and is preserved.",
+        "omittedResponseHeaders": {
+            "access-control-*": "CORS is deployment configuration (CORS_ORIGIN), not operation semantics. The recording would pin one deployment.",
+            "connection": "Transport framing, decided by the HTTP agent.",
+            "content-length": "Derived from the body already recorded, and a stale copy of it would be worse than none.",
+            "date": "Wall clock. Changes on every run by construction.",
+            "keep-alive": "Transport framing, decided by the HTTP agent.",
+            "x-ezclassify-license-*": "Licensing state of the recording deployment. Says nothing about the operation.",
+            "x-ratelimit-*": "Per-window counters. They change with every request, including repeats of the same one.",
+            "x-request-id": "Per-request correlation id. A fresh UUID every time."
+        },
+        "pathPlaceholders": {
+            "<recording-deployment-artifact-dir>": "Writable state directory (EZCLASSIFY_ARTIFACT_DIR). A fresh temporary directory per recording run.",
+            "<recording-deployment-artifact-path>": "Directory the deployment loads its development context artifacts from (EZCLASSIFY_ARTIFACT_PATH).",
+            "<recording-deployment-root>": "Checkout root of the runtime repository that produced the recording."
+        },
+        "recordedRequestHeaders": [
+            "accept",
+            "content-type"
+        ],
+        "recordedResponseHeaders": [
+            "allow",
+            "cache-control",
+            "content-type",
+            "x-content-type-options",
+            "x-ezclassify-resolved-version"
+        ]
+    },
+    "generation": {
+        "contractVersion": "1.0.0-dev.30",
+        "generator": "ezclassify-wire-corpus-recorder",
+        "generatorDigest": "sha256:e5b3b67e3098ab4be70771c087ef8513ef143158d7652689063c86444029c2c6"
+    },
+    "runtime": {
+        "engineVersion": "1.0.0-dev.30",
+        "restApiVersion": "1.0.0-dev.30"
+    },
+    "spec": {
+        "digest": "sha256:da547a662ab79fa3f79f7d1a53a0b6a2823b0cd001d15e3d5de2aa90a7da96ff",
+        "infoVersion": "1.0.0-dev.30",
+        "package": "@ezclassify/openapi",
+        "packageVersion": "1.0.0-dev.30"
+    }
+}

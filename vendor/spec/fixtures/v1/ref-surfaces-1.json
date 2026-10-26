@@ -1,0 +1,237 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "level",
+          "label": "Level",
+          "required": true,
+          "rollup": "max",
+          "single": true
+        },
+        {
+          "id": "sharing",
+          "label": "Sharing",
+          "rollup": "first",
+          "single": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep for",
+          "rollup": "max",
+          "scopes": [
+            "retention"
+          ],
+          "single": true
+        }
+      ],
+      "concepts": {
+        "inline": [
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "INTERNAL",
+            "name": "Internal",
+            "rank": 0,
+            "views": {
+              "abbreviated": "INT",
+              "default": "INTERNAL"
+            }
+          },
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "CONFIDENTIAL",
+            "name": "Confidential",
+            "rank": 1,
+            "views": {
+              "abbreviated": "CONF",
+              "default": "CONFIDENTIAL"
+            }
+          },
+          {
+            "categories": [
+              "sharing"
+            ],
+            "id": "PARTNERS",
+            "name": "Shared with partners",
+            "views": {
+              "default": "PARTNERS"
+            }
+          },
+          {
+            "categories": [
+              "keep"
+            ],
+            "id": "KEEP_7Y",
+            "name": "Seven years",
+            "rank": 0,
+            "views": {
+              "default": "KEEP 7 YEARS"
+            }
+          }
+        ]
+      }
+    },
+    "default_scope": "sensitivity",
+    "description": "Surface outputs conformance scheme. Two surfaces: sensitivity, with a part view `short` that is written in `short_line` or, for a marking shared with partners, `short_shared_line`; a whole view `full` written in `full_line` and also read in the retired `full_line_2019`; and an `xml` view with no role. Retention has one view, `block`, with no role. Parts are written in parentheses.",
+    "embedded_marking": [
+      {
+        "pattern": "\\((.+)\\)",
+        "template": "({marking}) "
+      }
+    ],
+    "id": "ref-surfaces-1",
+    "name": "Reference Surfaces Scheme 1",
+    "named_conditions": {
+      "shared-with-partners": "PARTNERS"
+    },
+    "render": {
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level"
+            }
+          ],
+          "id": "short_line",
+          "mode": "inline",
+          "surface": "sensitivity",
+          "view": "abbreviated"
+        },
+        {
+          "fields": [
+            {
+              "category": "level"
+            },
+            {
+              "category": "sharing"
+            }
+          ],
+          "id": "short_shared_line",
+          "mode": "inline",
+          "separator": " // ",
+          "surface": "sensitivity",
+          "view": "abbreviated"
+        },
+        {
+          "fields": [
+            {
+              "category": "level"
+            },
+            {
+              "category": "sharing"
+            }
+          ],
+          "id": "full_line",
+          "mode": "inline",
+          "separator": " // ",
+          "surface": "sensitivity"
+        },
+        {
+          "fields": [
+            {
+              "category": "level"
+            },
+            {
+              "category": "sharing"
+            }
+          ],
+          "id": "full_line_2019",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "sensitivity",
+          "view": "abbreviated"
+        },
+        {
+          "fields": [
+            {
+              "attribute": "level",
+              "category": "level"
+            },
+            {
+              "attribute": "sharing",
+              "category": "sharing"
+            }
+          ],
+          "id": "xml_attributes",
+          "mode": "block",
+          "surface": "sensitivity",
+          "syntax": {
+            "type": "xml-attributes"
+          }
+        },
+        {
+          "fields": [
+            {
+              "category": "keep"
+            }
+          ],
+          "id": "retention_block",
+          "mode": "block",
+          "surface": "retention"
+        }
+      ],
+      "surface_separator": "\n",
+      "surfaces": [
+        {
+          "default": {
+            "part": "short",
+            "whole": "full"
+          },
+          "surface": "sensitivity",
+          "views": [
+            {
+              "cases": [
+                {
+                  "format": "short_shared_line",
+                  "when": {
+                    "named_condition": "shared-with-partners"
+                  }
+                }
+              ],
+              "format": "short_line",
+              "id": "short",
+              "role": "part"
+            },
+            {
+              "also_read_in": [
+                "full_line_2019"
+              ],
+              "format": "full_line",
+              "id": "full",
+              "role": "whole"
+            },
+            {
+              "format": "xml_attributes",
+              "id": "xml"
+            }
+          ]
+        },
+        {
+          "default": "block",
+          "surface": "retention",
+          "views": [
+            {
+              "format": "retention_block",
+              "id": "block"
+            }
+          ]
+        }
+      ]
+    },
+    "scopes": [
+      {
+        "id": "sensitivity",
+        "label": "Sensitivity"
+      },
+      {
+        "id": "retention",
+        "label": "Retention"
+      }
+    ],
+    "version": "1.0.0"
+  }
+}

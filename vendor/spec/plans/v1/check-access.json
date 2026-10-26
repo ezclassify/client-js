@@ -1,0 +1,190 @@
+{
+    "cases": [
+        {
+            "accessFixture": "ref-access-rules-1",
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {
+                    "level": "HIGH"
+                }
+            ],
+            "expect": {
+                "granted": true
+            },
+            "fixture": "ref-access-1",
+            "method": "checkAccess",
+            "name": "check-access-equal-level-granted"
+        },
+        {
+            "accessFixture": "ref-access-rules-1",
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "LOW",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {
+                    "level": "HIGH"
+                }
+            ],
+            "expect": {
+                "granted": true
+            },
+            "fixture": "ref-access-1",
+            "method": "checkAccess",
+            "name": "check-access-user-above-data-granted"
+        },
+        {
+            "accessFixture": "ref-access-rules-1",
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {
+                    "level": "LOW"
+                }
+            ],
+            "expect": {
+                "granted": false
+            },
+            "fixture": "ref-access-1",
+            "method": "checkAccess",
+            "name": "check-access-user-below-data-denied"
+        },
+        {
+            "accessFixture": "ref-access-rules-1",
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {
+                    "level": "HIGH"
+                }
+            ],
+            "expect": {
+                "granted": true,
+                "rules": [
+                    {
+                        "granted": true,
+                        "rule": {
+                            "ruleId": "level-rule"
+                        }
+                    }
+                ]
+            },
+            "fixture": "ref-access-1",
+            "method": "checkAccess",
+            "name": "check-access-rules-array-present"
+        },
+        {
+            "accessFixture": "ref-scheme-1.access",
+            "args": [
+                [
+                    {
+                        "categoryId": "controls",
+                        "conceptId": "CTRL-A",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {}
+            ],
+            "expect": {
+                "granted": true,
+                "rules": [
+                    {
+                        "granted": true,
+                        "rule": {
+                            "ruleId": "level-rule"
+                        },
+                        "skipped": true
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "checkAccess",
+            "name": "check-access-no-matching-rule-skipped-granted"
+        },
+        {
+            "accessFixture": "ref-scheme-1.access",
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {
+                    "level": "MED"
+                }
+            ],
+            "expect": {
+                "granted": false,
+                "rules": [
+                    {
+                        "granted": false,
+                        "rule": {
+                            "ruleId": "level-rule"
+                        }
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "checkAccess",
+            "name": "check-access-med-user-high-data-denied"
+        },
+        {
+            "accessFixture": "ref-scheme-1.access",
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "MED",
+                        "confidence": "certain",
+                        "source": "data"
+                    }
+                ],
+                {
+                    "level": "MED"
+                }
+            ],
+            "expect": {
+                "granted": true,
+                "rules": [
+                    {
+                        "granted": true,
+                        "rule": {
+                            "ruleId": "level-rule"
+                        }
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "checkAccess",
+            "name": "check-access-med-user-med-data-granted"
+        }
+    ],
+    "slice": "engine"
+}

@@ -1,0 +1,765 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ezclassify.com/schemas/cache-conformance-plans/v1",
+    "title": "Cache conformance plans",
+    "description": "The format of plans.json: the operations the cache contract names, its checklist, the harness capabilities plans may require, and the plans themselves. CACHE-SEMANTICS.md defines what each step means.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "$schema",
+        "planVersion",
+        "description",
+        "corpus",
+        "denialCase",
+        "operations",
+        "checklist",
+        "capabilities",
+        "knownGaps",
+        "plans"
+    ],
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "planVersion": {
+            "const": "v1"
+        },
+        "description": {
+            "type": "string",
+            "minLength": 1
+        },
+        "corpus": {
+            "description": "Path of the wire corpus every case id refers to, relative to this file.",
+            "type": "string"
+        },
+        "denialCase": {
+            "description": "Wire corpus case whose recorded response is the runtime's constant denial-shaped 404. A denial-404 scripted response replays it.",
+            "$ref": "#/$defs/caseId"
+        },
+        "operations": {
+            "description": "Every operation the contract names, with its request and treatment.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "name",
+                    "method",
+                    "route",
+                    "treatment"
+                ],
+                "properties": {
+                    "name": {
+                        "$ref": "#/$defs/operation"
+                    },
+                    "method": {
+                        "enum": [
+                            "GET",
+                            "POST"
+                        ]
+                    },
+                    "route": {
+                        "description": "Path under the Context binding, /v1/ctx/{ctxId}/{version}/.",
+                        "type": "string",
+                        "pattern": "^[a-z-]+(/[a-z-]+)*$"
+                    },
+                    "treatment": {
+                        "enum": [
+                            "cached",
+                            "decision",
+                            "never",
+                            "uncached",
+                            "resource"
+                        ]
+                    }
+                }
+            }
+        },
+        "checklist": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "id",
+                    "requirement"
+                ],
+                "properties": {
+                    "id": {
+                        "$ref": "#/$defs/checklistId"
+                    },
+                    "requirement": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            }
+        },
+        "capabilities": {
+            "description": "Harness capabilities a plan may require. A capability with notApplicable may be declared absent by a port, and only for that stated reason; every other capability is required of every port.",
+            "type": "object",
+            "propertyNames": {
+                "$ref": "#/$defs/capabilityId"
+            },
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "description"
+                ],
+                "properties": {
+                    "description": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "notApplicable": {
+                        "description": "The only reason a port may give for declaring this capability absent.",
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            }
+        },
+        "knownGaps": {
+            "description": "Contract rules the corpus cannot yet measure, and why.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "checklist",
+                    "operation",
+                    "reason"
+                ],
+                "properties": {
+                    "checklist": {
+                        "$ref": "#/$defs/checklistId"
+                    },
+                    "operation": {
+                        "$ref": "#/$defs/operation"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            }
+        },
+        "plans": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/$defs/plan"
+            }
+        }
+    },
+    "$defs": {
+        "caseId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]*$"
+        },
+        "operation": {
+            "type": "string",
+            "pattern": "^(scheme|guide|access|context)\\.[a-z][A-Za-z]*$"
+        },
+        "checklistId": {
+            "type": "string",
+            "pattern": "^C[0-9]{2}$"
+        },
+        "capabilityId": {
+            "type": "string",
+            "pattern": "^[a-z][A-Za-z]*$"
+        },
+        "caller": {
+            "description": "A name for one caller within a plan.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*$"
+        },
+        "member": {
+            "description": "Top-level request body member a variant changes.",
+            "type": "string",
+            "pattern": "^[a-z][A-Za-z]*$"
+        },
+        "variant": {
+            "description": "How a call departs from the case's recorded request. reorderedMembers supplies the same arguments in a different order where the API allows it; unsetMember passes member explicitly as unset; both send the recorded body. explicitNullMember sends member as an explicit null, a different request.",
+            "enum": [
+                "reorderedMembers",
+                "unsetMember",
+                "explicitNullMember"
+            ]
+        },
+        "error": {
+            "description": "The failure a caller must see.",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "kind",
+                        "status"
+                    ],
+                    "properties": {
+                        "kind": {
+                            "const": "http"
+                        },
+                        "status": {
+                            "type": "integer",
+                            "minimum": 400,
+                            "maximum": 599
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "kind"
+                    ],
+                    "properties": {
+                        "kind": {
+                            "enum": [
+                                "aborted",
+                                "malformed-response"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "client": {
+            "description": "The one cache-enabled client a plan's steps share, built and, where the port has a connect step, connected before the first step. It holds a static context carrier. pinned binds a concrete Context version, unpinned binds latest, and token-defaulted binds the Context id alone and lets the context token supply the version.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "binding"
+            ],
+            "properties": {
+                "binding": {
+                    "enum": [
+                        "pinned",
+                        "unpinned",
+                        "token-defaulted"
+                    ]
+                },
+                "context": {
+                    "description": "Context id the client binds. Defaults to ez-full.",
+                    "type": "string"
+                },
+                "cacheAccessDecisions": {
+                    "type": "boolean"
+                },
+                "construction": {
+                    "description": "refused: building this client must fail, and the plan has no steps.",
+                    "const": "refused"
+                }
+            }
+        },
+        "plan": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "title",
+                "covers",
+                "capabilities",
+                "client",
+                "steps"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-zA-Z0-9.-]*$"
+                },
+                "title": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "covers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/checklistId"
+                    }
+                },
+                "capabilities": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/capabilityId"
+                    }
+                },
+                "client": {
+                    "$ref": "#/$defs/client"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/step"
+                    }
+                }
+            }
+        },
+        "step": {
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/call"
+                },
+                {
+                    "$ref": "#/$defs/concurrent"
+                },
+                {
+                    "$ref": "#/$defs/gate"
+                },
+                {
+                    "$ref": "#/$defs/release"
+                },
+                {
+                    "$ref": "#/$defs/cancel"
+                },
+                {
+                    "$ref": "#/$defs/advanceClock"
+                },
+                {
+                    "$ref": "#/$defs/respond"
+                },
+                {
+                    "$ref": "#/$defs/quiesce"
+                },
+                {
+                    "$ref": "#/$defs/mutateResult"
+                },
+                {
+                    "$ref": "#/$defs/expectOk"
+                },
+                {
+                    "$ref": "#/$defs/expectError"
+                },
+                {
+                    "$ref": "#/$defs/expectWireCount"
+                },
+                {
+                    "$ref": "#/$defs/expectWireAborted"
+                },
+                {
+                    "$ref": "#/$defs/expectIndependentResults"
+                }
+            ]
+        },
+        "call": {
+            "description": "Call operation with the case's recorded request, times times in sequence, awaiting each. Each call must succeed unless expect names the error it must raise. caller names the last outcome for later steps.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "operation",
+                "case"
+            ],
+            "properties": {
+                "step": {
+                    "const": "call"
+                },
+                "operation": {
+                    "$ref": "#/$defs/operation"
+                },
+                "case": {
+                    "$ref": "#/$defs/caseId"
+                },
+                "times": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "caller": {
+                    "$ref": "#/$defs/caller"
+                },
+                "variant": {
+                    "$ref": "#/$defs/variant"
+                },
+                "member": {
+                    "$ref": "#/$defs/member"
+                },
+                "preCanceled": {
+                    "description": "The call arrives with its cancellation already signaled.",
+                    "const": true
+                },
+                "expect": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "error"
+                    ],
+                    "properties": {
+                        "error": {
+                            "$ref": "#/$defs/error"
+                        }
+                    }
+                }
+            },
+            "dependentRequired": {
+                "member": [
+                    "variant"
+                ]
+            },
+            "if": {
+                "required": [
+                    "variant"
+                ],
+                "properties": {
+                    "variant": {
+                        "enum": [
+                            "unsetMember",
+                            "explicitNullMember"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "member"
+                ]
+            }
+        },
+        "concurrent": {
+            "description": "Start one call per caller at once. With the case gated, the step ends once the held request has reached the transport and every caller has joined the in-flight entry, which the harness observes rather than assumes; otherwise it ends when every caller has settled. Each caller's outcome is asserted by a later expectOk or expectError.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "operation",
+                "case",
+                "callers"
+            ],
+            "properties": {
+                "step": {
+                    "const": "concurrent"
+                },
+                "operation": {
+                    "$ref": "#/$defs/operation"
+                },
+                "case": {
+                    "$ref": "#/$defs/caseId"
+                },
+                "callers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/caller"
+                    }
+                },
+                "cancelable": {
+                    "description": "Callers started with a cancellation surface a later cancel step uses.",
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/caller"
+                    }
+                }
+            }
+        },
+        "gate": {
+            "description": "Hold every later request matching case in flight until release.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "case"
+            ],
+            "properties": {
+                "step": {
+                    "const": "gate"
+                },
+                "case": {
+                    "$ref": "#/$defs/caseId"
+                }
+            }
+        },
+        "release": {
+            "description": "Answer the held requests for case with their responses and wait for the callers waiting on them to settle. A request already canceled is not answered.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "case"
+            ],
+            "properties": {
+                "step": {
+                    "const": "release"
+                },
+                "case": {
+                    "$ref": "#/$defs/caseId"
+                }
+            }
+        },
+        "cancel": {
+            "description": "Signal cancellation for one caller started as cancelable.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "caller"
+            ],
+            "properties": {
+                "step": {
+                    "const": "cancel"
+                },
+                "caller": {
+                    "$ref": "#/$defs/caller"
+                }
+            }
+        },
+        "advanceClock": {
+            "description": "Move the clock the cache reads forward by ms. Transport timers, such as a request timeout, do not move.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "ms"
+            ],
+            "properties": {
+                "step": {
+                    "const": "advanceClock"
+                },
+                "ms": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
+        "respond": {
+            "description": "Script a response derived from recorded bytes. malformed-success answers the next request matching case with its recorded response, the JSON pointers in removeMembers removed; each pointer names a member the contract requires. denial-404 answers the next request matching case with the denialCase response. resolved-version makes every later response carry version wherever the recorded bytes name the resolved Context version: the X-EzClassify-Resolved-Version header, /resolution/resolvedVersion, and the version of a Context description.",
+            "oneOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "step",
+                        "synthetic",
+                        "case",
+                        "removeMembers"
+                    ],
+                    "properties": {
+                        "step": {
+                            "const": "respond"
+                        },
+                        "synthetic": {
+                            "const": "malformed-success"
+                        },
+                        "case": {
+                            "$ref": "#/$defs/caseId"
+                        },
+                        "removeMembers": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string",
+                                "pattern": "^(/[A-Za-z]+)+$"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "step",
+                        "synthetic",
+                        "case"
+                    ],
+                    "properties": {
+                        "step": {
+                            "const": "respond"
+                        },
+                        "synthetic": {
+                            "const": "denial-404"
+                        },
+                        "case": {
+                            "$ref": "#/$defs/caseId"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "step",
+                        "synthetic",
+                        "version"
+                    ],
+                    "properties": {
+                        "step": {
+                            "const": "respond"
+                        },
+                        "synthetic": {
+                            "const": "resolved-version"
+                        },
+                        "version": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    }
+                }
+            ]
+        },
+        "quiesce": {
+            "description": "Wait until the client has finished background work earlier responses started.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step"
+            ],
+            "properties": {
+                "step": {
+                    "const": "quiesce"
+                }
+            }
+        },
+        "mutateResult": {
+            "description": "Change the caller's result in place as far as the language allows, including a nested collection. A result that refuses mutation satisfies the step.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "caller"
+            ],
+            "properties": {
+                "step": {
+                    "const": "mutateResult"
+                },
+                "caller": {
+                    "$ref": "#/$defs/caller"
+                }
+            }
+        },
+        "expectOk": {
+            "description": "Each caller settled with a result.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "callers"
+            ],
+            "properties": {
+                "step": {
+                    "const": "expectOk"
+                },
+                "callers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/caller"
+                    }
+                }
+            }
+        },
+        "expectError": {
+            "description": "Each caller settled with the stated failure.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "callers",
+                "error"
+            ],
+            "properties": {
+                "step": {
+                    "const": "expectError"
+                },
+                "callers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/caller"
+                    }
+                },
+                "error": {
+                    "$ref": "#/$defs/error"
+                }
+            }
+        },
+        "expectWireCount": {
+            "description": "The transport has received count requests matching case, or the case with variant applied, since the client was built and connected.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "case",
+                "count"
+            ],
+            "properties": {
+                "step": {
+                    "const": "expectWireCount"
+                },
+                "case": {
+                    "$ref": "#/$defs/caseId"
+                },
+                "variant": {
+                    "const": "explicitNullMember"
+                },
+                "member": {
+                    "$ref": "#/$defs/member"
+                },
+                "count": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "dependentRequired": {
+                "variant": [
+                    "member"
+                ],
+                "member": [
+                    "variant"
+                ]
+            }
+        },
+        "expectWireAborted": {
+            "description": "Whether the request in flight for case has been canceled at the transport.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "case",
+                "aborted"
+            ],
+            "properties": {
+                "step": {
+                    "const": "expectWireAborted"
+                },
+                "case": {
+                    "$ref": "#/$defs/caseId"
+                },
+                "aborted": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "expectIndependentResults": {
+            "description": "Each caller's result equals a fresh decode of the response it was answered from, whatever was done to other callers' results.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "step",
+                "callers"
+            ],
+            "properties": {
+                "step": {
+                    "const": "expectIndependentResults"
+                },
+                "callers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/$defs/caller"
+                    }
+                }
+            }
+        }
+    }
+}

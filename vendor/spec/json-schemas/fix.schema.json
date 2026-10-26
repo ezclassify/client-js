@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "FixConceptReference": {
+            "description": "Stable reference to a concept a fix or change touches.",
+            "properties": {
+                "categoryId": {
+                    "description": "Owning category identifier.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Concept identifier.",
+                    "type": "string"
+                }
+            },
+            "required": ["conceptId", "categoryId"],
+            "type": "object"
+        }
+    },
+    "description": "One way to make the marking valid. Every change in it answers an error.\n\nA fix is a whole marking, not a patch: `rendered` is the complete marking the author would end up with. The engine proves each one before offering it: it reads the marking back, judges it the way it judges any input, and offers only those that read back valid.",
+    "properties": {
+        "adds": {
+            "description": "Concepts this fix adds because an error requires them.",
+            "items": {
+                "$ref": "#/definitions/FixConceptReference"
+            },
+            "type": "array"
+        },
+        "keeps": {
+            "description": "Concepts of the author's marking this fix keeps.",
+            "items": {
+                "$ref": "#/definitions/FixConceptReference"
+            },
+            "type": "array"
+        },
+        "message": {
+            "description": "What this fix does, in words.",
+            "type": "string"
+        },
+        "removes": {
+            "description": "Concepts of the author's marking this fix removes because an error names them.",
+            "items": {
+                "$ref": "#/definitions/FixConceptReference"
+            },
+            "type": "array"
+        },
+        "rendered": {
+            "description": "The valid marking this fix produces, in the result's output format.\n\nIt is written exactly as the result's own `rendered` is, so the two can be shown side by side. On an in-process engine with an `afterRender` plugin, that includes the plugin; the proof reads back the engine's own writing from before the plugin ran, so the plugin never decides which fixes are offered.",
+            "type": "string"
+        }
+    },
+    "required": ["message", "rendered", "keeps", "adds", "removes"],
+    "type": "object"
+}

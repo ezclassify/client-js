@@ -1,0 +1,42 @@
+{
+  "engineVersion": "1.0.0-dev.30",
+  "openapiVersion": "1.0.0-dev.30",
+  "responses": {
+    "0b7c2e44765c33adafdfee25fa99bee41327ac630ba089501135df5d08624626": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"MED\",\"confidence\":\"certain\",\"source\":\"us...",
+      "method": "render",
+      "response": {
+        "result": "MED"
+      }
+    },
+    "24cb4081bc2d74cba2232b29d9222f71e8e417be3c66a0a6cc64423d0b6d9049": {
+      "argsSummary": "[[]]",
+      "method": "render",
+      "response": {
+        "result": ""
+      }
+    },
+    "58aee7b3debab206a7d11600abfe792250aed33ea732c73690bafc6ad9bdca41": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "render",
+      "response": {
+        "result": "HIGH/CTRL-A"
+      }
+    },
+    "6e33fbdae3e3b762a6d929a46e463baf9395e6f35429ba995acac69e4c28a4f5": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"LOW\",\"confidence\":\"certain\",\"source\":\"us...",
+      "method": "render",
+      "response": {
+        "result": "LOW"
+      }
+    },
+    "ed7baf2543f3c089301198c9dd362842b175f600c4a1bc226117195282c2868c": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "render",
+      "response": {
+        "result": "HIGH"
+      }
+    }
+  },
+  "version": "0.1.0"
+}

@@ -1,0 +1,140 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "level",
+          "label": "Level",
+          "position": 0,
+          "required": true,
+          "rollup": "max",
+          "single": true
+        },
+        {
+          "id": "controls",
+          "label": "Controls",
+          "position": 1,
+          "required": false,
+          "rollup": "union",
+          "single": false
+        }
+      ],
+      "concepts": {
+        "inline": [
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "LOW",
+            "name": "Low",
+            "parents": [],
+            "position": 0,
+            "views": {
+              "default": "LOW",
+              "portion": "L"
+            },
+            "rank": 0
+          },
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "MED",
+            "name": "Med",
+            "parents": [],
+            "position": 1,
+            "views": {
+              "default": "MED",
+              "portion": "M"
+            },
+            "rank": 1
+          },
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "HIGH",
+            "name": "High",
+            "parents": [],
+            "position": 2,
+            "views": {
+              "default": "HIGH",
+              "portion": "H"
+            },
+            "rank": 2
+          },
+          {
+            "categories": [
+              "controls"
+            ],
+            "id": "CTRL-A",
+            "name": "Control A",
+            "parents": [
+              "HIGH"
+            ],
+            "position": 0,
+            "views": {
+              "default": "CTRL-A"
+            }
+          }
+        ]
+      }
+    },
+    "default_scope": "banner",
+    "description": "Canonical conformance test scheme. Two categories: level (max rollup, required) and controls (union rollup, optional). Four concepts: LOW/MED/HIGH in level, CTRL-A in controls requiring parent HIGH.",
+    "id": "ref-scheme-1",
+    "name": "Reference Scheme 1",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "render": {
+      "default": "default",
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            },
+            {
+              "category": "controls",
+              "separator": "/"
+            }
+          ],
+          "id": "default",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner"
+        },
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            },
+            {
+              "category": "controls",
+              "separator": "/"
+            }
+          ],
+          "id": "portion",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner",
+          "view": "portion"
+        }
+      ],
+      "of_invalid": "drop_unmatched"
+    },
+    "rules": [],
+    "scopes": [
+      {
+        "id": "banner",
+        "label": "Banner"
+      }
+    ],
+    "version": "1.0.0"
+  }
+}

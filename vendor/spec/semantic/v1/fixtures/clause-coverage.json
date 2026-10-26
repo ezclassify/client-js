@@ -1,0 +1,1162 @@
+{
+  "case-01": [
+    {
+      "clauseId": "case-01-clause-01",
+      "expectedAssertionId": "case-01-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-01",
+      "expectedOutcome": "authored parts validate"
+    },
+    {
+      "clauseId": "case-01-clause-02",
+      "expectedAssertionId": "case-01-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-01",
+      "expectedOutcome": "authored whole covers parts"
+    },
+    {
+      "clauseId": "case-01-clause-03",
+      "expectedAssertionId": "case-01-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-01",
+      "expectedOutcome": "authored verdict passes"
+    },
+    {
+      "clauseId": "case-01-clause-04",
+      "expectedAssertionId": "case-01-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-01",
+      "expectedOutcome": "guide remains pending"
+    },
+    {
+      "clauseId": "case-01-clause-05",
+      "expectedAssertionId": "case-01-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-01",
+      "expectedOutcome": "projected coverage fails"
+    },
+    {
+      "clauseId": "case-01-clause-06",
+      "expectedAssertionId": "case-01-expected-06",
+      "operation": "auditDocument",
+      "fixtureScope": "case-01",
+      "expectedOutcome": "cross-part computed rule adds the missing projected assertion"
+    }
+  ],
+  "case-02": [
+    {
+      "clauseId": "case-02-clause-01",
+      "expectedAssertionId": "case-02-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-02",
+      "expectedOutcome": "specific findings are accepted for the same digest"
+    },
+    {
+      "clauseId": "case-02-clause-02",
+      "expectedAssertionId": "case-02-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-02",
+      "expectedOutcome": "computed result becomes determined"
+    },
+    {
+      "clauseId": "case-02-clause-03",
+      "expectedAssertionId": "case-02-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-02",
+      "expectedOutcome": "determined coverage fails"
+    }
+  ],
+  "case-03": [
+    {
+      "clauseId": "case-03-clause-01",
+      "expectedAssertionId": "case-03-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-03",
+      "expectedOutcome": "accepted set is insufficient"
+    },
+    {
+      "clauseId": "case-03-clause-02",
+      "expectedAssertionId": "case-03-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-03",
+      "expectedOutcome": "one finding remains unresolved"
+    },
+    {
+      "clauseId": "case-03-clause-03",
+      "expectedAssertionId": "case-03-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-03",
+      "expectedOutcome": "projected override replaces an outcome"
+    },
+    {
+      "clauseId": "case-03-clause-04",
+      "expectedAssertionId": "case-03-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-03",
+      "expectedOutcome": "projected coverage changes"
+    },
+    {
+      "clauseId": "case-03-clause-05",
+      "expectedAssertionId": "case-03-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-03",
+      "expectedOutcome": "determined status is not inferred monotonically"
+    },
+    {
+      "clauseId": "case-03-clause-06",
+      "expectedAssertionId": "case-03-expected-06",
+      "operation": "auditDocument",
+      "fixtureScope": "case-03",
+      "expectedOutcome": "acceptance recomputes the determined result and status"
+    }
+  ],
+  "case-04": [
+    {
+      "clauseId": "case-04-clause-01",
+      "expectedAssertionId": "case-04-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-04",
+      "expectedOutcome": "incidental lexical evidence is only a nomination"
+    },
+    {
+      "clauseId": "case-04-clause-02",
+      "expectedAssertionId": "case-04-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-04",
+      "expectedOutcome": "authored result remains pass"
+    },
+    {
+      "clauseId": "case-04-clause-03",
+      "expectedAssertionId": "case-04-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-04",
+      "expectedOutcome": "authoritative result is not failed by lexical evidence"
+    },
+    {
+      "clauseId": "case-04-clause-04",
+      "expectedAssertionId": "case-04-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-04",
+      "expectedOutcome": "rejection removes the candidate"
+    },
+    {
+      "clauseId": "case-04-clause-05",
+      "expectedAssertionId": "case-04-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-04",
+      "expectedOutcome": "lexical evidence never becomes an authoritative fact"
+    }
+  ],
+  "case-05": [
+    {
+      "clauseId": "case-05-clause-01",
+      "expectedAssertionId": "case-05-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-05",
+      "expectedOutcome": "scan misses rephrasing"
+    },
+    {
+      "clauseId": "case-05-clause-02",
+      "expectedAssertionId": "case-05-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-05",
+      "expectedOutcome": "qualified manual rule is supplied"
+    },
+    {
+      "clauseId": "case-05-clause-03",
+      "expectedAssertionId": "case-05-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-05",
+      "expectedOutcome": "evidence includes the rule"
+    },
+    {
+      "clauseId": "case-05-clause-04",
+      "expectedAssertionId": "case-05-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-05",
+      "expectedOutcome": "reason is retained"
+    },
+    {
+      "clauseId": "case-05-clause-05",
+      "expectedAssertionId": "case-05-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-05",
+      "expectedOutcome": "manual fact participates in determination"
+    },
+    {
+      "clauseId": "case-05-clause-06",
+      "expectedAssertionId": "case-05-expected-06",
+      "operation": "auditDocument",
+      "fixtureScope": "case-05",
+      "expectedOutcome": "manual selection identity is bound to document rule and evidence"
+    }
+  ],
+  "case-06": [
+    {
+      "clauseId": "case-06-clause-01",
+      "expectedAssertionId": "case-06-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-06",
+      "expectedOutcome": "two occurrences have distinct finding ids"
+    },
+    {
+      "clauseId": "case-06-clause-02",
+      "expectedAssertionId": "case-06-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-06",
+      "expectedOutcome": "one is accepted"
+    },
+    {
+      "clauseId": "case-06-clause-03",
+      "expectedAssertionId": "case-06-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-06",
+      "expectedOutcome": "the other remains independently rejected or unresolved"
+    }
+  ],
+  "case-07": [
+    {
+      "clauseId": "case-07-clause-01",
+      "expectedAssertionId": "case-07-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "text revision is stale"
+    },
+    {
+      "clauseId": "case-07-clause-02",
+      "expectedAssertionId": "case-07-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "guide revision is stale"
+    },
+    {
+      "clauseId": "case-07-clause-03",
+      "expectedAssertionId": "case-07-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "evidence revision is stale"
+    },
+    {
+      "clauseId": "case-07-clause-04",
+      "expectedAssertionId": "case-07-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "composition revision is stale"
+    },
+    {
+      "clauseId": "case-07-clause-05",
+      "expectedAssertionId": "case-07-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "remote status is 409"
+    },
+    {
+      "clauseId": "case-07-clause-06",
+      "expectedAssertionId": "case-07-expected-06",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "local error is typed"
+    },
+    {
+      "clauseId": "case-07-clause-07",
+      "expectedAssertionId": "case-07-expected-07",
+      "operation": "auditDocument",
+      "fixtureScope": "case-07",
+      "expectedOutcome": "both document routes have stale-error parity"
+    }
+  ],
+  "case-08": [
+    {
+      "clauseId": "case-08-clause-01",
+      "expectedAssertionId": "case-08-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-08",
+      "expectedOutcome": "authored whole is absent"
+    },
+    {
+      "clauseId": "case-08-clause-02",
+      "expectedAssertionId": "case-08-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-08",
+      "expectedOutcome": "accepted facts require assertions"
+    },
+    {
+      "clauseId": "case-08-clause-03",
+      "expectedAssertionId": "case-08-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-08",
+      "expectedOutcome": "determined coverage fails"
+    },
+    {
+      "clauseId": "case-08-clause-04",
+      "expectedAssertionId": "case-08-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-08",
+      "expectedOutcome": "all missing assertions are reported"
+    }
+  ],
+  "case-09": [
+    {
+      "clauseId": "case-09-clause-01",
+      "expectedAssertionId": "case-09-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-09",
+      "expectedOutcome": "immutable userAttributes lack assertion requirement"
+    },
+    {
+      "clauseId": "case-09-clause-02",
+      "expectedAssertionId": "case-09-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-09",
+      "expectedOutcome": "content route is emitted"
+    },
+    {
+      "clauseId": "case-09-clause-03",
+      "expectedAssertionId": "case-09-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-09",
+      "expectedOutcome": "subject mutation route is absent"
+    },
+    {
+      "clauseId": "case-09-clause-04",
+      "expectedAssertionId": "case-09-expected-04",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-09",
+      "expectedOutcome": "content route joins traceable support"
+    }
+  ],
+  "case-10": [
+    {
+      "clauseId": "case-10-clause-01",
+      "expectedAssertionId": "case-10-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-10",
+      "expectedOutcome": "subject and context fail intersection"
+    },
+    {
+      "clauseId": "case-10-clause-02",
+      "expectedAssertionId": "case-10-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-10",
+      "expectedOutcome": "context relationship route is emitted"
+    },
+    {
+      "clauseId": "case-10-clause-03",
+      "expectedAssertionId": "case-10-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-10",
+      "expectedOutcome": "relationship language is conditional and does not mutate the subject"
+    }
+  ],
+  "case-11": [
+    {
+      "clauseId": "case-11-clause-01",
+      "expectedAssertionId": "case-11-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-11",
+      "expectedOutcome": "content assertion activates rule"
+    },
+    {
+      "clauseId": "case-11-clause-02",
+      "expectedAssertionId": "case-11-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-11",
+      "expectedOutcome": "subject-context comparison fails"
+    },
+    {
+      "clauseId": "case-11-clause-03",
+      "expectedAssertionId": "case-11-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-11",
+      "expectedOutcome": "content and context routes remain distinct"
+    },
+    {
+      "clauseId": "case-11-clause-04",
+      "expectedAssertionId": "case-11-expected-04",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-11",
+      "expectedOutcome": "activation assertions and context paths remain machine-readable"
+    }
+  ],
+  "case-12": [
+    {
+      "clauseId": "case-12-clause-01",
+      "expectedAssertionId": "case-12-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-12",
+      "expectedOutcome": "authoritative access is unchanged"
+    },
+    {
+      "clauseId": "case-12-clause-02",
+      "expectedAssertionId": "case-12-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-12",
+      "expectedOutcome": "projected access is denied"
+    },
+    {
+      "clauseId": "case-12-clause-03",
+      "expectedAssertionId": "case-12-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-12",
+      "expectedOutcome": "projected remediation is advisory and conditional"
+    },
+    {
+      "clauseId": "case-12-clause-04",
+      "expectedAssertionId": "case-12-expected-04",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-12",
+      "expectedOutcome": "projected-only failure is never authoritative denial"
+    }
+  ],
+  "case-13": [
+    {
+      "clauseId": "case-13-clause-01",
+      "expectedAssertionId": "case-13-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-13",
+      "expectedOutcome": "literal policy comparison denies"
+    },
+    {
+      "clauseId": "case-13-clause-02",
+      "expectedAssertionId": "case-13-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-13",
+      "expectedOutcome": "no subject remediation is emitted"
+    }
+  ],
+  "case-14": [
+    {
+      "clauseId": "case-14-clause-01",
+      "expectedAssertionId": "case-14-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-14",
+      "expectedOutcome": "authored blocking assertion lacks content support"
+    },
+    {
+      "clauseId": "case-14-clause-02",
+      "expectedAssertionId": "case-14-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-14",
+      "expectedOutcome": "lower-marking advice is refused"
+    },
+    {
+      "clauseId": "case-14-clause-03",
+      "expectedAssertionId": "case-14-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-14",
+      "expectedOutcome": "limitation code is returned"
+    }
+  ],
+  "case-15": [
+    {
+      "clauseId": "case-15-clause-01",
+      "expectedAssertionId": "case-15-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-15",
+      "expectedOutcome": "content revision changes digest"
+    },
+    {
+      "clauseId": "case-15-clause-02",
+      "expectedAssertionId": "case-15-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-15",
+      "expectedOutcome": "prior determinations become stale"
+    },
+    {
+      "clauseId": "case-15-clause-03",
+      "expectedAssertionId": "case-15-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-15",
+      "expectedOutcome": "re-evaluation is required before grant"
+    }
+  ],
+  "case-16": [
+    {
+      "clauseId": "case-16-clause-01",
+      "expectedAssertionId": "case-16-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-16",
+      "expectedOutcome": "guide assessment is null"
+    },
+    {
+      "clauseId": "case-16-clause-02",
+      "expectedAssertionId": "case-16-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-16",
+      "expectedOutcome": "guide dimension is not evaluated"
+    },
+    {
+      "clauseId": "case-16-clause-03",
+      "expectedAssertionId": "case-16-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-16",
+      "expectedOutcome": "authored scheme audit still runs"
+    }
+  ],
+  "case-17": [
+    {
+      "clauseId": "case-17-clause-01",
+      "expectedAssertionId": "case-17-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-17",
+      "expectedOutcome": "access artifact is absent"
+    },
+    {
+      "clauseId": "case-17-clause-02",
+      "expectedAssertionId": "case-17-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-17",
+      "expectedOutcome": "remote result is 422"
+    },
+    {
+      "clauseId": "case-17-clause-03",
+      "expectedAssertionId": "case-17-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-17",
+      "expectedOutcome": "local error is typed"
+    }
+  ],
+  "case-18": [
+    {
+      "clauseId": "case-18-clause-01",
+      "expectedAssertionId": "case-18-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-18",
+      "expectedOutcome": "artifact reference is qualified"
+    },
+    {
+      "clauseId": "case-18-clause-02",
+      "expectedAssertionId": "case-18-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-18",
+      "expectedOutcome": "provider is retained"
+    },
+    {
+      "clauseId": "case-18-clause-03",
+      "expectedAssertionId": "case-18-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-18",
+      "expectedOutcome": "snapshot is immutable"
+    },
+    {
+      "clauseId": "case-18-clause-04",
+      "expectedAssertionId": "case-18-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-18",
+      "expectedOutcome": "attribution is retained"
+    },
+    {
+      "clauseId": "case-18-clause-05",
+      "expectedAssertionId": "case-18-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-18",
+      "expectedOutcome": "rule reference is qualified"
+    }
+  ],
+  "case-19": [
+    {
+      "clauseId": "case-19-clause-01",
+      "expectedAssertionId": "case-19-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-19",
+      "expectedOutcome": "endpoint is a locator"
+    },
+    {
+      "clauseId": "case-19-clause-02",
+      "expectedAssertionId": "case-19-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-19",
+      "expectedOutcome": "snapshot is absent"
+    },
+    {
+      "clauseId": "case-19-clause-03",
+      "expectedAssertionId": "case-19-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-19",
+      "expectedOutcome": "reproducibility is best-effort"
+    }
+  ],
+  "case-20": [
+    {
+      "clauseId": "case-20-clause-01",
+      "expectedAssertionId": "case-20-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-20",
+      "expectedOutcome": "artifact resolves once"
+    },
+    {
+      "clauseId": "case-20-clause-02",
+      "expectedAssertionId": "case-20-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-20",
+      "expectedOutcome": "source identity reads once"
+    },
+    {
+      "clauseId": "case-20-clause-03",
+      "expectedAssertionId": "case-20-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-20",
+      "expectedOutcome": "canonical query reads once"
+    },
+    {
+      "clauseId": "case-20-clause-04",
+      "expectedAssertionId": "case-20-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-20",
+      "expectedOutcome": "all branches share observations"
+    },
+    {
+      "clauseId": "case-20-clause-05",
+      "expectedAssertionId": "case-20-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-20",
+      "expectedOutcome": "best-effort limitation is envelope-shared"
+    }
+  ],
+  "case-21": [
+    {
+      "clauseId": "case-21-clause-01",
+      "expectedAssertionId": "case-21-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-21",
+      "expectedOutcome": "requested version is present"
+    },
+    {
+      "clauseId": "case-21-clause-02",
+      "expectedAssertionId": "case-21-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-21",
+      "expectedOutcome": "resolved version is present"
+    },
+    {
+      "clauseId": "case-21-clause-03",
+      "expectedAssertionId": "case-21-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-21",
+      "expectedOutcome": "artifacts are present"
+    },
+    {
+      "clauseId": "case-21-clause-04",
+      "expectedAssertionId": "case-21-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-21",
+      "expectedOutcome": "sources are present"
+    },
+    {
+      "clauseId": "case-21-clause-05",
+      "expectedAssertionId": "case-21-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-21",
+      "expectedOutcome": "operation limitations are present"
+    }
+  ],
+  "case-22": [
+    {
+      "clauseId": "case-22-clause-01",
+      "expectedAssertionId": "case-22-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "profiles have equal statuses"
+    },
+    {
+      "clauseId": "case-22-clause-02",
+      "expectedAssertionId": "case-22-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "profiles have equal coverage"
+    },
+    {
+      "clauseId": "case-22-clause-03",
+      "expectedAssertionId": "case-22-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "profiles have equal targets"
+    },
+    {
+      "clauseId": "case-22-clause-04",
+      "expectedAssertionId": "case-22-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "counts are equal"
+    },
+    {
+      "clauseId": "case-22-clause-05",
+      "expectedAssertionId": "case-22-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "summary omissions are declared"
+    },
+    {
+      "clauseId": "case-22-clause-06",
+      "expectedAssertionId": "case-22-expected-06",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "standard support is deduplicated"
+    },
+    {
+      "clauseId": "case-22-clause-07",
+      "expectedAssertionId": "case-22-expected-07",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "full detail is complete"
+    },
+    {
+      "clauseId": "case-22-clause-08",
+      "expectedAssertionId": "case-22-expected-08",
+      "operation": "auditDocument",
+      "fixtureScope": "case-22",
+      "expectedOutcome": "omitted arrays are absent"
+    }
+  ],
+  "case-23": [
+    {
+      "clauseId": "case-23-clause-01",
+      "expectedAssertionId": "case-23-expected-01",
+      "operation": "documentAccessRequirements",
+      "fixtureScope": "case-23",
+      "expectedOutcome": "marking-only target normalizes"
+    },
+    {
+      "clauseId": "case-23-clause-02",
+      "expectedAssertionId": "case-23-expected-02",
+      "operation": "documentAccessRequirements",
+      "fixtureScope": "case-23",
+      "expectedOutcome": "assertions-only target normalizes"
+    },
+    {
+      "clauseId": "case-23-clause-03",
+      "expectedAssertionId": "case-23-expected-03",
+      "operation": "documentAccessRequirements",
+      "fixtureScope": "case-23",
+      "expectedOutcome": "combined target normalizes"
+    },
+    {
+      "clauseId": "case-23-clause-04",
+      "expectedAssertionId": "case-23-expected-04",
+      "operation": "documentAccessRequirements",
+      "fixtureScope": "case-23",
+      "expectedOutcome": "applied rules are qualified"
+    },
+    {
+      "clauseId": "case-23-clause-05",
+      "expectedAssertionId": "case-23-expected-05",
+      "operation": "documentAccessRequirements",
+      "fixtureScope": "case-23",
+      "expectedOutcome": "empty target is invalid"
+    }
+  ],
+  "case-24": [
+    {
+      "clauseId": "case-24-clause-01",
+      "expectedAssertionId": "case-24-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-24",
+      "expectedOutcome": "non-BMP prefix is present"
+    },
+    {
+      "clauseId": "case-24-clause-02",
+      "expectedAssertionId": "case-24-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-24",
+      "expectedOutcome": "combining prefix is present"
+    },
+    {
+      "clauseId": "case-24-clause-03",
+      "expectedAssertionId": "case-24-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-24",
+      "expectedOutcome": "evidence uses UTF-8 byte offsets"
+    },
+    {
+      "clauseId": "case-24-clause-04",
+      "expectedAssertionId": "case-24-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-24",
+      "expectedOutcome": "offsets agree across surfaces"
+    }
+  ],
+  "case-25": [
+    {
+      "clauseId": "case-25-clause-01",
+      "expectedAssertionId": "case-25-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-25",
+      "expectedOutcome": "CVSS composition runs generically"
+    },
+    {
+      "clauseId": "case-25-clause-02",
+      "expectedAssertionId": "case-25-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-25",
+      "expectedOutcome": "TLP taxonomy runs generically"
+    },
+    {
+      "clauseId": "case-25-clause-03",
+      "expectedAssertionId": "case-25-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-25",
+      "expectedOutcome": "geography union-first runs generically"
+    },
+    {
+      "clauseId": "case-25-clause-04",
+      "expectedAssertionId": "case-25-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-25",
+      "expectedOutcome": "no domain branch is used"
+    },
+    {
+      "clauseId": "case-25-clause-05",
+      "expectedAssertionId": "case-25-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-25",
+      "expectedOutcome": "irrelevant access assumptions are absent"
+    }
+  ],
+  "case-26": [
+    {
+      "clauseId": "case-26-clause-01",
+      "expectedAssertionId": "case-26-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-26",
+      "expectedOutcome": "identical decisions deduplicate"
+    },
+    {
+      "clauseId": "case-26-clause-02",
+      "expectedAssertionId": "case-26-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-26",
+      "expectedOutcome": "identical manual selections deduplicate"
+    },
+    {
+      "clauseId": "case-26-clause-03",
+      "expectedAssertionId": "case-26-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-26",
+      "expectedOutcome": "conflicting duplicate fails"
+    },
+    {
+      "clauseId": "case-26-clause-04",
+      "expectedAssertionId": "case-26-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-26",
+      "expectedOutcome": "reversed order is identical"
+    }
+  ],
+  "case-27": [
+    {
+      "clauseId": "case-27-clause-01",
+      "expectedAssertionId": "case-27-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-27",
+      "expectedOutcome": "empty text fails"
+    },
+    {
+      "clauseId": "case-27-clause-02",
+      "expectedAssertionId": "case-27-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-27",
+      "expectedOutcome": "ASCII whitespace fails"
+    },
+    {
+      "clauseId": "case-27-clause-03",
+      "expectedAssertionId": "case-27-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-27",
+      "expectedOutcome": "Unicode White_Space fails"
+    },
+    {
+      "clauseId": "case-27-clause-04",
+      "expectedAssertionId": "case-27-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-27",
+      "expectedOutcome": "detail is empty-document"
+    },
+    {
+      "clauseId": "case-27-clause-05",
+      "expectedAssertionId": "case-27-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-27",
+      "expectedOutcome": "no digest is produced"
+    }
+  ],
+  "case-28": [
+    {
+      "clauseId": "case-28-clause-01",
+      "expectedAssertionId": "case-28-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-28",
+      "expectedOutcome": "unpaired UTF-16 fails"
+    },
+    {
+      "clauseId": "case-28-clause-02",
+      "expectedAssertionId": "case-28-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-28",
+      "expectedOutcome": "invalid UTF-8 fails"
+    },
+    {
+      "clauseId": "case-28-clause-03",
+      "expectedAssertionId": "case-28-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-28",
+      "expectedOutcome": "escaped JSON invalid scalar fails"
+    },
+    {
+      "clauseId": "case-28-clause-04",
+      "expectedAssertionId": "case-28-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-28",
+      "expectedOutcome": "detail is invalid-unicode"
+    },
+    {
+      "clauseId": "case-28-clause-05",
+      "expectedAssertionId": "case-28-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-28",
+      "expectedOutcome": "replacement is forbidden"
+    }
+  ],
+  "case-29": [
+    {
+      "clauseId": "case-29-clause-01",
+      "expectedAssertionId": "case-29-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-29",
+      "expectedOutcome": "manual rule and evidence equal nomination"
+    },
+    {
+      "clauseId": "case-29-clause-02",
+      "expectedAssertionId": "case-29-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-29",
+      "expectedOutcome": "collision detail is stable"
+    },
+    {
+      "clauseId": "case-29-clause-03",
+      "expectedAssertionId": "case-29-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-29",
+      "expectedOutcome": "accept or reject remains the only route"
+    }
+  ],
+  "case-30": [
+    {
+      "clauseId": "case-30-clause-01",
+      "expectedAssertionId": "case-30-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "determinations are shuffled"
+    },
+    {
+      "clauseId": "case-30-clause-02",
+      "expectedAssertionId": "case-30-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "manual selections are shuffled"
+    },
+    {
+      "clauseId": "case-30-clause-03",
+      "expectedAssertionId": "case-30-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "source completion is randomized"
+    },
+    {
+      "clauseId": "case-30-clause-04",
+      "expectedAssertionId": "case-30-expected-04",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "map insertion is unstable"
+    },
+    {
+      "clauseId": "case-30-clause-05",
+      "expectedAssertionId": "case-30-expected-05",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "semantic JSON is equal"
+    },
+    {
+      "clauseId": "case-30-clause-06",
+      "expectedAssertionId": "case-30-expected-06",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "ids are equal"
+    },
+    {
+      "clauseId": "case-30-clause-07",
+      "expectedAssertionId": "case-30-expected-07",
+      "operation": "auditDocument",
+      "fixtureScope": "case-30",
+      "expectedOutcome": "all profiles agree"
+    }
+  ],
+  "case-31": [
+    {
+      "clauseId": "case-31-clause-01",
+      "expectedAssertionId": "case-31-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "document text is redacted"
+    },
+    {
+      "clauseId": "case-31-clause-02",
+      "expectedAssertionId": "case-31-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "matched text is redacted"
+    },
+    {
+      "clauseId": "case-31-clause-03",
+      "expectedAssertionId": "case-31-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "subject values are redacted"
+    },
+    {
+      "clauseId": "case-31-clause-04",
+      "expectedAssertionId": "case-31-expected-04",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "context values are redacted"
+    },
+    {
+      "clauseId": "case-31-clause-05",
+      "expectedAssertionId": "case-31-expected-05",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "evidence substrings are redacted"
+    },
+    {
+      "clauseId": "case-31-clause-06",
+      "expectedAssertionId": "case-31-expected-06",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "logs telemetry errors arguments and standard responses are covered"
+    },
+    {
+      "clauseId": "case-31-clause-07",
+      "expectedAssertionId": "case-31-expected-07",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "full detail requires explicit selection"
+    },
+    {
+      "clauseId": "case-31-clause-08",
+      "expectedAssertionId": "case-31-expected-08",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-31",
+      "expectedOutcome": "full does not alter logging"
+    }
+  ],
+  "case-32": [
+    {
+      "clauseId": "case-32-clause-01",
+      "expectedAssertionId": "case-32-expected-01",
+      "operation": "cliDocument",
+      "fixtureScope": "case-32",
+      "expectedOutcome": "audit pending accepted denial remediation and revision replay"
+    },
+    {
+      "clauseId": "case-32-clause-02",
+      "expectedAssertionId": "case-32-expected-02",
+      "operation": "cliDocument",
+      "fixtureScope": "case-32",
+      "expectedOutcome": "local and remote JSON agree"
+    },
+    {
+      "clauseId": "case-32-clause-03",
+      "expectedAssertionId": "case-32-expected-03",
+      "operation": "cliDocument",
+      "fixtureScope": "case-32",
+      "expectedOutcome": "exit code 0 is sufficient or granted"
+    },
+    {
+      "clauseId": "case-32-clause-04",
+      "expectedAssertionId": "case-32-expected-04",
+      "operation": "cliDocument",
+      "fixtureScope": "case-32",
+      "expectedOutcome": "exit code 1 is authoritative failure"
+    },
+    {
+      "clauseId": "case-32-clause-05",
+      "expectedAssertionId": "case-32-expected-05",
+      "operation": "cliDocument",
+      "fixtureScope": "case-32",
+      "expectedOutcome": "exit code 2 is operational or stale"
+    },
+    {
+      "clauseId": "case-32-clause-06",
+      "expectedAssertionId": "case-32-expected-06",
+      "operation": "cliDocument",
+      "fixtureScope": "case-32",
+      "expectedOutcome": "exit code 3 is indeterminate or projected-only"
+    }
+  ],
+  "case-33": [
+    {
+      "clauseId": "case-33-clause-01",
+      "expectedAssertionId": "case-33-expected-01",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-33",
+      "expectedOutcome": "determined assertion joins support"
+    },
+    {
+      "clauseId": "case-33-clause-02",
+      "expectedAssertionId": "case-33-expected-02",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-33",
+      "expectedOutcome": "content requirement joins support"
+    },
+    {
+      "clauseId": "case-33-clause-03",
+      "expectedAssertionId": "case-33-expected-03",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-33",
+      "expectedOutcome": "support joins accepted or manual fact"
+    },
+    {
+      "clauseId": "case-33-clause-04",
+      "expectedAssertionId": "case-33-expected-04",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-33",
+      "expectedOutcome": "fact joins exact decision and reason"
+    },
+    {
+      "clauseId": "case-33-clause-05",
+      "expectedAssertionId": "case-33-expected-05",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-33",
+      "expectedOutcome": "projected support joins projected finding"
+    },
+    {
+      "clauseId": "case-33-clause-06",
+      "expectedAssertionId": "case-33-expected-06",
+      "operation": "assessDocumentAccess",
+      "fixtureScope": "case-33",
+      "expectedOutcome": "rejected findings are unreachable"
+    }
+  ],
+  "case-34": [
+    {
+      "clauseId": "case-34-clause-01",
+      "expectedAssertionId": "case-34-expected-01",
+      "operation": "auditDocument",
+      "fixtureScope": "case-34",
+      "expectedOutcome": "whole carries a share value not every part allows"
+    },
+    {
+      "clauseId": "case-34-clause-02",
+      "expectedAssertionId": "case-34-expected-02",
+      "operation": "auditDocument",
+      "fixtureScope": "case-34",
+      "expectedOutcome": "excess names it and missing stays empty"
+    },
+    {
+      "clauseId": "case-34-clause-03",
+      "expectedAssertionId": "case-34-expected-03",
+      "operation": "auditDocument",
+      "fixtureScope": "case-34",
+      "expectedOutcome": "audit verdict is inadequate coverage"
+    }
+  ]
+}

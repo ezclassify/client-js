@@ -1,0 +1,281 @@
+{
+    "cases": [
+        {
+            "description": "Exact match: request body equals the recorded args exactly. The replayer must return the recorded response with HTTP 200.",
+            "expectedBody": {
+                "assertions": [{ "categoryId": "level", "conceptId": "HIGH" }],
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "expectedStatus": 200,
+            "id": "exact-match",
+            "replayerRecordings": {
+                "1a3932ae1540cfe94df375cd61fc711aad550db874cb18e5a382ee39fff4ec3a": {
+                    "body": {
+                        "assertions": [
+                            { "categoryId": "level", "conceptId": "HIGH" }
+                        ],
+                        "rendered": "HIGH",
+                        "valid": true
+                    },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "input": "HIGH" },
+                "headers": {
+                    "content-type": "application/json"
+                },
+                "method": "POST",
+                "path": "/api/scheme/process"
+            }
+        },
+        {
+            "description": "Path with a trailing slash must match the same recording as the canonical path without a trailing slash.",
+            "expectedBody": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "expectedStatus": 200,
+            "id": "trailing-slash",
+            "notes": "The hash key stored in replayerRecordings was computed from the canonical path '/api/scheme/process' (no trailing slash). The replayer must strip the trailing slash before computing the lookup key.",
+            "replayerRecordings": {
+                "1a3932ae1540cfe94df375cd61fc711aad550db874cb18e5a382ee39fff4ec3a": {
+                    "body": {
+                        "assertions": [
+                            { "categoryId": "level", "conceptId": "HIGH" }
+                        ],
+                        "rendered": "HIGH",
+                        "valid": true
+                    },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "input": "HIGH" },
+                "headers": {
+                    "content-type": "application/json"
+                },
+                "method": "POST",
+                "path": "/api/scheme/process/"
+            }
+        },
+        {
+            "description": "Request-scoped tracing headers (x-request-id, x-correlation-id) must be propagated in responses but must NOT affect recording lookup. The same recording is returned regardless of these headers.",
+            "expectedBody": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "expectedStatus": 200,
+            "id": "extra-headers",
+            "notes": "The extra headers must not affect lookup. Whether the replayer echoes x-request-id back in the response is implementation-defined and not tested here.",
+            "replayerRecordings": {
+                "1a3932ae1540cfe94df375cd61fc711aad550db874cb18e5a382ee39fff4ec3a": {
+                    "body": {
+                        "assertions": [
+                            { "categoryId": "level", "conceptId": "HIGH" }
+                        ],
+                        "rendered": "HIGH",
+                        "valid": true
+                    },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "input": "HIGH" },
+                "headers": {
+                    "content-type": "application/json",
+                    "x-correlation-id": "corr-xyz789",
+                    "x-request-id": "test-req-abc123"
+                },
+                "method": "POST",
+                "path": "/api/scheme/process"
+            }
+        },
+        {
+            "description": "A Content-Type header of 'application/json; charset=utf-8' must be treated as equivalent to 'application/json' for body parsing and recording lookup.",
+            "expectedBody": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "expectedStatus": 200,
+            "id": "content-type-charset",
+            "notes": "Many HTTP clients (Java's HttpURLConnection, Python's requests, .NET's HttpClient) append '; charset=utf-8' by default. Rejecting these as an unknown content-type would break all non-Go conformance clients.",
+            "replayerRecordings": {
+                "1a3932ae1540cfe94df375cd61fc711aad550db874cb18e5a382ee39fff4ec3a": {
+                    "body": {
+                        "assertions": [
+                            { "categoryId": "level", "conceptId": "HIGH" }
+                        ],
+                        "rendered": "HIGH",
+                        "valid": true
+                    },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "input": "HIGH" },
+                "headers": {
+                    "content-type": "application/json; charset=utf-8"
+                },
+                "method": "POST",
+                "path": "/api/scheme/process"
+            }
+        },
+        {
+            "description": "JSON object key order in the request body must be ignored. A body with keys in a different order than the canonical form must match the same recording.",
+            "expectedBody": {
+                "rendered": "MED",
+                "valid": true
+            },
+            "expectedStatus": 200,
+            "id": "arg-order",
+            "notes": "The hash in replayerRecordings was computed from stableJson({\"input\":\"MED\",\"schemeId\":\"ref-scheme-1\"}) with keys sorted lexicographically. The request body sends keys in reverse order ({\"schemeId\":...,\"input\":...}). After stableJson normalization both produce the same hash. This test catches replayers that hash raw bytes instead of normalized JSON.",
+            "replayerRecordings": {
+                "5e1ccd6934bf8306d9695afcf208ee44ef64272a9266b9eb67ef12c3b2554f7d": {
+                    "body": {
+                        "assertions": [
+                            { "categoryId": "level", "conceptId": "MED" }
+                        ],
+                        "rendered": "MED",
+                        "valid": true
+                    },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "input": "MED", "schemeId": "ref-scheme-1" },
+                "headers": {
+                    "content-type": "application/json"
+                },
+                "method": "POST",
+                "path": "/api/scheme/process",
+                "rawBody": "{\"schemeId\":\"ref-scheme-1\",\"input\":\"MED\"}"
+            }
+        },
+        {
+            "description": "An array in its recorded order must match the recording.",
+            "expectedBody": {
+                "rendered": "HIGH/MED"
+            },
+            "expectedStatus": 200,
+            "id": "array-order-hit",
+            "replayerRecordings": {
+                "d668709388715668de0148d40f202b93ba4a3b8a54615fbbc451644c9ccc6e20": {
+                    "body": { "rendered": "HIGH/MED" },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "inputs": ["HIGH", "MED"] },
+                "headers": { "content-type": "application/json" },
+                "method": "POST",
+                "path": "/api/scheme/process"
+            }
+        },
+        {
+            "description": "Reversing array elements must miss the recording for the original order.",
+            "expectedMissEnvelope": {
+                "bodyHash": "0ae1862702c21fa755ade6abbfcb2f0e432ff10c0276129bd988ff3c56a6af43",
+                "error": "no_recording",
+                "path": "/api/scheme/process"
+            },
+            "expectedStatus": 404,
+            "id": "array-order-miss",
+            "replayerRecordings": {
+                "d668709388715668de0148d40f202b93ba4a3b8a54615fbbc451644c9ccc6e20": {
+                    "body": { "rendered": "HIGH/MED" },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "inputs": ["MED", "HIGH"] },
+                "headers": { "content-type": "application/json" },
+                "method": "POST",
+                "path": "/api/scheme/process"
+            }
+        },
+        {
+            "description": "A path with different letter case must miss the canonical-path recording.",
+            "expectedMissEnvelope": {
+                "bodyHash": "23c6ca75ee9382586f96f8d87004d3cf1352dacd9f3cd9c0807d5429a1ed4c6e",
+                "error": "no_recording",
+                "path": "/api/scheme/PROCESS"
+            },
+            "expectedStatus": 404,
+            "id": "path-case-miss",
+            "replayerRecordings": {
+                "1a3932ae1540cfe94df375cd61fc711aad550db874cb18e5a382ee39fff4ec3a": {
+                    "body": {
+                        "assertions": [
+                            { "categoryId": "level", "conceptId": "HIGH" }
+                        ],
+                        "rendered": "HIGH",
+                        "valid": true
+                    },
+                    "statusCode": 200
+                }
+            },
+            "request": {
+                "body": { "input": "HIGH" },
+                "headers": { "content-type": "application/json" },
+                "method": "POST",
+                "path": "/api/scheme/PROCESS"
+            }
+        },
+        {
+            "description": "When no recording matches the (path, body) pair, the replayer must return HTTP 404 with a miss envelope in the shape defined by the 'missEnvelope' section of this corpus.",
+            "expectedMissEnvelope": {
+                "bodyHash": "344956ec1bb806a07f23db4c463f219d823bb854eb3402fc4debca5715cf17d1",
+                "error": "no_recording",
+                "path": "/api/scheme/process"
+            },
+            "expectedStatus": 404,
+            "id": "miss-no-recording",
+            "notes": "The 'error' field MUST be the literal string 'no_recording'. The 'bodyHash' MUST equal sha256(stableJson(body)) = sha256('{\"input\":\"UNKNOWN-XYZ\"}') = 344956ec... The SDK conformance test harness detects this envelope and fails the test with a clear diagnostic: 'no recording found for path=/api/scheme/process body={...}' rather than a silent subset-match failure.",
+            "replayerRecordings": {},
+            "request": {
+                "body": { "input": "UNKNOWN-XYZ" },
+                "headers": {
+                    "content-type": "application/json"
+                },
+                "method": "POST",
+                "path": "/api/scheme/process"
+            }
+        }
+    ],
+    "description": "Replayer-contract corpus. Every language SDK's stub HTTP replayer must pass all cases in this file before it is permitted to run engine-slice conformance. Cases cover trailing slashes, path case, extra headers, content-type variants, JSON object-key and array-element ordering, and the miss-envelope shape. A request.rawBody string, when present, is the exact UTF-8 JSON sent on the wire instead of serializing request.body.",
+    "lookupAlgorithm": {
+        "hashAlgorithm": "SHA-256, lowercase hex digest.",
+        "hashInput": "Concatenate: normalizedPath, the literal ASCII pipe character '|', then stableJson(body). No separators before or after.",
+        "normalizedPath": "Strip one or more trailing slashes from the URL path. Do not lowercase the path: paths are case-sensitive. Example: '/api/scheme/process/' → '/api/scheme/process'.",
+        "stableJson": "Recursively sort all JSON object keys in lexicographic order, then serialize as compact JSON (no spaces, no newlines). Arrays are NOT reordered: only object keys are sorted. Example: {\"b\":2,\"a\":1} → '{\"a\":1,\"b\":2}'.",
+        "summary": "sha256(normalizedPath + '|' + stableJson(body))"
+    },
+    "matchingRules": [
+        "Trailing slashes on the URL path are ignored: '/api/scheme/process/' matches the same recording as '/api/scheme/process'.",
+        "HTTP headers other than Content-Type are ignored for recording lookup. The 'x-request-id', 'x-correlation-id', and similar optional propagation headers MUST NOT change which recording is returned.",
+        "The Content-Type request header MUST be treated as 'application/json' when it carries any 'application/json' media type regardless of charset suffix or other parameters. Example: 'application/json; charset=utf-8' is equivalent to 'application/json'.",
+        "JSON object key order in the request body MUST be ignored. Two request bodies that are identical after stableJson normalization MUST match the same recording.",
+        "Array element order is significant. [\"HIGH\",\"MED\"] and [\"MED\",\"HIGH\"] are distinct requests and may match different recordings.",
+        "Comparison is performed on the normalized (stableJson) form of the body, NOT on the raw bytes."
+    ],
+    "missEnvelope": {
+        "description": "When no recording matches the incoming request, the replayer MUST return HTTP 404 with a JSON body that exactly matches this shape. Clients use the 'error' field to detect a miss and fail the conformance test with a clear diagnostic rather than a silent body mismatch.",
+        "notes": [
+            "'error' MUST be the literal string 'no_recording'.",
+            "'message' is informational only; conformance tests MUST NOT assert on its exact value.",
+            "'path' MUST be the normalized (trailing-slash-stripped) path.",
+            "'bodyHash' MUST be sha256(stableJson(body)) as a lowercase hex string.",
+            "The Content-Type of the 404 response MUST be 'application/json'."
+        ],
+        "required": ["error", "path", "bodyHash"],
+        "shape": {
+            "bodyHash": "<string: sha256 of stableJson(body), lowercase hex>",
+            "error": "no_recording",
+            "message": "<human-readable string, may vary>",
+            "path": "<string: the normalized request path>"
+        }
+    },
+    "version": "1"
+}

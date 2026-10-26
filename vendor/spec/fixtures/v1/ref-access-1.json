@@ -1,0 +1,80 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "level",
+          "label": "Level",
+          "position": 0,
+          "required": true,
+          "rollup": "max",
+          "single": true
+        }
+      ],
+      "concepts": {
+        "inline": [
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "LOW",
+            "name": "Low",
+            "parents": [],
+            "position": 0,
+            "views": {
+              "default": "LOW"
+            },
+            "rank": 0
+          },
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "HIGH",
+            "name": "High",
+            "parents": [],
+            "position": 1,
+            "views": {
+              "default": "HIGH"
+            },
+            "rank": 1
+          }
+        ]
+      }
+    },
+    "default_scope": "banner",
+    "description": "Conformance test scheme. Two level concepts (LOW, HIGH). Access rules live in ref-access-rules-1.json.",
+    "id": "ref-access-1",
+    "name": "Reference Access Profile 1",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "render": {
+      "default": "default",
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            }
+          ],
+          "id": "default",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner"
+        }
+      ]
+    },
+    "rules": [],
+    "scopes": [
+      {
+        "id": "banner",
+        "label": "Banner"
+      }
+    ],
+    "version": "1.0.0"
+  }
+}

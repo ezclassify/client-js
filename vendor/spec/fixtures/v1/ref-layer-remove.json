@@ -1,0 +1,30 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [],
+      "concepts": {
+        "inline": []
+      }
+    },
+    "description": "Layer that removes the MED concept from the level category. Tests layer.removes: composing base+remove should make MED invalid while LOW and HIGH remain valid.",
+    "id": "ref-layer-remove",
+    "layer": {
+      "base": "ref-layer-base@1.0.0",
+      "removes": [
+        {
+          "concept": "MED"
+        }
+      ]
+    },
+    "name": "Remove MED Layer",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "rollup_pipelines": [],
+    "rules": [],
+    "type": "layer",
+    "version": "1.0.0"
+  }
+}

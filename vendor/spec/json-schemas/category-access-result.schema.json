@@ -1,0 +1,90 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "AccessRule": {
+            "description": "Strategy for comparing subject attributes against data assertions in a category during an access check.\n\n- `gte`: user's ranked concept must be ≥ the data concept's rank\n- `superset`: user's concept set must include all data concepts\n- `includes`: user's concept set must include at least one data concept\n- `exact`: user's concepts must exactly match the data concepts\n- `any`: a supplied, non-null user attribute grants access, including an empty array; it does not require a recognized concept or a non-empty concept set\n\nDeclared on `AccessRuleEntry.strategy` for simple attribute-mapping rules.",
+            "enum": ["gte", "superset", "includes", "exact", "any"],
+            "type": "string"
+        },
+        "ConceptModernization": {
+            "description": "One deprecated-to-current concept substitution that processing applied before an access rule was evaluated.\n\nThe id fields are machine keys; the `*Display` companions carry the rendered marking view, following the same split as `missing` / `missingDisplay`.",
+            "properties": {
+                "conceptDisplay": {
+                    "description": "Resolved operational display for `conceptId`.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Current concept the access rule was evaluated against.",
+                    "type": "string"
+                },
+                "replacedConceptDisplay": {
+                    "description": "Resolved operational display for `replacedConceptId`.",
+                    "type": "string"
+                },
+                "replacedConceptId": {
+                    "description": "Deprecated concept the data was actually marked with.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "conceptId",
+                "replacedConceptId",
+                "conceptDisplay",
+                "replacedConceptDisplay"
+            ],
+            "type": "object"
+        }
+    },
+    "description": "Per-category access evaluation: whether the user met the category's rule, with details on missing concepts.",
+    "properties": {
+        "dataConceptIds": {
+            "description": "The concept ids the data carries in the category.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "granted": {
+            "description": "Whether the user's concepts satisfy the category's rule.",
+            "type": "boolean"
+        },
+        "missing": {
+            "description": "Data concept ids the user lacks, for the `superset`, `includes` and `exact` comparisons. Empty when nothing is missing.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "missingDisplay": {
+            "description": "Resolved operational display (rendered marking view) for each id in `missing`, index-aligned, so a consumer can list the unsatisfied concepts by their marking rather than their raw ids. `missing` stays as the machine keys.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "modernizedFrom": {
+            "description": "Data concepts in this category that processing modernized from a deprecated marking before the rule was evaluated.\n\nPresent only when the data carried a deprecated concept. It lets an explanation show the full trail (the marking the document bears, the current concept it resolved to, and the comparison actually made against the user) rather than reporting a decision about a concept the reader never saw in the whole-document marking.",
+            "items": {
+                "$ref": "#/definitions/ConceptModernization"
+            },
+            "type": "array"
+        },
+        "reason": {
+            "description": "Why access was denied, in words, with concepts written as the marking writes them. Absent when granted.",
+            "type": "string"
+        },
+        "rule": {
+            "$ref": "#/definitions/AccessRule",
+            "description": "The comparison applied to the category."
+        },
+        "userConceptIds": {
+            "description": "The concept ids the user holds in the category.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": ["granted", "rule"],
+    "type": "object"
+}

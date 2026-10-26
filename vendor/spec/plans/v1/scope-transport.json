@@ -1,0 +1,504 @@
+{
+    "cases": [
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-X",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "assertions": [
+                    { "categoryId": "level", "conceptId": "HIGH" },
+                    { "categoryId": "authority", "conceptId": "AUTH-X" }
+                ],
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "process",
+            "name": "c1-process-mixed-banner-retains-scoped-assertion"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-X",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                { "outputFormat": "full" }
+            ],
+            "expect": {
+                "rendered": "HIGH/AUTH-X",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "process",
+            "name": "c1-process-mixed-full-emits-scoped-category"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-Y",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                { "surface": "alt" }
+            ],
+            "expect": {
+                "assertions": [
+                    { "categoryId": "authority", "conceptId": "AUTH-Y" }
+                ],
+                "rendered": "",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "process",
+            "name": "c1-process-scope-only-banner-drops-string-keeps-assertion"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-Y",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                { "outputFormat": "full", "surface": "alt" }
+            ],
+            "expect": {
+                "assertions": [
+                    { "categoryId": "authority", "conceptId": "AUTH-Y" }
+                ],
+                "rendered": "AUTH-Y",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "process",
+            "name": "c1-process-scope-only-full-emits-scoped-category"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-X",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                "banner"
+            ],
+            "expect": { "result": "HIGH" },
+            "fixture": "ref-scope-1",
+            "method": "render",
+            "name": "c2-render-banner-subset-format-emits-only-covered-level"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-X",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                "full"
+            ],
+            "expect": { "result": "HIGH/AUTH-X" },
+            "fixture": "ref-scope-1",
+            "method": "render",
+            "name": "c2-render-full-format-emits-coverage-boundary"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                { "outputFormat": "full", "surface": "alt" }
+            ],
+            "expect": {
+                "assertions": [
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                "rendered": "ORIG=ABCXYZ",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "process",
+            "name": "c3-process-capture-value-byte-preserved-full"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                "banner"
+            ],
+            "expect": { "result": "" },
+            "fixture": "ref-scope-1",
+            "method": "render",
+            "name": "c3-render-capture-value-dropped-by-banner-projection"
+        },
+        {
+            "args": [
+                [
+                    [
+                        {
+                            "categoryId": "level",
+                            "conceptId": "LOW",
+                            "confidence": "certain",
+                            "source": "user"
+                        },
+                        {
+                            "categoryId": "authority",
+                            "conceptId": "AUTH-X",
+                            "confidence": "certain",
+                            "source": "user"
+                        }
+                    ],
+                    [
+                        {
+                            "categoryId": "level",
+                            "conceptId": "HIGH",
+                            "confidence": "certain",
+                            "source": "user"
+                        },
+                        {
+                            "categoryId": "origin",
+                            "conceptId": "ORIG",
+                            "confidence": "certain",
+                            "source": "user",
+                            "value": "ABCXYZ"
+                        }
+                    ]
+                ],
+                { "outputFormat": "full" }
+            ],
+            "expect": {
+                "assertions": [
+                    { "categoryId": "level", "conceptId": "HIGH" },
+                    { "categoryId": "authority", "conceptId": "AUTH-X" },
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                "rendered": "HIGH/AUTH-X/ORIG=ABCXYZ",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "aggregateAssertions",
+            "name": "c5-aggregate-assertions-scoped-plus-capture-full-lossless"
+        },
+        {
+            "args": [
+                [
+                    [
+                        {
+                            "categoryId": "level",
+                            "conceptId": "LOW",
+                            "confidence": "certain",
+                            "source": "user"
+                        },
+                        {
+                            "categoryId": "authority",
+                            "conceptId": "AUTH-X",
+                            "confidence": "certain",
+                            "source": "user"
+                        }
+                    ],
+                    [
+                        {
+                            "categoryId": "level",
+                            "conceptId": "HIGH",
+                            "confidence": "certain",
+                            "source": "user"
+                        },
+                        {
+                            "categoryId": "origin",
+                            "conceptId": "ORIG",
+                            "confidence": "certain",
+                            "source": "user",
+                            "value": "ABCXYZ"
+                        }
+                    ]
+                ],
+                { "outputFormat": "banner" }
+            ],
+            "expect": {
+                "assertions": [
+                    { "categoryId": "level", "conceptId": "HIGH" },
+                    { "categoryId": "authority", "conceptId": "AUTH-X" },
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": "ref-scope-1",
+            "method": "aggregateAssertions",
+            "name": "c5-aggregate-assertions-banner-drops-string-keeps-all-assertions"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-X",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                { "outputFormat": "full", "surface": "alt" }
+            ],
+            "expect": { "rendered": "AUTH-X", "valid": true },
+            "fixture": "ref-scope-2",
+            "method": "process",
+            "name": "c6-process-surface-accepts-fragment-carrying-its-required-category"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                { "outputFormat": "full", "surface": "alt" }
+            ],
+            "expect": {
+                "errors": [
+                    { "constraintId": "required-category:authority" }
+                ],
+                "rendered": "ORIG=ABCXYZ",
+                "valid": false
+            },
+            "fixture": "ref-scope-2",
+            "method": "process",
+            "name": "c6-process-surface-refuses-fragment-missing-its-required-category"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                { "outputFormat": "full" }
+            ],
+            "expect": {
+                "errors": [{ "constraintId": "required-category:level" }],
+                "rendered": "ORIG=ABCXYZ",
+                "valid": false
+            },
+            "fixture": "ref-scope-2",
+            "method": "process",
+            "name": "c6-process-whole-marking-refuses-the-same-fragment-for-its-own-required-category"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "authority",
+                        "conceptId": "AUTH-X",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "origin",
+                        "conceptId": "ORIG",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "ABCXYZ"
+                    }
+                ],
+                { "outputFormat": "full" }
+            ],
+            "expect": {
+                "rendered": "HIGH/AUTH-X/ORIG=ABCXYZ",
+                "valid": true
+            },
+            "fixture": "ref-scope-2",
+            "method": "process",
+            "name": "c6-process-whole-marking-accepts-a-complete-marking-carrying-both-surfaces"
+        },
+        {
+            "args": [
+                [
+                    [
+                        {
+                            "categoryId": "authority",
+                            "conceptId": "AUTH-X",
+                            "confidence": "certain",
+                            "source": "user"
+                        }
+                    ]
+                ],
+                { "outputFormat": "full", "surface": "alt" }
+            ],
+            "expect": { "rendered": "AUTH-X", "valid": true },
+            "fixture": "ref-scope-2",
+            "method": "aggregateAssertions",
+            "name": "c7-aggregate-surface-accepts-rollup-carrying-its-required-category"
+        },
+        {
+            "args": [
+                [
+                    [
+                        {
+                            "categoryId": "origin",
+                            "conceptId": "ORIG",
+                            "confidence": "certain",
+                            "source": "user",
+                            "value": "ABCXYZ"
+                        }
+                    ]
+                ],
+                { "outputFormat": "full", "surface": "alt" }
+            ],
+            "expect": {
+                "errors": [{ "constraintId": "required-category:authority" }],
+                "rendered": "ORIG=ABCXYZ",
+                "valid": false
+            },
+            "fixture": "ref-scope-2",
+            "method": "aggregateAssertions",
+            "name": "c7-aggregate-surface-refuses-rollup-missing-its-required-category"
+        },
+        {
+            "args": [
+                [
+                    [
+                        {
+                            "categoryId": "origin",
+                            "conceptId": "ORIG",
+                            "confidence": "certain",
+                            "source": "user",
+                            "value": "ABCXYZ"
+                        }
+                    ]
+                ],
+                { "outputFormat": "full" }
+            ],
+            "expect": {
+                "errors": [{ "constraintId": "required-category:level" }],
+                "rendered": "ORIG=ABCXYZ",
+                "valid": false
+            },
+            "fixture": "ref-scope-2",
+            "method": "aggregateAssertions",
+            "name": "c7-aggregate-whole-marking-refuses-the-same-rollup-for-its-own-required-category"
+        },
+        {
+            "args": [
+                [
+                    [
+                        {
+                            "categoryId": "level",
+                            "conceptId": "HIGH",
+                            "confidence": "certain",
+                            "source": "user"
+                        }
+                    ],
+                    [
+                        {
+                            "categoryId": "authority",
+                            "conceptId": "AUTH-X",
+                            "confidence": "certain",
+                            "source": "user"
+                        }
+                    ],
+                    [
+                        {
+                            "categoryId": "origin",
+                            "conceptId": "ORIG",
+                            "confidence": "certain",
+                            "source": "user",
+                            "value": "ABCXYZ"
+                        }
+                    ]
+                ],
+                { "outputFormat": "full" }
+            ],
+            "expect": {
+                "rendered": "HIGH/AUTH-X/ORIG=ABCXYZ",
+                "valid": true
+            },
+            "fixture": "ref-scope-2",
+            "method": "aggregateAssertions",
+            "name": "c7-aggregate-whole-marking-accepts-portions-that-roll-up-to-a-complete-marking"
+        }
+    ],
+    "slice": "engine"
+}

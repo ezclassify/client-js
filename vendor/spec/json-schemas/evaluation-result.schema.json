@@ -1,0 +1,794 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "AggregatedMarkings": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "description": "Aggregated guide output: one rolled-up marking per target scheme id.",
+            "type": "object"
+        },
+        "ArtifactKind": {
+            "description": "Closed artifact families participating in a composed operation.",
+            "enum": [
+                "scheme",
+                "layer",
+                "guide",
+                "access",
+                "crosswalk",
+                "context"
+            ],
+            "type": "string"
+        },
+        "ArtifactReference": {
+            "description": "Identifies an immutable artifact participating in a composed operation.",
+            "properties": {
+                "digest": {
+                    "description": "Content digest when the resolver can supply one.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Artifact identifier.",
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/ArtifactKind",
+                    "description": "Artifact family."
+                },
+                "version": {
+                    "description": "Resolved immutable artifact version.",
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "id", "version"],
+            "type": "object"
+        },
+        "Attribution": {
+            "description": "Provenance attached to every source so downstream consumers can render proper attribution and license notices.\n\nMandatory because most source data we'll integrate (NIST, ICS, IANA, external taxonomies) requires citation. Sources that don't have a formal license should set `license: 'unspecified'` rather than omit it.",
+            "properties": {
+                "citation": {
+                    "description": "Suggested citation string for academic / regulatory use.",
+                    "type": "string"
+                },
+                "license": {
+                    "description": "SPDX identifier or short license token (e.g. \"CC-BY-4.0\", \"public-domain\").",
+                    "type": "string"
+                },
+                "licenseUrl": {
+                    "description": "Canonical URL where the license terms can be inspected.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Display name of the upstream source (e.g. \"NIST CSWP-29\").",
+                    "type": "string"
+                }
+            },
+            "required": ["name", "license"],
+            "type": "object"
+        },
+        "BestEffortRuleSourceReference": {
+            "description": "Best-effort external source join carried by a qualified rule reference.",
+            "properties": {
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["providerId", "reproducibility"],
+            "type": "object"
+        },
+        "BestEffortSourceReference": {
+            "description": "Best-effort source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the mutable content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["attribution", "providerId", "reproducibility"],
+            "type": "object"
+        },
+        "CharacterWindow": {
+            "description": "Proximity measured in raw characters.",
+            "properties": {
+                "chars": {
+                    "description": "The largest distance allowed between two spans, counted in characters (UTF-16 code units) between their nearest edges. Spans that touch or overlap are 0 apart.",
+                    "minimum": 0,
+                    "type": "integer"
+                }
+            },
+            "required": ["chars"],
+            "type": "object"
+        },
+        "ConceptRef": {
+            "description": "A reference to a concept in a dependent scheme. Resolved to a full Assertion during guide evaluation.",
+            "properties": {
+                "category": {
+                    "description": "Category ID: required when the concept belongs to multiple categories.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Concept ID: must exist in one of the guide's target schemes.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value for text-input concepts (e.g., country codes, project names).",
+                    "type": "string"
+                }
+            },
+            "required": ["id"],
+            "type": "object"
+        },
+        "GuideBreakdownEntry": {
+            "description": "Per-rule breakdown in a guide evaluation result.",
+            "properties": {
+                "isComputed": {
+                    "description": "Whether the rule was activated from other guide facts.",
+                    "type": "boolean"
+                },
+                "outcome": {
+                    "$ref": "#/definitions/GuideRuleOutcome",
+                    "description": "Rule outcome evaluated by the guide engine."
+                },
+                "overriddenBy": {
+                    "$ref": "#/definitions/RuleReference",
+                    "description": "Qualified overriding rule when this outcome was replaced."
+                },
+                "rule": {
+                    "$ref": "#/definitions/RuleReference",
+                    "description": "Qualified rule whose outcome was evaluated."
+                },
+                "wasOverridden": {
+                    "description": "Whether an active rule replaced this rule's outcome.",
+                    "type": "boolean"
+                }
+            },
+            "required": ["rule", "outcome", "isComputed", "wasOverridden"],
+            "type": "object"
+        },
+        "GuideMatchSpec": {
+            "description": "A named pattern matcher specification. Use built-in types like 'ipv4', 'email', 'coordinates', or 'regex' with a custom pattern.",
+            "properties": {
+                "caseSensitive": {
+                    "description": "Case-sensitivity for a `type: 'regex'` leaf. When true the pattern compiles without the `i` flag, so an `[A-Z]` class means uppercase only. Absent or false, the pattern matches case-insensitively. Ignored on non-`regex` leaves.",
+                    "type": "boolean"
+                },
+                "label": {
+                    "description": "Display label: overrides the matcher's built-in label.",
+                    "type": "string"
+                },
+                "pattern": {
+                    "description": "Custom regex pattern: only used when type is 'regex'.",
+                    "type": "string"
+                },
+                "runtime": {
+                    "description": "`runtime: true` marks a matcher provided by the host at runtime. Such a leaf is always valid at load; if the named matcher is not registered it matches nothing here, and resolves normally where it is registered.",
+                    "type": "boolean"
+                },
+                "type": {
+                    "description": "Matcher type: a built-in name (ipv4, cidr, ipv6, mac_address, email, hostname, url, coordinates, mgrs, phone, ssn, credit_card, date, uuid) or 'regex' for custom. Domain-specific packs (usgov, healthcare, financial, ...) add further names when registered.",
+                    "minLength": 1,
+                    "type": "string"
+                }
+            },
+            "required": ["type"],
+            "type": "object"
+        },
+        "GuideRule": {
+            "description": "A rule in a marking guide: a data-element description with an outcome that contributes to the aggregate marking when activated.\n\nRules are presented as checkboxes in the UI. `keywords` enables keyword-search filtering; `match` enables text-scan detection (e.g., finding IPv4 addresses in a document body). `outcome.rendered` or `outcome.concepts` provides the marking contribution. Rules with `when` are computed; they auto-activate based on sibling rule selection state and do not appear as user-visible checkboxes.\n\nThis is the named runtime/read-result shape. Authoring input is carried by the guide definition's `rules.inline` entries.",
+            "properties": {
+                "category": {
+                    "description": "Guide category ID for grouping in the UI.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description of the data element this rule covers.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Unique identifier within the guide.",
+                    "type": "string"
+                },
+                "keywords": {
+                    "description": "Searchable terms for literal keyword filtering (absent on computed rules).",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "match": {
+                    "description": "Named pattern matchers for content evaluation. Each entry is a `MatchNode`: a leaf spec referencing a built-in matcher (e.g. `{ type: 'ipv4' }`) or a custom regex (`{ type: 'regex', pattern: '...' }`), or a combinator node (`any` / `all` / `not` / `near` / `context` / `validate`) composed over child nodes. When content is evaluated, both `keywords` and `match` are checked.",
+                    "items": {
+                        "$ref": "#/definitions/MatchNode"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Human-readable display name.",
+                    "type": "string"
+                },
+                "outcome": {
+                    "$ref": "#/definitions/GuideRuleOutcome",
+                    "description": "What this rule contributes when active. At least one of rendered or concepts must be set."
+                },
+                "overrides": {
+                    "description": "Rule IDs whose outcomes this rule replaces when active. When omitted (default), this rule's outcome is additive: it contributes alongside the rules it depends on.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "rationale": {
+                    "description": "Explanation of why this outcome applies.",
+                    "type": "string"
+                },
+                "when": {
+                    "$ref": "#/definitions/RuleWhen",
+                    "description": "When present, this rule auto-activates based on other rules' selection state. Uses the same when framework as scheme rules. `has` references guide rule IDs. Rules with `when` are \"computed\"; they don't appear as checkboxes."
+                }
+            },
+            "required": ["id", "name", "outcome"],
+            "type": "object"
+        },
+        "GuideRuleOutcome": {
+            "description": "The effect of a guide rule: what it contributes to the marking.",
+            "properties": {
+                "concepts": {
+                    "description": "Direct concept references: converted to assertions, then engine.process()'d.",
+                    "items": {
+                        "$ref": "#/definitions/ConceptRef"
+                    },
+                    "type": "array"
+                },
+                "rendered": {
+                    "description": "Pre-rendered marking string: parsed by engine.process() during evaluation.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "MatchAllNode": {
+            "description": "The `all` combinator: every child must match, and all children must overlap within `within` of the first child's span. The emitted span is the first child's (the anchor). Used to require several signals co-occur.",
+            "properties": {
+                "all": {
+                    "description": "The signals that must all match. The first is the anchor whose span is kept.",
+                    "items": {
+                        "$ref": "#/definitions/MatchNode"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "label": {
+                    "description": "Display label for this node's matches. Defaults to `all`.",
+                    "type": "string"
+                },
+                "within": {
+                    "$ref": "#/definitions/Win",
+                    "description": "How close every other child's match must lie to the anchor's."
+                }
+            },
+            "required": ["all", "within"],
+            "type": "object"
+        },
+        "MatchAnyNode": {
+            "description": "The `any` combinator: a union of child spans under one label. Used to express a multi-format value as several small, individually screened leaves instead of one giant alternation.",
+            "properties": {
+                "any": {
+                    "description": "The alternatives. A span any of them matches is a match.",
+                    "items": {
+                        "$ref": "#/definitions/MatchNode"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "label": {
+                    "description": "Display label for this node's matches. Defaults to `any`.",
+                    "type": "string"
+                }
+            },
+            "required": ["any"],
+            "type": "object"
+        },
+        "MatchContextExpression": {
+            "description": "Cue relationship used by the context combinator.",
+            "properties": {
+                "candidate": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The spans to keep when the cue is present."
+                },
+                "cue": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The span that must lie near a candidate for it to count."
+                },
+                "side": {
+                    "$ref": "#/definitions/MatchContextSide",
+                    "description": "Where the cue may lie relative to the candidate: `before`, `after`, or `both` (the default)."
+                },
+                "within": {
+                    "$ref": "#/definitions/Win",
+                    "description": "How close the cue must lie to the candidate."
+                }
+            },
+            "required": ["candidate", "cue", "within"],
+            "type": "object"
+        },
+        "MatchContextNode": {
+            "description": "The `context` combinator: keep each `candidate` span only when a `cue` span lies within `within` on the given `side` (default `both`). Used to require a positive cue (e.g. a ZIP only counts with a postal/state cue nearby).",
+            "properties": {
+                "context": {
+                    "$ref": "#/definitions/MatchContextExpression",
+                    "description": "The candidate and the cue it needs."
+                },
+                "label": {
+                    "description": "Display label for this node's matches. Defaults to `context`.",
+                    "type": "string"
+                }
+            },
+            "required": ["context"],
+            "type": "object"
+        },
+        "MatchContextSide": {
+            "description": "Relative position accepted by a context-expression cue.",
+            "enum": ["before", "after", "both"],
+            "type": "string"
+        },
+        "MatchNearEmit": {
+            "description": "Span emitted by a near-expression match.",
+            "enum": ["a", "b", "envelope"],
+            "type": "string"
+        },
+        "MatchNearExpression": {
+            "description": "Pairing expression used by the near combinator.",
+            "properties": {
+                "a": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The first span of the pair. Kept by default."
+                },
+                "b": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The second span of the pair."
+                },
+                "emit": {
+                    "$ref": "#/definitions/MatchNearEmit",
+                    "description": "Which span survives a match: `a` (the default), `b`, or `envelope`, the span covering both."
+                },
+                "within": {
+                    "$ref": "#/definitions/Win",
+                    "description": "How close the `b` span must lie to the `a` span."
+                }
+            },
+            "required": ["a", "b", "within"],
+            "type": "object"
+        },
+        "MatchNearNode": {
+            "description": "The `near` combinator: pair an `a` span with a `b` span that lies within `within`. `emit` selects which span survives: the `a` span (default), the `b` span, or the envelope spanning both.",
+            "properties": {
+                "label": {
+                    "description": "Display label for this node's matches. Defaults to `near`.",
+                    "type": "string"
+                },
+                "near": {
+                    "$ref": "#/definitions/MatchNearExpression",
+                    "description": "The pairing to match."
+                }
+            },
+            "required": ["near"],
+            "type": "object"
+        },
+        "MatchNode": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/GuideMatchSpec"
+                },
+                {
+                    "$ref": "#/definitions/MatchAnyNode"
+                },
+                {
+                    "$ref": "#/definitions/MatchAllNode"
+                },
+                {
+                    "$ref": "#/definitions/MatchNotNode"
+                },
+                {
+                    "$ref": "#/definitions/MatchNearNode"
+                },
+                {
+                    "$ref": "#/definitions/MatchContextNode"
+                },
+                {
+                    "$ref": "#/definitions/MatchValidateNode"
+                }
+            ],
+            "description": "A declarative match expression: a `GuideMatchSpec` leaf, or one of the combinator nodes composed over child nodes. A guide rule's `match` array is a list of these."
+        },
+        "MatchNotNode": {
+            "description": "The `not` combinator: keep each `of` candidate span only when NO `not` span lies within `within` of it. Drops a candidate that has a competing cue nearby.",
+            "properties": {
+                "label": {
+                    "description": "Display label for this node's matches. Defaults to `not`.",
+                    "type": "string"
+                },
+                "not": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The competing cue. A candidate with one of its spans nearby is dropped."
+                },
+                "of": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The candidate spans to keep or drop."
+                },
+                "within": {
+                    "$ref": "#/definitions/Win",
+                    "description": "How close a `not` span must lie to a candidate to drop it."
+                }
+            },
+            "required": ["not", "of", "within"],
+            "type": "object"
+        },
+        "MatchValidateNode": {
+            "description": "The `validate` combinator: run the named validator over each `candidate` span's matched text and keep the candidate when the validator passes (`keep: 'pass'`, the default) or when it fails (`keep: 'fail'`). The validator is content-free arithmetic or structure registered in the validator registry; an unknown name is a load-time error.",
+            "properties": {
+                "label": {
+                    "description": "Display label for this node's matches. Defaults to `validate`.",
+                    "type": "string"
+                },
+                "validate": {
+                    "$ref": "#/definitions/MatchValidationExpression",
+                    "description": "The validator to run and which outcome to keep."
+                }
+            },
+            "required": ["validate"],
+            "type": "object"
+        },
+        "MatchValidationExpression": {
+            "description": "Validator invocation used by the validate combinator.",
+            "properties": {
+                "args": {
+                    "description": "Optional opaque arguments passed through to the validator."
+                },
+                "candidate": {
+                    "$ref": "#/definitions/MatchNode",
+                    "description": "The spans whose matched text the validator checks."
+                },
+                "keep": {
+                    "$ref": "#/definitions/MatchValidationKeep",
+                    "description": "Which outcome keeps a candidate: `pass` (the default) or `fail`."
+                },
+                "with": {
+                    "description": "Registered validator name.",
+                    "minLength": 1,
+                    "type": "string"
+                }
+            },
+            "required": ["candidate", "with"],
+            "type": "object"
+        },
+        "MatchValidationKeep": {
+            "description": "Validator outcome retained by a validation expression.",
+            "enum": ["pass", "fail"],
+            "type": "string"
+        },
+        "ProcessingRole": {
+            "description": "Structural role of a marking within a processing operation.",
+            "enum": ["whole", "part"],
+            "type": "string"
+        },
+        "ReproducibleRuleSourceReference": {
+            "description": "Compact source join carried by a qualified rule reference.",
+            "properties": {
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable snapshot containing the rule.",
+                    "type": "string"
+                }
+            },
+            "required": ["providerId", "reproducibility", "snapshotId"],
+            "type": "object"
+        },
+        "ReproducibleSourceReference": {
+            "description": "Reproducible source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable content identity.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "attribution",
+                "providerId",
+                "reproducibility",
+                "snapshotId"
+            ],
+            "type": "object"
+        },
+        "RuleCondition": {
+            "description": "A single condition in a rule's `when` block. Can test category contents, processing context role, or concept presence.",
+            "properties": {
+                "category": {
+                    "description": "Category to evaluate against. Also serves as a shorthand matching any concept in this category within when blocks.",
+                    "type": "string"
+                },
+                "has": {
+                    "description": "Shorthand for has_concept: check if this concept is present",
+                    "type": "string"
+                },
+                "is": {
+                    "description": "Combined operator+value shorthand (e.g. \"count_eq 1\", \"has_content\")",
+                    "type": "string"
+                },
+                "operator": {
+                    "description": "Explicit operator for the condition",
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/ProcessingRole",
+                    "description": "Processing context role filter"
+                },
+                "target": {
+                    "$ref": "#/definitions/RuleConditionTarget",
+                    "description": "Which assertion set to evaluate: 'self' (default), 'context' (the whole marking), or 'contributors' (every set that fed an aggregate)."
+                },
+                "value": {
+                    "description": "Explicit value for the operator",
+                    "type": ["string", "number"]
+                }
+            },
+            "type": "object"
+        },
+        "RuleConditionTarget": {
+            "description": "Assertion set a rule condition is evaluated against.\n\n- `'self'` (default): the assertions currently under evaluation.\n- `'context'`: the assertions of the whole marking this one is part of. Such a condition has an answer only when the part has a verified whole, one that reads and is valid. Without one (no whole given, a whole that does not read, or a whole that reads but is invalid) the condition is unresolved, and so is any `all`, `any` or `none` around it whose answer depends on it. A rule whose `when` is unresolved never fires, changes no value, reports no error and offers no fix; a check rule (`require`, `require_any`, `restrict`, `forbid`, `exclusive`, `cardinality`) that the marking already meets still passes, and any other unresolved rule gives the part the `_whole_unverified` notice.\n- `'contributors'`: each contributing assertion set that went into an aggregate, evaluated separately. The condition holds only when EVERY contributor satisfies it, and it is never satisfied outside aggregation, where there are no contributors to inspect. Use it to describe what must be true of every part of a document, which the merged set can no longer answer once the parts have been collapsed into one.",
+            "enum": ["self", "context", "contributors"],
+            "type": "string"
+        },
+        "RuleContributorQuantifier": {
+            "description": "Quantifies a condition block over contributing assertion sets.",
+            "enum": ["any", "all", "none"],
+            "type": "string"
+        },
+        "RuleReference": {
+            "description": "Identifies the exact resolved semantics of one policy rule.",
+            "properties": {
+                "artifact": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Artifact that owns the rule."
+                },
+                "ruleDigest": {
+                    "description": "RFC 8785/SHA-256 digest of the canonical resolved rule content.",
+                    "type": "string"
+                },
+                "ruleId": {
+                    "description": "Rule identifier within the owning artifact.",
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/RuleSourceReference",
+                    "description": "External source identity when the rule was not supplied inline."
+                }
+            },
+            "required": ["artifact", "ruleId", "ruleDigest"],
+            "type": "object"
+        },
+        "RuleSourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleRuleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortRuleSourceReference"
+                }
+            ],
+            "description": "Compact source join carried by a qualified rule reference."
+        },
+        "RuleWhen": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                {
+                    "$ref": "#/definitions/RuleWhenQuantifier"
+                }
+            ],
+            "description": "Conditions that trigger a rule. Supports shorthand forms:\n\n- `string`: concept ID must be present (any category)\n- `string[]`: any of these concept IDs must be present\n- `object`: structured `{ any | all | none }` block, possibly nested"
+        },
+        "RuleWhenNode": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/RuleCondition"
+                },
+                {
+                    "$ref": "#/definitions/RuleWhenQuantifier"
+                }
+            ],
+            "description": "A leaf condition or recursively nested boolean quantifier in a rule tree."
+        },
+        "RuleWhenQuantifier": {
+            "description": "A node in a rule `when`-tree: either a leaf `RuleCondition` or a nested quantifier (`any` / `all` / `none`) over further nodes.\n\nThe tree structure allows arbitrarily deep boolean logic within a rule's trigger condition. Leaf nodes test assertion or context state; inner nodes combine them with OR (`any`), AND (`all`), or NOT-OR (`none`).",
+            "properties": {
+                "all": {
+                    "description": "Satisfied when every one of these nodes is.",
+                    "items": {
+                        "$ref": "#/definitions/RuleWhenNode"
+                    },
+                    "type": "array"
+                },
+                "any": {
+                    "description": "Satisfied when at least one of these nodes is.",
+                    "items": {
+                        "$ref": "#/definitions/RuleWhenNode"
+                    },
+                    "type": "array"
+                },
+                "none": {
+                    "description": "Satisfied when none of these nodes is.",
+                    "items": {
+                        "$ref": "#/definitions/RuleWhenNode"
+                    },
+                    "type": "array"
+                },
+                "quantifier": {
+                    "$ref": "#/definitions/RuleContributorQuantifier",
+                    "description": "Combine contributor results; defaults to all. Requires target: contributors. Missing or empty contributors never satisfy the block."
+                },
+                "target": {
+                    "const": "contributors",
+                    "description": "Evaluate this entire boolean block within each contributor.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "SourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortSourceReference"
+                }
+            ],
+            "description": "Records source identity and mandatory attribution for an operation."
+        },
+        "TokenWindow": {
+            "description": "Proximity measured in whitespace-delimited tokens.",
+            "properties": {
+                "tokens": {
+                    "description": "The largest distance allowed between two spans, counted in whitespace-delimited tokens between their nearest edges.",
+                    "minimum": 0,
+                    "type": "integer"
+                }
+            },
+            "required": ["tokens"],
+            "type": "object"
+        },
+        "Win": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/TokenWindow"
+                },
+                {
+                    "$ref": "#/definitions/CharacterWindow"
+                }
+            ],
+            "description": "A bounded proximity window. Exactly one token or character bound is present, so a windowed operation can never widen to the whole line accidentally."
+        }
+    },
+    "description": "Output of GuideEngine.evaluate(): the aggregate marking produced by evaluating a set of selected guide rules. Parallels SchemeEngine.process() on the scheme side.",
+    "properties": {
+        "activeComputedRules": {
+            "description": "The computed rules whose `when` condition the selection satisfied.",
+            "items": {
+                "$ref": "#/definitions/GuideRule"
+            },
+            "type": "array"
+        },
+        "aggregatedMarking": {
+            "description": "The effective markings rolled up into one marking by the target scheme. Empty when no rule contributed, or when the result spans more than one target scheme, in which case `aggregatedMarkings` holds one per scheme.",
+            "type": "string"
+        },
+        "aggregatedMarkings": {
+            "$ref": "#/definitions/AggregatedMarkings",
+            "description": "Aggregated output keyed by target scheme id. Present when guide evaluation routed through more than one target scheme."
+        },
+        "breakdown": {
+            "description": "One entry per evaluated rule: for each guide, its selected rules, then its computed rules.",
+            "items": {
+                "$ref": "#/definitions/GuideBreakdownEntry"
+            },
+            "type": "array"
+        },
+        "contributingBreakdown": {
+            "description": "Subset of `breakdown` that actually contributed to `aggregatedMarking` (i.e. `breakdown.filter(b => !b.wasOverridden)`). Precomputed so UI layers stop re-filtering the full breakdown.",
+            "items": {
+                "$ref": "#/definitions/GuideBreakdownEntry"
+            },
+            "type": "array"
+        },
+        "effectiveMarkings": {
+            "description": "The marking each contributing rule's outcome resolves to. Overridden rules contribute none.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "guideId": {
+            "description": "The id of the guide evaluated. Absent when the result combines several guides.",
+            "type": "string"
+        },
+        "provenance": {
+            "$ref": "#/definitions/SourceReference",
+            "description": "External guide-rule source observation used by this evaluation."
+        },
+        "selectedRules": {
+            "description": "The selected rules that were evaluated. Rules with a `when` condition are computed, not selected, and are not listed here.",
+            "items": {
+                "$ref": "#/definitions/GuideRule"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "selectedRules",
+        "activeComputedRules",
+        "effectiveMarkings",
+        "aggregatedMarking",
+        "breakdown",
+        "contributingBreakdown"
+    ],
+    "type": "object"
+}
