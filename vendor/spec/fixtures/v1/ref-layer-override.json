@@ -1,0 +1,44 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [],
+      "concepts": {
+        "inline": [
+          {
+            "aliases": [
+              "HIGH",
+              "H"
+            ],
+            "categories": [
+              "level"
+            ],
+            "id": "HIGH",
+            "name": "Critical",
+            "parents": [],
+            "position": 2,
+            "rank": 2,
+            "views": {
+              "default": "CRITICAL",
+              "portion": "C"
+            }
+          }
+        ]
+      }
+    },
+    "description": "Layer that overrides the HIGH concept to render as CRITICAL. Tests layer redefinition: composing base+override should make HIGH render as CRITICAL while its conceptId stays HIGH.",
+    "id": "ref-layer-override",
+    "layer": {
+      "base": "ref-layer-base@1.0.0"
+    },
+    "name": "Override HIGH Layer",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "rollup_pipelines": [],
+    "rules": [],
+    "type": "layer",
+    "version": "1.0.0"
+  }
+}

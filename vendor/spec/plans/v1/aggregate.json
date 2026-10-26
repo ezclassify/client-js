@@ -1,0 +1,77 @@
+{
+    "cases": [
+        {
+            "args": [["LOW", "HIGH"]],
+            "expect": {
+                "rendered": "HIGH"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-low-high-picks-high"
+        },
+        {
+            "args": [["LOW", "MED"]],
+            "expect": {
+                "rendered": "MED"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-low-med-picks-med"
+        },
+        {
+            "args": [["HIGH", "CTRL-A"]],
+            "expect": {
+                "rendered": "HIGH/CTRL-A"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-high-ctrl-a-includes-controls"
+        },
+        {
+            "args": [["LOW"]],
+            "expect": {
+                "rendered": "LOW"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-single-low"
+        },
+        {
+            "args": [[]],
+            "expect": {
+                "rendered": ""
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-empty-array"
+        },
+        {
+            "args": [["HIGH", "LOW", "MED"]],
+            "expect": {
+                "rendered": "HIGH"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-order-independent"
+        },
+        {
+            "args": [["HIGH", "HIGH"]],
+            "expect": {
+                "rendered": "HIGH"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-duplicate-concepts-dedup"
+        },
+        {
+            "args": [["MED", "HIGH", "CTRL-A"]],
+            "expect": {
+                "rendered": "HIGH/CTRL-A"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "aggregate",
+            "name": "aggregate-three-markings-with-controls"
+        }
+    ],
+    "slice": "engine"
+}

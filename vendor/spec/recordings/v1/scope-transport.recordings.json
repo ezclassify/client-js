@@ -1,0 +1,579 @@
+{
+  "engineVersion": "1.0.0-dev.30",
+  "openapiVersion": "1.0.0-dev.30",
+  "responses": {
+    "071cec2f8154d76ba4319377b75b4dc092c5d78789917687878157413ce961cd": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "level",
+              "conceptId": "HIGH"
+            }
+          ],
+          "omitted": [
+            {
+              "categoryId": "authority",
+              "conceptId": "AUTH-X"
+            }
+          ],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "HIGH",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "07ac498ff8b354b2d4af6b5270996c0abe6c63d1816b4d6a415af824e807924b": {
+      "argsSummary": "[[[{\"categoryId\":\"level\",\"conceptId\":\"LOW\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "aggregateAssertions",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "aggregate"
+          },
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "errors": [],
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "HIGH/AUTH-X/ORIG=ABCXYZ",
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "090fa24f0524eebcbef9c57817b747772a41469ad7dc2e5faefa9409ec0248fd": {
+      "argsSummary": "[[[{\"categoryId\":\"origin\",\"conceptId\":\"ORIG\",\"confidence\":\"certain\",\"source\":...",
+      "method": "aggregateAssertions",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "errors": [
+          {
+            "constraintId": "required-category:authority",
+            "message": "Authority is required: the marking asserts no concept in this category"
+          }
+        ],
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "ORIG=ABCXYZ",
+        "valid": false,
+        "warnings": []
+      }
+    },
+    "27c829e388833d47a493014cf47a87be29b58c9eb8834ad1427d7fb7c80d3ba1": {
+      "argsSummary": "[[{\"categoryId\":\"origin\",\"conceptId\":\"ORIG\",\"confidence\":\"certain\",\"source\":\"...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "origin",
+              "conceptId": "ORIG",
+              "value": "ABCXYZ"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "ORIG=ABCXYZ",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "2e1b023999a6f98bc9496b21d312a00134c86776c6379890d884d2361417ca70": {
+      "argsSummary": "[[{\"categoryId\":\"origin\",\"conceptId\":\"ORIG\",\"confidence\":\"certain\",\"source\":\"...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "origin",
+              "conceptId": "ORIG",
+              "value": "ABCXYZ"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [
+          {
+            "constraintId": "required-category:authority",
+            "message": "Authority is required: the marking asserts no concept in this category"
+          }
+        ],
+        "inputWasValid": false,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "ORIG=ABCXYZ",
+        "renders": {},
+        "valid": false,
+        "warnings": []
+      }
+    },
+    "323d2c38141d550dd8cdd9dc4d34e0361d7e6d9fed2b14b51aa1f6ceb081bf9e": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "level",
+              "conceptId": "HIGH"
+            },
+            {
+              "categoryId": "authority",
+              "conceptId": "AUTH-X"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "HIGH/AUTH-X",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "35d4f4f630cc00c29c81c9a62d42166886932674e706f82d9bf434f6ce8dc36c": {
+      "argsSummary": "[[{\"categoryId\":\"authority\",\"conceptId\":\"AUTH-X\",\"confidence\":\"certain\",\"sour...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "authority",
+              "conceptId": "AUTH-X"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "AUTH-X",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "3d460b95e480c661e5d3114ef1c41fb74eb5284aa4e65e37527508d85b877232": {
+      "argsSummary": "[[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"...",
+      "method": "aggregateAssertions",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "aggregate"
+          },
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "errors": [],
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "HIGH/AUTH-X/ORIG=ABCXYZ",
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "5b0b5898655cea9ff4ef23467e4eb25367b071fdc0db45ee8c7fdd5660bd8543": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "render",
+      "response": {
+        "result": "HIGH/AUTH-X"
+      }
+    },
+    "6374a46bab98a6b586841a0df6f6c82919bdf727c1aaeaa5eefd6b2623d275a6": {
+      "argsSummary": "[[{\"categoryId\":\"authority\",\"conceptId\":\"AUTH-Y\",\"confidence\":\"certain\",\"sour...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-Y",
+            "confidence": "certain",
+            "source": "user"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "authority",
+              "conceptId": "AUTH-Y"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "AUTH-Y",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "6e9f1e3f4397ae1052d68fc92ba40482c0784c743da985169b036704ab155944": {
+      "argsSummary": "[[{\"categoryId\":\"authority\",\"conceptId\":\"AUTH-Y\",\"confidence\":\"certain\",\"sour...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-Y",
+            "confidence": "certain",
+            "source": "user"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [],
+          "omitted": [
+            {
+              "categoryId": "authority",
+              "conceptId": "AUTH-Y"
+            }
+          ],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "86f44635bfcaabff1ee26487c2c726b267fb6a30a0be962b5300c5558f4b4421": {
+      "argsSummary": "[[[{\"categoryId\":\"level\",\"conceptId\":\"LOW\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "aggregateAssertions",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "aggregate"
+          },
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "errors": [],
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "HIGH",
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "a778f10e5ed079ff4fa2915ca257547e9831f00d1d9b1024b672c8d7026953e5": {
+      "argsSummary": "[[[{\"categoryId\":\"origin\",\"conceptId\":\"ORIG\",\"confidence\":\"certain\",\"source\":...",
+      "method": "aggregateAssertions",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "errors": [
+          {
+            "constraintId": "required-category:level",
+            "message": "Level is required: the marking asserts no concept in this category"
+          }
+        ],
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "ORIG=ABCXYZ",
+        "valid": false,
+        "warnings": []
+      }
+    },
+    "a9de6186114f047376420e5224cea704dfb952e8ff2f36ffed641a528f6d88c3": {
+      "argsSummary": "[[[{\"categoryId\":\"authority\",\"conceptId\":\"AUTH-X\",\"confidence\":\"certain\",\"sou...",
+      "method": "aggregateAssertions",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          }
+        ],
+        "errors": [],
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "AUTH-X",
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "ab2d64cb21a0f629761186df108b2163fefd4394ce7df5c07fa586778337457b": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "render",
+      "response": {
+        "result": "HIGH"
+      }
+    },
+    "b1a4f93ace77a0f0ecf37bc2be75b1abf3ec074851babcff9440331a3acda78f": {
+      "argsSummary": "[[{\"categoryId\":\"level\",\"conceptId\":\"HIGH\",\"confidence\":\"certain\",\"source\":\"u...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "authority",
+            "conceptId": "AUTH-X",
+            "confidence": "certain",
+            "source": "user"
+          },
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "level",
+              "conceptId": "HIGH"
+            },
+            {
+              "categoryId": "authority",
+              "conceptId": "AUTH-X"
+            },
+            {
+              "categoryId": "origin",
+              "conceptId": "ORIG",
+              "value": "ABCXYZ"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [],
+        "inputWasValid": true,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "HIGH/AUTH-X/ORIG=ABCXYZ",
+        "renders": {},
+        "valid": true,
+        "warnings": []
+      }
+    },
+    "b801299e47aa7746cb9bb36871f0a7d1b1ce6cb7da96287708d44c08b6a49c4c": {
+      "argsSummary": "[[{\"categoryId\":\"origin\",\"conceptId\":\"ORIG\",\"confidence\":\"certain\",\"source\":\"...",
+      "method": "render",
+      "response": {
+        "result": ""
+      }
+    },
+    "fb1c38e2901f4eb1865d8dd817e36f0956dad15b47596fb4f721e22563348877": {
+      "argsSummary": "[[{\"categoryId\":\"origin\",\"conceptId\":\"ORIG\",\"confidence\":\"certain\",\"source\":\"...",
+      "method": "process",
+      "response": {
+        "appliedFixes": [],
+        "assertions": [
+          {
+            "categoryId": "origin",
+            "conceptId": "ORIG",
+            "confidence": "certain",
+            "source": "user",
+            "value": "ABCXYZ"
+          }
+        ],
+        "assessment": {
+          "collapsed": [],
+          "conflicts": [],
+          "emitted": [
+            {
+              "categoryId": "origin",
+              "conceptId": "ORIG",
+              "value": "ABCXYZ"
+            }
+          ],
+          "omitted": [],
+          "unrepresentable": []
+        },
+        "errors": [
+          {
+            "constraintId": "required-category:level",
+            "message": "Level is required: the marking asserts no concept in this category"
+          }
+        ],
+        "inputWasValid": false,
+        "notices": [],
+        "proposedFixes": [],
+        "rendered": "ORIG=ABCXYZ",
+        "renders": {},
+        "valid": false,
+        "warnings": []
+      }
+    }
+  },
+  "version": "0.1.0"
+}

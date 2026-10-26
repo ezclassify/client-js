@@ -1,0 +1,51 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [],
+      "concepts": {
+        "inline": []
+      }
+    },
+    "default_scope": "banner",
+    "description": "Layer that introduces a bracketed render format and overrides the default render format pointer. Validates that composeLayers propagates a layer's defaultRenderFormat when it names a new format.",
+    "id": "ref-layer-render-override",
+    "layer": {
+      "base": "ref-layer-base@1.0.0"
+    },
+    "name": "Render Format Override Layer",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "render": {
+      "default": "bracketed",
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            }
+          ],
+          "id": "bracketed",
+          "mode": "inline",
+          "prefix": "[[",
+          "separator": "/",
+          "suffix": "]]",
+          "surface": "banner"
+        }
+      ]
+    },
+    "rollup_pipelines": [],
+    "rules": [],
+    "scopes": [
+      {
+        "id": "banner",
+        "label": "Banner"
+      }
+    ],
+    "type": "layer",
+    "version": "1.0.0"
+  }
+}

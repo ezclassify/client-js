@@ -1,0 +1,486 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Assertion": {
+            "description": "A concept asserted in a category during processing, with confidence level and provenance metadata.\n\nAssertions are the core data unit flowing through the engine pipeline. `confidence` records how the assertion was produced: `'certain'` when read or handed in as stated, `'inferred'` when an inference rule added it, and `'repaired'` when the engine added or rewrote it while repairing the marking. The engine does not assign `'uncertain'` itself. `source` says where the assertion came from. `expiresAt` records caller-supplied expiry metadata. The engine does not evaluate that date or automatically change confidence or the marking; the host applies its expiry policy.",
+            "properties": {
+                "categoryId": {
+                    "description": "The id of the category the concept is asserted in.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "The id of the concept.",
+                    "type": "string"
+                },
+                "confidence": {
+                    "$ref": "#/definitions/AssertionConfidence",
+                    "description": "How the assertion was produced: `certain` when read or handed in as stated, `inferred` when an inference rule added it, or `repaired` when the engine added or rewrote it while repairing the marking. The engine does not assign `uncertain` itself."
+                },
+                "expiresAt": {
+                    "description": "Caller-supplied ISO 8601 expiry date; the engine does not evaluate it.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/Record%3Cstring%2Cunknown%3E",
+                    "description": "Caller-defined data attached to the assertion. The engine assigns it no meaning."
+                },
+                "provenance": {
+                    "$ref": "#/definitions/SourceReference",
+                    "description": "Source provenance for the concept that backed this assertion.\n\nPopulated only when the concept came from an external source whose records were loaded with the scheme (typically one a scheme's `concepts.external` block declares). Inline-backed assertions leave this field undefined to keep payloads compact for the common single-source case. A concept a scheme document declares in its `inline` list has none, even when one of that document's `external` sources also serves a record with its id. A concept read through a queryable-only source (`SourceCapabilities.queryableOnly`) has none either: that source is asked per lookup and never loaded whole, and a lookup does not say which source answered. Such a source still appears in a composed operation's `resolution.sources`. Across a layered stack the later layer decides: a concept a later layer's source supplies carries that source's provenance even when an earlier document declares it inline, and a concept a later layer declares inline carries none.\n\nIdentity fields mirror the source's `sourceIdentity()` observation at engine-load time (or the immutable value the Context pinned)."
+                },
+                "replacedConceptId": {
+                    "description": "The deprecated concept this assertion was modernized from.\n\nSet when processing rewrote a deprecated concept into the replacement its scheme declares. `conceptId` is the current concept every downstream stage evaluates; this field records what the data was actually marked with, so an explanation can show the substitution (\"concept A was replaced by concept B; B is what your access was compared against\") instead of silently presenting a concept the document never carried.\n\nIt travels on the assertion rather than alongside it because assertion arrays are the engine's state transport: an access check made from transported assertions can still explain the substitution.",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "Where this assertion came from. An open string: the engine labels the facts it adds, and a caller or a host may label the facts it hands in however it likes.\n\nFour labels mean the engine derived the fact, so it derives the fact again each time it settles a marking: `infer`, and `repair` with a `sourceRule`, a fact a scheme rule adds; `default`, a category's default concept; and `context`, a value a part took from its whole. When validate, process or explain settles a marking, a fact handed in under one of them is set aside and comes back only if the engine derives it again, so no label can make a removal silent.\n\nEvery other label is the author's statement and is kept as given: `parse` (read from text), `user` (handed in by a caller), `aggregate` (a value a rollup states as its own, even one a contributor derived or took from its whole), every other label the engine writes on a result, and any label a caller or host chooses, such as `stated`.",
+                    "type": "string"
+                },
+                "sourceRule": {
+                    "description": "The id of the scheme rule that produced this assertion, when one did. Otherwise an engine-owned id beginning with `_`, set when the scheme's structure, not a rule, added the assertion. The engine writes two: `_tier_child_requires_parent` (a tier parent required by a stated child) and `_header_of_stated_member` (a header filled in for a stated member). A scheme rule id never begins with `_`.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "The value of a concept that takes one (`text_input`).\n\nA value handed in is read the way a value in text is: it settles in the spelling the concept's encoding stores. One the encoding cannot read is reported as the error `_invalid_assertion_value`, and a concept that takes a value, handed in with none, as `_missing_assertion_value`. See `ValidationError`.",
+                    "type": "string"
+                }
+            },
+            "required": ["categoryId", "conceptId", "confidence", "source"],
+            "type": "object"
+        },
+        "AssertionConfidence": {
+            "description": "Confidence assigned to an assertion by the processing pipeline.",
+            "enum": ["certain", "inferred", "repaired", "uncertain"],
+            "type": "string"
+        },
+        "Attribution": {
+            "description": "Provenance attached to every source so downstream consumers can render proper attribution and license notices.\n\nMandatory because most source data we'll integrate (NIST, ICS, IANA, external taxonomies) requires citation. Sources that don't have a formal license should set `license: 'unspecified'` rather than omit it.",
+            "properties": {
+                "citation": {
+                    "description": "Suggested citation string for academic / regulatory use.",
+                    "type": "string"
+                },
+                "license": {
+                    "description": "SPDX identifier or short license token (e.g. \"CC-BY-4.0\", \"public-domain\").",
+                    "type": "string"
+                },
+                "licenseUrl": {
+                    "description": "Canonical URL where the license terms can be inspected.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Display name of the upstream source (e.g. \"NIST CSWP-29\").",
+                    "type": "string"
+                }
+            },
+            "required": ["name", "license"],
+            "type": "object"
+        },
+        "BestEffortSourceReference": {
+            "description": "Best-effort source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the mutable content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["attribution", "providerId", "reproducibility"],
+            "type": "object"
+        },
+        "Change": {
+            "description": "A change the engine actually made while processing. Lives in `appliedFixes`; a declined addition is not a change.",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/FixAction",
+                    "description": "'add' (only `add` set), 'remove' (only `remove` set), 'replace' (both), 'reorder' (neither: the input parsed via a tolerant rule; the canonical form is in the result's `rendered`)."
+                },
+                "add": {
+                    "description": "Concepts the change added. Set for `add` and `replace`.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "message": {
+                    "description": "What the change did, in words.",
+                    "type": "string"
+                },
+                "remove": {
+                    "description": "Concepts the change removed. Set for `remove` and `replace`.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "ruleId": {
+                    "description": "Rule that made this change: a scheme rule's id, or an id the engine keeps for a change no scheme rule names.\n\n`_recognition_role` is one of them: the text was read as a view of one role, for a request whose context names the other. See `ValidateResult.inputWasValid`, and `ValidateResult.appliedFixes` for how it is shown.",
+                    "type": "string"
+                },
+                "triggerConceptIds": {
+                    "description": "Concept IDs whose presence triggered the rule that made this change.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": ["ruleId", "action", "message"],
+            "type": "object"
+        },
+        "CollectedNotice": {
+            "description": "A notice that was resolved and collected for a specific concept in a processed marking. Notices originate from the concept's `documentation.notices` definitions and may be conditional (only fire when another concept is simultaneously asserted) or unconditional.\n\nReturned by `SchemeEngine.collectNotices()`, and carried on every result that describes a marking, so reading the notices for a processed marking does not take a second call. The `required` flag indicates whether the notice represents a mandatory acknowledgment the UI must surface before the user can submit the marking.",
+            "properties": {
+                "conceptId": {
+                    "description": "The concept the notice is attached to.",
+                    "type": "string"
+                },
+                "conceptName": {
+                    "description": "The concept's display name, for showing beside the notice.",
+                    "type": "string"
+                },
+                "required": {
+                    "description": "Whether the notice must be shown. A host surfaces a required notice before the marking is accepted.",
+                    "type": "boolean"
+                },
+                "text": {
+                    "description": "The notice text the marking requires.",
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/ConceptNoticeType",
+                    "description": "What kind of notice this is."
+                },
+                "views": {
+                    "$ref": "#/definitions/NoticeViewValues",
+                    "description": "The notice's own `ConceptNotice.views`, carried through unchanged.\n\nA host that emits a notice into a structured form needs the value the form's own vocabulary registers it under, and it has the collected notice rather than the concept it came from. Absent when the notice declares no registration at all."
+                }
+            },
+            "required": [
+                "conceptId",
+                "conceptName",
+                "type",
+                "text",
+                "required"
+            ],
+            "type": "object"
+        },
+        "ConceptColor": {
+            "description": "Portable scheme-default display colors, carried as a text/background pair so contrast is authored together. In category mode they are declared only on concepts in the category named by `render.color_from`; consuming hosts may override them.\n\nBoth values are CSS hex (`#rgb` or `#rrggbb`). The pair travels together so a host never composes one authored color against an unknown surface (the white-on-white failure mode).",
+            "properties": {
+                "background": {
+                    "description": "Background color as a CSS hex string.",
+                    "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+                    "type": "string"
+                },
+                "text": {
+                    "description": "Text/foreground color as a CSS hex string.",
+                    "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+                    "type": "string"
+                }
+            },
+            "required": ["background", "text"],
+            "type": "object"
+        },
+        "ConceptNoticeType": {
+            "description": "What kind of notice a concept carries.",
+            "enum": [
+                "warning",
+                "handling",
+                "admonition",
+                "distribution",
+                "info"
+            ],
+            "type": "string"
+        },
+        "Fix": {
+            "description": "One way to make the marking valid. Every change in it answers an error.\n\nA fix is a whole marking, not a patch: `rendered` is the complete marking the author would end up with. The engine proves each one before offering it: it reads the marking back, judges it the way it judges any input, and offers only those that read back valid.",
+            "properties": {
+                "adds": {
+                    "description": "Concepts this fix adds because an error requires them.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "keeps": {
+                    "description": "Concepts of the author's marking this fix keeps.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "message": {
+                    "description": "What this fix does, in words.",
+                    "type": "string"
+                },
+                "removes": {
+                    "description": "Concepts of the author's marking this fix removes because an error names them.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "rendered": {
+                    "description": "The valid marking this fix produces, in the result's output format.\n\nIt is written exactly as the result's own `rendered` is, so the two can be shown side by side. On an in-process engine with an `afterRender` plugin, that includes the plugin; the proof reads back the engine's own writing from before the plugin ran, so the plugin never decides which fixes are offered.",
+                    "type": "string"
+                }
+            },
+            "required": ["message", "rendered", "keeps", "adds", "removes"],
+            "type": "object"
+        },
+        "FixAction": {
+            "description": "Discrete mutation represented by an engine `Change`.",
+            "enum": ["add", "remove", "replace", "reorder"],
+            "type": "string"
+        },
+        "FixConceptReference": {
+            "description": "Stable reference to a concept a fix or change touches.",
+            "properties": {
+                "categoryId": {
+                    "description": "Owning category identifier.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Concept identifier.",
+                    "type": "string"
+                }
+            },
+            "required": ["conceptId", "categoryId"],
+            "type": "object"
+        },
+        "NoticeViewValues": {
+            "$ref": "#/definitions/Record%3Cstring%2Cstring%3E",
+            "description": "The value a notice is registered under, keyed by view name, e.g. `{ ism: 'RD' }`.\n\nStructurally the same map as `ViewLabels` and deliberately not the same type. A view label is how a view spells something for a reader; this is the token a view's own vocabulary files the notice under, and one is never substitutable for the other."
+        },
+        "Record<string,string>": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object"
+        },
+        "Record<string,unknown>": {
+            "additionalProperties": {},
+            "type": "object"
+        },
+        "ReproducibleSourceReference": {
+            "description": "Reproducible source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable content identity.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "attribution",
+                "providerId",
+                "reproducibility",
+                "snapshotId"
+            ],
+            "type": "object"
+        },
+        "SourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortSourceReference"
+                }
+            ],
+            "description": "Records source identity and mandatory attribution for an operation."
+        },
+        "ValidationError": {
+            "description": "A constraint violation detected during validation, referencing the constraint ID and a human-readable message.\n\nCarried in the `errors` of every result that judges a marking. `constraintId` identifies the rule that fired; `message` is human-readable. When `severity` is `'warning'`, the violation is advisory and does not set `valid` to `false`. Use `categoryId` and `affectedConcepts` to highlight the specific UI elements involved.\n\nTwo of the ids the engine keeps for itself are for a fact a caller hands in that cannot be settled as given: `_missing_assertion_value`, a concept that takes a value handed in with none, and `_invalid_assertion_value`, a value the concept's encoding cannot read. Each is an error on the result, not a refused request: the fact is left out of the settled marking and named in `affectedConcepts`.\n\nAnother, `_exceeds_whole`, is a part that carries more than the whole it is read in: the whole does not cover a value the part holds, carries one the part does not allow, or, in a category a rollup pipeline resolves, would change if rolled up with the part. It is given only for a part that is valid on its own, read in a whole that reads and is valid. `affectedConcepts` names every finding, and no fix answers it. See `ProcessingContext.partOf`.",
+            "properties": {
+                "affectedConcepts": {
+                    "description": "Concept IDs involved in this validation failure.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categoryId": {
+                    "description": "Category ID this error relates to (when determinable from the constraint).",
+                    "type": "string"
+                },
+                "constraintId": {
+                    "description": "The id of the constraint that was violated: a scheme rule's id, or an engine-reserved id beginning with `_`.",
+                    "type": "string"
+                },
+                "didYouMean": {
+                    "description": "The ids of the concepts the unread token was likely meant as. Never empty. They are ids for a program to act on, not spellings to show an author: `message` gives the same hint in words, naming the spellings.\n\nSet only on an `_unmatched_token` error, which is about one token the engine could not read, and only when that token reads as a misspelling of some concept's spelling. The concepts named are tied for nearest, so their order ranks none above another.\n\nIts absence is no evidence that the token is stray text. A token too short to judge carries none, and so does one equally near to too many concepts. A token that already spells a concept, apart from case, carries none even when it is also near another concept: it was left unread for another reason, such as where it stands, and naming a different concept would point the author away from a word they spelled right.\n\nIt is not a fix: nothing here has been proven to make the marking valid, and `suggestedFix` and the result's fix paths do not depend on it.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "message": {
+                    "description": "What is wrong, in words a person can act on.",
+                    "type": "string"
+                },
+                "severity": {
+                    "$ref": "#/definitions/ValidationSeverity",
+                    "description": "Severity: 'error' blocks validity, 'warning' is advisory. Default: 'error'."
+                },
+                "suggestedFix": {
+                    "description": "The `message` of the proposed fix that answers this error, such as \"Add CTRL-A\".\n\nSet only on a result that carries that fix in its own `proposedFixes`. A result with no fix paths, such as a `ValidateResult` or a scan region, never sets it, so a reader never holds a pointer to a fix it was not given.",
+                    "type": "string"
+                }
+            },
+            "required": ["constraintId", "message"],
+            "type": "object"
+        },
+        "ValidationSeverity": {
+            "description": "Severity assigned to a validation issue.",
+            "enum": ["error", "warning"],
+            "type": "string"
+        },
+        "Warning": {
+            "description": "A non-blocking informational signal surfaced in a result's `warnings`.\n\nUnlike `ValidationError`, warnings never affect `valid`. `kind: 'deprecation'` fires when a deprecated concept is asserted, and `replacement` names a suggested successor concept. `kind: 'rule'` fires when a scheme's authored `warn` rule matches the marking, with the rule's id as `ruleId`. `kind: 'notice'` is the engine speaking about the operation itself rather than about anything the scheme declares; its `ruleId`, when present, is an engine-reserved id beginning with `_`, the same convention a `ValidationError` follows.\n\nA marking's warnings come in a fixed order: deprecations first, then the scheme's rule warnings in the order the scheme declares its rules, then the engine's notices. An aggregate's warnings are about the rolled-up marking, not about each marking that fed it.",
+            "properties": {
+                "categoryId": {
+                    "description": "Category this warning relates to (when applicable)",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Concept this warning relates to (when applicable). A rule warning names one when the rule's `when` names exactly one concept the marking holds.",
+                    "type": "string"
+                },
+                "conceptName": {
+                    "description": "Resolved operational display for `conceptId` (the concept's rendered marking view), for a consumer that shows the warning next to the concept. `conceptId` stays as the machine key; this is the human-visible string.",
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/WarningKind",
+                    "description": "Warning kind: 'deprecation' for a deprecated concept, 'rule' for a scheme's authored `warn` rule, 'notice' for the engine's own notice."
+                },
+                "message": {
+                    "description": "Human-readable message",
+                    "type": "string"
+                },
+                "replacement": {
+                    "description": "When kind=deprecation, the suggested replacement concept id (if any)",
+                    "type": "string"
+                },
+                "replacementName": {
+                    "description": "When kind=deprecation, the resolved operational display for `replacement` (the successor concept's rendered marking view). `replacement` stays as the machine key; this is the human-visible string.",
+                    "type": "string"
+                },
+                "ruleId": {
+                    "description": "The scheme rule that gave a `rule` warning, or the engine-reserved id of a `notice`. Absent on a deprecation warning.",
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "message"],
+            "type": "object"
+        },
+        "WarningKind": {
+            "description": "Non-blocking warning category: a deprecated concept, a scheme's authored `warn` rule, or a notice the engine gives about the operation itself.",
+            "enum": ["deprecation", "rule", "notice"],
+            "type": "string"
+        }
+    },
+    "description": "Output of SchemeEngine.aggregate(): the combined marking produced from multiple portion inputs. By design aggregate always produces the proper aggregate: fixes are applied, never proposed. Every field it shares with `ValidateResult` means what it means there, `valid` included. It differs in that:\n\n- There is no `inputWasValid` (input is N portions, not a single string)\n- `proposedFixes` is always empty (aggregate applies what it can)",
+    "properties": {
+        "appliedFixes": {
+            "description": "The changes the rollup made to reach the combined marking.",
+            "items": {
+                "$ref": "#/definitions/Change"
+            },
+            "type": "array"
+        },
+        "assertions": {
+            "description": "The assertions of the combined marking, listed in print order as a validate result's are: the order the rendered marking places each concept; a concept the rendering leaves out appears where it would print.",
+            "items": {
+                "$ref": "#/definitions/Assertion"
+            },
+            "type": "array"
+        },
+        "displayColor": {
+            "$ref": "#/definitions/ConceptColor",
+            "description": "Portable scheme-derived display color for the final post-rollup marking. Embedding hosts may override this presentation default."
+        },
+        "errors": {
+            "description": "The constraints the combined marking violates.",
+            "items": {
+                "$ref": "#/definitions/ValidationError"
+            },
+            "type": "array"
+        },
+        "notices": {
+            "description": "The notices the scheme attaches to the concepts in `assertions`, collected the same way `SchemeEngine.collectNotices()` collects them. Always present, empty when the aggregate carries none, so a consumer can read the field without checking that it exists.",
+            "items": {
+                "$ref": "#/definitions/CollectedNotice"
+            },
+            "type": "array"
+        },
+        "proposedFixes": {
+            "description": "Always empty: aggregate applies every fix it can.",
+            "items": {
+                "$ref": "#/definitions/Fix"
+            },
+            "type": "array"
+        },
+        "rendered": {
+            "description": "The combined marking, written in the output format.",
+            "type": "string"
+        },
+        "valid": {
+            "description": "True when the combined marking stands once settled, as `ValidateResult.valid` defines it.",
+            "type": "boolean"
+        },
+        "warnings": {
+            "description": "Advisory signals about the combined marking.",
+            "items": {
+                "$ref": "#/definitions/Warning"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "assertions",
+        "rendered",
+        "valid",
+        "errors",
+        "warnings",
+        "appliedFixes",
+        "proposedFixes",
+        "notices"
+    ],
+    "type": "object"
+}

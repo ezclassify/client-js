@@ -1,0 +1,345 @@
+{
+  "engineVersion": "1.0.0-dev.30",
+  "openapiVersion": "1.0.0-dev.30",
+  "responses": {
+    "2574cd5f77b13beff827f517bed8e71218ff82e3778135009b509a1bb7859049": {
+      "argsSummary": "[\"no markings in this prose sentence\"]",
+      "method": "scan",
+      "response": {
+        "count": 0,
+        "firstMarking": null,
+        "firstRendered": null,
+        "firstStart": null,
+        "results": []
+      }
+    },
+    "705846dcf9ec007014f975c8e8018bec36d754daf2669d247464e0125dc6daa3": {
+      "argsSummary": "[\"LOW\\nHIGH\"]",
+      "method": "scan",
+      "response": {
+        "count": 2,
+        "firstMarking": "LOW",
+        "firstRendered": "LOW",
+        "firstStart": 0,
+        "results": [
+          {
+            "end": 3,
+            "marking": "LOW",
+            "result": {
+              "appliedFixes": [],
+              "assertions": [
+                {
+                  "categoryId": "level",
+                  "conceptId": "LOW",
+                  "confidence": "certain",
+                  "source": "parse"
+                }
+              ],
+              "assessment": {
+                "collapsed": [],
+                "conflicts": [],
+                "emitted": [
+                  {
+                    "categoryId": "level",
+                    "conceptId": "LOW"
+                  }
+                ],
+                "omitted": [],
+                "unrepresentable": []
+              },
+              "errors": [],
+              "inputWasValid": true,
+              "notices": [],
+              "recognition": {
+                "inputFormat": "default",
+                "status": "complete",
+                "surface": "banner",
+                "unmatched": []
+              },
+              "rendered": "LOW",
+              "valid": true,
+              "warnings": []
+            },
+            "role": "whole",
+            "start": 0,
+            "type": "default",
+            "wrapped": false
+          },
+          {
+            "end": 8,
+            "marking": "HIGH",
+            "result": {
+              "appliedFixes": [],
+              "assertions": [
+                {
+                  "categoryId": "level",
+                  "conceptId": "HIGH",
+                  "confidence": "certain",
+                  "source": "parse"
+                }
+              ],
+              "assessment": {
+                "collapsed": [],
+                "conflicts": [],
+                "emitted": [
+                  {
+                    "categoryId": "level",
+                    "conceptId": "HIGH"
+                  }
+                ],
+                "omitted": [],
+                "unrepresentable": []
+              },
+              "errors": [],
+              "inputWasValid": true,
+              "notices": [],
+              "recognition": {
+                "inputFormat": "default",
+                "status": "complete",
+                "surface": "banner",
+                "unmatched": []
+              },
+              "rendered": "HIGH",
+              "valid": true,
+              "warnings": []
+            },
+            "role": "whole",
+            "start": 4,
+            "type": "default",
+            "wrapped": false
+          }
+        ]
+      }
+    },
+    "718ae00f2dcc67379c4d1d8a166e353aefcb4ff5935c1dbcbac90708fc03e022": {
+      "argsSummary": "[\"HIGH\"]",
+      "method": "scan",
+      "response": {
+        "count": 1,
+        "firstMarking": "HIGH",
+        "firstRendered": "HIGH",
+        "firstStart": 0,
+        "results": [
+          {
+            "end": 4,
+            "marking": "HIGH",
+            "result": {
+              "appliedFixes": [],
+              "assertions": [
+                {
+                  "categoryId": "level",
+                  "conceptId": "HIGH",
+                  "confidence": "certain",
+                  "source": "parse"
+                }
+              ],
+              "assessment": {
+                "collapsed": [],
+                "conflicts": [],
+                "emitted": [
+                  {
+                    "categoryId": "level",
+                    "conceptId": "HIGH"
+                  }
+                ],
+                "omitted": [],
+                "unrepresentable": []
+              },
+              "errors": [],
+              "inputWasValid": true,
+              "notices": [],
+              "recognition": {
+                "inputFormat": "default",
+                "status": "complete",
+                "surface": "banner",
+                "unmatched": []
+              },
+              "rendered": "HIGH",
+              "valid": true,
+              "warnings": []
+            },
+            "role": "whole",
+            "start": 0,
+            "type": "default",
+            "wrapped": false
+          }
+        ]
+      }
+    },
+    "9b273227e13b296d3bfb3bf559550cfa44d25a45ba2dd6a31e58f2c325abd817": {
+      "argsSummary": "[\"HEADER\\nHIGH\\nsome text\\nLOW\"]",
+      "method": "scan",
+      "response": {
+        "count": 2,
+        "firstMarking": "HIGH",
+        "firstRendered": "HIGH",
+        "firstStart": 7,
+        "results": [
+          {
+            "end": 11,
+            "marking": "HIGH",
+            "result": {
+              "appliedFixes": [],
+              "assertions": [
+                {
+                  "categoryId": "level",
+                  "conceptId": "HIGH",
+                  "confidence": "certain",
+                  "source": "parse"
+                }
+              ],
+              "assessment": {
+                "collapsed": [],
+                "conflicts": [],
+                "emitted": [
+                  {
+                    "categoryId": "level",
+                    "conceptId": "HIGH"
+                  }
+                ],
+                "omitted": [],
+                "unrepresentable": []
+              },
+              "errors": [],
+              "inputWasValid": true,
+              "notices": [],
+              "recognition": {
+                "inputFormat": "default",
+                "status": "complete",
+                "surface": "banner",
+                "unmatched": []
+              },
+              "rendered": "HIGH",
+              "valid": true,
+              "warnings": []
+            },
+            "role": "whole",
+            "start": 7,
+            "type": "default",
+            "wrapped": false
+          },
+          {
+            "end": 25,
+            "marking": "LOW",
+            "result": {
+              "appliedFixes": [],
+              "assertions": [
+                {
+                  "categoryId": "level",
+                  "conceptId": "LOW",
+                  "confidence": "certain",
+                  "source": "parse"
+                }
+              ],
+              "assessment": {
+                "collapsed": [],
+                "conflicts": [],
+                "emitted": [
+                  {
+                    "categoryId": "level",
+                    "conceptId": "LOW"
+                  }
+                ],
+                "omitted": [],
+                "unrepresentable": []
+              },
+              "errors": [],
+              "inputWasValid": true,
+              "notices": [],
+              "recognition": {
+                "inputFormat": "default",
+                "status": "complete",
+                "surface": "banner",
+                "unmatched": []
+              },
+              "rendered": "LOW",
+              "valid": true,
+              "warnings": []
+            },
+            "role": "whole",
+            "start": 22,
+            "type": "default",
+            "wrapped": false
+          }
+        ]
+      }
+    },
+    "b3830cac1d635072f306025eb747b24b9d2435e9e497763f1fe4cb5620f47f4a": {
+      "argsSummary": "[\"HIGH/CTRL-A\"]",
+      "method": "scan",
+      "response": {
+        "count": 1,
+        "firstMarking": "HIGH/CTRL-A",
+        "firstRendered": "HIGH/CTRL-A",
+        "firstStart": 0,
+        "results": [
+          {
+            "end": 11,
+            "marking": "HIGH/CTRL-A",
+            "result": {
+              "appliedFixes": [],
+              "assertions": [
+                {
+                  "categoryId": "level",
+                  "conceptId": "HIGH",
+                  "confidence": "certain",
+                  "source": "parse"
+                },
+                {
+                  "categoryId": "controls",
+                  "conceptId": "CTRL-A",
+                  "confidence": "certain",
+                  "source": "parse"
+                }
+              ],
+              "assessment": {
+                "collapsed": [],
+                "conflicts": [],
+                "emitted": [
+                  {
+                    "categoryId": "level",
+                    "conceptId": "HIGH"
+                  },
+                  {
+                    "categoryId": "controls",
+                    "conceptId": "CTRL-A"
+                  }
+                ],
+                "omitted": [],
+                "unrepresentable": []
+              },
+              "errors": [],
+              "inputWasValid": true,
+              "notices": [],
+              "recognition": {
+                "inputFormat": "default",
+                "status": "complete",
+                "surface": "banner",
+                "unmatched": []
+              },
+              "rendered": "HIGH/CTRL-A",
+              "valid": true,
+              "warnings": []
+            },
+            "role": "whole",
+            "start": 0,
+            "type": "default",
+            "wrapped": false
+          }
+        ]
+      }
+    },
+    "cd77d9d302ba91ac24be2793692885b7712fc815131aec7dd1e945af2ccd144a": {
+      "argsSummary": "[\"\"]",
+      "method": "scan",
+      "response": {
+        "count": 0,
+        "firstMarking": null,
+        "firstRendered": null,
+        "firstStart": null,
+        "results": []
+      }
+    }
+  },
+  "version": "0.1.0"
+}

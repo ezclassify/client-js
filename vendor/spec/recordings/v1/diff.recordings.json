@@ -1,0 +1,133 @@
+{
+  "engineVersion": "1.0.0-dev.30",
+  "openapiVersion": "1.0.0-dev.30",
+  "responses": {
+    "03f9545efed018ed3740f79f3b3524543da1e2dea5b9079c2d1291758c6960eb": {
+      "argsSummary": "[\"LOW\",\"HIGH\"]",
+      "method": "diff",
+      "response": {
+        "added": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ],
+        "common": [],
+        "removed": [
+          {
+            "categoryId": "level",
+            "conceptId": "LOW",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ]
+      }
+    },
+    "50defe04caeb4ba02317c1e6e1af5c804a87a47772faab7285566cad937d58c1": {
+      "argsSummary": "[\"\",\"\"]",
+      "method": "diff",
+      "response": {
+        "added": [],
+        "common": [],
+        "removed": []
+      }
+    },
+    "71b4424968e40e25aad489b2c5bab114e27334759fc686276987d943881f77db": {
+      "argsSummary": "[\"HIGH\",\"HIGH\"]",
+      "method": "diff",
+      "response": {
+        "added": [],
+        "common": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ],
+        "removed": []
+      }
+    },
+    "b250ee458c3ca1f4b8304c4b9063193bf242e958bead2fd87004e0a4981ffbfb": {
+      "argsSummary": "[\"HIGH\",\"HIGH/CTRL-A\"]",
+      "method": "diff",
+      "response": {
+        "added": [
+          {
+            "categoryId": "controls",
+            "conceptId": "CTRL-A",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ],
+        "common": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ],
+        "removed": []
+      }
+    },
+    "d23fb2796c026c928356de966f62d1f19a5bb1af977022b47cf04d88988c10c1": {
+      "argsSummary": "[\"HIGH\",\"\"]",
+      "method": "diff",
+      "response": {
+        "added": [],
+        "common": [],
+        "removed": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ]
+      }
+    },
+    "de22a32f6cce4f3dc457a45d35bbfa8fbcca18cec0c95fb6d98c10ef81583875": {
+      "argsSummary": "[\"HIGH/CTRL-A\",\"HIGH\"]",
+      "method": "diff",
+      "response": {
+        "added": [],
+        "common": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ],
+        "removed": [
+          {
+            "categoryId": "controls",
+            "conceptId": "CTRL-A",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ]
+      }
+    },
+    "f026c60185e28abb26503d94c1339eb6f84a86a50414ef3b2f1e3c181d713b85": {
+      "argsSummary": "[\"\",\"HIGH\"]",
+      "method": "diff",
+      "response": {
+        "added": [
+          {
+            "categoryId": "level",
+            "conceptId": "HIGH",
+            "confidence": "certain",
+            "source": "parse"
+          }
+        ],
+        "common": [],
+        "removed": []
+      }
+    }
+  },
+  "version": "0.1.0"
+}

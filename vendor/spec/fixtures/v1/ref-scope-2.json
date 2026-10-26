@@ -1,0 +1,166 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "level",
+          "label": "Level",
+          "position": 0,
+          "required": true,
+          "rollup": "max",
+          "single": true
+        },
+        {
+          "id": "authority",
+          "label": "Authority",
+          "position": 1,
+          "required": true,
+          "rollup": "union",
+          "scopes": [
+            "alt"
+          ],
+          "single": false
+        },
+        {
+          "id": "origin",
+          "label": "Origin",
+          "position": 2,
+          "required": false,
+          "rollup": "union",
+          "scopes": [
+            "alt"
+          ],
+          "single": true
+        }
+      ],
+      "concepts": {
+        "inline": [
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "LOW",
+            "name": "Low",
+            "parents": [],
+            "position": 0,
+            "rank": 0,
+            "views": {
+              "default": "LOW",
+              "portion": "L"
+            }
+          },
+          {
+            "categories": [
+              "level"
+            ],
+            "id": "HIGH",
+            "name": "High",
+            "parents": [],
+            "position": 1,
+            "rank": 1,
+            "views": {
+              "default": "HIGH",
+              "portion": "H"
+            }
+          },
+          {
+            "categories": [
+              "authority"
+            ],
+            "id": "AUTH-X",
+            "name": "Authority X",
+            "parents": [],
+            "position": 0,
+            "scopes": [
+              "alt"
+            ],
+            "views": {
+              "default": "AUTH-X"
+            }
+          },
+          {
+            "categories": [
+              "origin"
+            ],
+            "id": "ORIG",
+            "name": "Origin",
+            "parents": [],
+            "position": 0,
+            "scopes": [
+              "alt"
+            ],
+            "text_input": {
+              "placeholder": "ORIGIN",
+              "encoding": {
+                "type": "text",
+                "pattern": "[A-Z]{2,6}"
+              }
+            },
+            "views": {
+              "default": "ORIG={value}"
+            }
+          }
+        ]
+      }
+    },
+    "default_scope": "banner",
+    "description": "Conformance validation-surface reference. Same two surfaces as ref-scope-1, but each surface owns a required category: level is required and unscoped, so the banner surface and the whole marking demand it; authority is required and scoped to 'alt', so only the alternate surface demands it. Lets a case say which surface a fragment is and pin what that surface demands, instead of judging every fragment as a whole marking.",
+    "id": "ref-scope-2",
+    "name": "Reference Scope Scheme 2",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "render": {
+      "default": "banner",
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            }
+          ],
+          "id": "banner",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner"
+        },
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            },
+            {
+              "category": "authority",
+              "separator": "/"
+            },
+            {
+              "category": "origin",
+              "separator": "/"
+            }
+          ],
+          "id": "full",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner"
+        }
+      ],
+      "of_invalid": "drop_unmatched"
+    },
+    "rules": [],
+    "scopes": [
+      {
+        "id": "banner",
+        "label": "Banner"
+      },
+      {
+        "id": "alt",
+        "label": "Alternate"
+      }
+    ],
+    "version": "1.0.0"
+  }
+}

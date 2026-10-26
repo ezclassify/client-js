@@ -1,0 +1,420 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "AccessComparisonResult": {
+            "description": "Machine-readable result of one access-rule comparison.",
+            "properties": {
+                "left": {
+                    "$ref": "#/definitions/AccessOperand",
+                    "description": "Left comparison operand."
+                },
+                "matched": {
+                    "description": "Whether the comparison succeeded.",
+                    "type": "boolean"
+                },
+                "missing": {
+                    "description": "Required values missing from the evaluated operand, when applicable.",
+                    "items": {},
+                    "type": "array"
+                },
+                "operator": {
+                    "description": "Policy operator applied to the operands.",
+                    "type": "string"
+                },
+                "right": {
+                    "$ref": "#/definitions/AccessOperand",
+                    "description": "Right comparison operand."
+                }
+            },
+            "required": ["left", "operator", "right", "matched"],
+            "type": "object"
+        },
+        "AccessOperand": {
+            "description": "Typed operand captured while an access rule is evaluated.",
+            "properties": {
+                "assertions": {
+                    "description": "Assertions addressed by an assertion operand.",
+                    "items": {
+                        "$ref": "#/definitions/AssertionReference"
+                    },
+                    "type": "array"
+                },
+                "categoryId": {
+                    "description": "Category addressed by an assertion operand.",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "Dot-path for subject or context operands.",
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/AccessOperandSource",
+                    "description": "Source domain from which the value was read."
+                },
+                "value": {
+                    "description": "Literal or resolved opaque value."
+                }
+            },
+            "required": ["source"],
+            "type": "object"
+        },
+        "AccessOperandSource": {
+            "description": "Source of one operand in an access-policy comparison.",
+            "enum": ["subject", "context", "assertion", "literal"],
+            "type": "string"
+        },
+        "AccessRuleActivation": {
+            "description": "Machine-readable record of why an access rule activated.",
+            "properties": {
+                "assertions": {
+                    "description": "Assertions that activated the rule.",
+                    "items": {
+                        "$ref": "#/definitions/AssertionReference"
+                    },
+                    "type": "array"
+                },
+                "contextPaths": {
+                    "description": "Context paths consulted by activation.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "matched": {
+                    "description": "Whether the rule's activation predicate matched.",
+                    "type": "boolean"
+                }
+            },
+            "required": ["matched", "assertions", "contextPaths"],
+            "type": "object"
+        },
+        "AccessRuleResult": {
+            "description": "Result of evaluating a single qualified access rule entry.",
+            "properties": {
+                "activation": {
+                    "$ref": "#/definitions/AccessRuleActivation",
+                    "description": "Machine-readable activation basis."
+                },
+                "comparisons": {
+                    "description": "Machine-readable comparisons evaluated by the rule.",
+                    "items": {
+                        "$ref": "#/definitions/AccessComparisonResult"
+                    },
+                    "type": "array"
+                },
+                "granted": {
+                    "description": "Whether this rule passed.",
+                    "type": "boolean"
+                },
+                "modernizedFrom": {
+                    "description": "Deprecated-to-current concept substitutions that processing applied to the data before this rule was evaluated.\n\nPresent only when the data carried a deprecated concept. It completes the explanation of the decision: the marking the document bears, the current concept it resolved to, and the comparison this rule actually made. A consumer showing why access was granted or denied should surface it, so the verdict is never reported against a concept the reader never saw.",
+                    "items": {
+                        "$ref": "#/definitions/ConceptModernization"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Rule name from the access policy (for display).",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "Denial reason from the rule definition or generated explanation.",
+                    "type": "string"
+                },
+                "rule": {
+                    "$ref": "#/definitions/RuleReference",
+                    "description": "Qualified rule identity and semantic digest."
+                },
+                "ruleIndex": {
+                    "description": "Zero-based index of the rule in the access policy's evaluated rules.",
+                    "type": "integer"
+                },
+                "skipped": {
+                    "description": "Whether the rule was skipped because its activation did not match.",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "ruleIndex",
+                "name",
+                "granted",
+                "skipped",
+                "activation",
+                "comparisons",
+                "rule"
+            ],
+            "type": "object"
+        },
+        "ArtifactKind": {
+            "description": "Closed artifact families participating in a composed operation.",
+            "enum": [
+                "scheme",
+                "layer",
+                "guide",
+                "access",
+                "crosswalk",
+                "context"
+            ],
+            "type": "string"
+        },
+        "ArtifactReference": {
+            "description": "Identifies an immutable artifact participating in a composed operation.",
+            "properties": {
+                "digest": {
+                    "description": "Content digest when the resolver can supply one.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Artifact identifier.",
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/ArtifactKind",
+                    "description": "Artifact family."
+                },
+                "version": {
+                    "description": "Resolved immutable artifact version.",
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "id", "version"],
+            "type": "object"
+        },
+        "AssertionReference": {
+            "description": "Compact reference to an assertion without engine-production metadata.",
+            "properties": {
+                "categoryId": {
+                    "description": "Category containing the asserted concept.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Asserted concept identifier.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Captured value for value-bearing concepts.",
+                    "type": "string"
+                }
+            },
+            "required": ["categoryId", "conceptId"],
+            "type": "object"
+        },
+        "Attribution": {
+            "description": "Provenance attached to every source so downstream consumers can render proper attribution and license notices.\n\nMandatory because most source data we'll integrate (NIST, ICS, IANA, external taxonomies) requires citation. Sources that don't have a formal license should set `license: 'unspecified'` rather than omit it.",
+            "properties": {
+                "citation": {
+                    "description": "Suggested citation string for academic / regulatory use.",
+                    "type": "string"
+                },
+                "license": {
+                    "description": "SPDX identifier or short license token (e.g. \"CC-BY-4.0\", \"public-domain\").",
+                    "type": "string"
+                },
+                "licenseUrl": {
+                    "description": "Canonical URL where the license terms can be inspected.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Display name of the upstream source (e.g. \"NIST CSWP-29\").",
+                    "type": "string"
+                }
+            },
+            "required": ["name", "license"],
+            "type": "object"
+        },
+        "BestEffortRuleSourceReference": {
+            "description": "Best-effort external source join carried by a qualified rule reference.",
+            "properties": {
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["providerId", "reproducibility"],
+            "type": "object"
+        },
+        "BestEffortSourceReference": {
+            "description": "Best-effort source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the mutable content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["attribution", "providerId", "reproducibility"],
+            "type": "object"
+        },
+        "ConceptModernization": {
+            "description": "One deprecated-to-current concept substitution that processing applied before an access rule was evaluated.\n\nThe id fields are machine keys; the `*Display` companions carry the rendered marking view, following the same split as `missing` / `missingDisplay`.",
+            "properties": {
+                "conceptDisplay": {
+                    "description": "Resolved operational display for `conceptId`.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Current concept the access rule was evaluated against.",
+                    "type": "string"
+                },
+                "replacedConceptDisplay": {
+                    "description": "Resolved operational display for `replacedConceptId`.",
+                    "type": "string"
+                },
+                "replacedConceptId": {
+                    "description": "Deprecated concept the data was actually marked with.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "conceptId",
+                "replacedConceptId",
+                "conceptDisplay",
+                "replacedConceptDisplay"
+            ],
+            "type": "object"
+        },
+        "ReproducibleRuleSourceReference": {
+            "description": "Compact source join carried by a qualified rule reference.",
+            "properties": {
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable snapshot containing the rule.",
+                    "type": "string"
+                }
+            },
+            "required": ["providerId", "reproducibility", "snapshotId"],
+            "type": "object"
+        },
+        "ReproducibleSourceReference": {
+            "description": "Reproducible source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable content identity.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "attribution",
+                "providerId",
+                "reproducibility",
+                "snapshotId"
+            ],
+            "type": "object"
+        },
+        "RuleReference": {
+            "description": "Identifies the exact resolved semantics of one policy rule.",
+            "properties": {
+                "artifact": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Artifact that owns the rule."
+                },
+                "ruleDigest": {
+                    "description": "RFC 8785/SHA-256 digest of the canonical resolved rule content.",
+                    "type": "string"
+                },
+                "ruleId": {
+                    "description": "Rule identifier within the owning artifact.",
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/RuleSourceReference",
+                    "description": "External source identity when the rule was not supplied inline."
+                }
+            },
+            "required": ["artifact", "ruleId", "ruleDigest"],
+            "type": "object"
+        },
+        "RuleSourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleRuleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortRuleSourceReference"
+                }
+            ],
+            "description": "Compact source join carried by a qualified rule reference."
+        },
+        "SourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortSourceReference"
+                }
+            ],
+            "description": "Records source identity and mandatory attribution for an operation."
+        }
+    },
+    "description": "Overall access decision with per-rule breakdown.\n\nReturned by `AccessEngineAdapter.check()`. `granted` is `true` only when every non-skipped rule granted access. Inspect `rules` to surface per-category denial reasons in an authorization UI: each `AccessRuleResult` carries a human-readable `reason` field.",
+    "properties": {
+        "granted": {
+            "description": "True when every rule that was not skipped granted access.",
+            "type": "boolean"
+        },
+        "provenance": {
+            "$ref": "#/definitions/SourceReference",
+            "description": "Source provenance for the access-rule source that evaluated this decision.\n\nPopulated only when the `AccessEngine` was wired with an external `AccessRuleSource` override at load time (typically a `MappedAccessRuleSource` the server's Context loader built from an access YAML's `rules.external` block). Inline-backed decisions leave this field undefined to keep payloads compact for the common single-source case.\n\nIdentity fields mirror the source's `sourceIdentity()` observation at engine-construction time."
+        },
+        "rules": {
+            "description": "One result per rule in the policy, in policy order.",
+            "items": {
+                "$ref": "#/definitions/AccessRuleResult"
+            },
+            "type": "array"
+        }
+    },
+    "required": ["granted", "rules"],
+    "type": "object"
+}

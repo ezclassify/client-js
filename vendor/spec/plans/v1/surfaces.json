@@ -1,0 +1,396 @@
+{
+    "cases": [
+        {
+            "args": ["CONF // PARTNERS"],
+            "expect": {
+                "recognition": {
+                    "inputFormat": "sensitivity/short",
+                    "role": "part",
+                    "status": "complete",
+                    "surface": "sensitivity"
+                },
+                "rendered": "CONF // PARTNERS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-part-read-as-its-view"
+        },
+        {
+            "args": ["CONF/PARTNERS"],
+            "expect": {
+                "recognition": {
+                    "inputFormat": "sensitivity/full",
+                    "role": "whole",
+                    "status": "complete",
+                    "surface": "sensitivity"
+                },
+                "rendered": "CONFIDENTIAL // PARTNERS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-retired-form-read-as-its-view"
+        },
+        {
+            "args": ["CONF"],
+            "expect": {
+                "recognition": {
+                    "status": "complete",
+                    "surface": "sensitivity"
+                },
+                "rendered": "CONFIDENTIAL",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-forms-of-two-roles-alike-decide-no-role"
+        },
+        {
+            "args": [
+                "CONF",
+                {
+                    "inputFormat": "short"
+                }
+            ],
+            "expect": {
+                "recognition": {
+                    "inputFormat": "sensitivity/short",
+                    "role": "part",
+                    "status": "complete"
+                },
+                "rendered": "CONF",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-input-format-names-a-view"
+        },
+        {
+            "args": [
+                "CONF/PARTNERS",
+                {
+                    "inputFormat": "full_line_2019"
+                }
+            ],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "inputFormat": "sensitivity/full",
+                    "role": "whole",
+                    "status": "complete"
+                },
+                "rendered": "CONFIDENTIAL // PARTNERS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "process",
+            "name": "surfaces-process-input-format-names-a-read-only-form"
+        },
+        {
+            "args": [
+                "CONF/PARTNERS",
+                {
+                    "inputFormat": "full"
+                }
+            ],
+            "expect": {
+                "inputWasValid": false,
+                "recognition": {
+                    "corrections": [
+                        {
+                            "end": 4,
+                            "original": "CONF",
+                            "reason": "alias",
+                            "replacement": "CONFIDENTIAL",
+                            "start": 0
+                        },
+                        {
+                            "end": 5,
+                            "original": "/",
+                            "reason": "separator",
+                            "replacement": " // ",
+                            "start": 4
+                        }
+                    ],
+                    "inputFormat": "sensitivity/full",
+                    "role": "whole",
+                    "status": "complete"
+                },
+                "rendered": "CONFIDENTIAL // PARTNERS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "process",
+            "name": "surfaces-process-input-format-names-a-view-not-its-read-only-form"
+        },
+        {
+            "args": [
+                "CONF/PARTNERS",
+                {
+                    "inputFormat": "sensitivity/full"
+                }
+            ],
+            "expect": {
+                "inputWasValid": false,
+                "recognition": {
+                    "inputFormat": "sensitivity/full",
+                    "role": "whole",
+                    "status": "complete"
+                },
+                "rendered": "CONFIDENTIAL // PARTNERS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-input-format-names-an-address-not-its-read-only-form"
+        },
+        {
+            "args": [
+                "CONF // PARTNERS",
+                {
+                    "inputFormat": "short"
+                }
+            ],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "inputFormat": "sensitivity/short",
+                    "role": "part",
+                    "status": "complete"
+                },
+                "rendered": "CONF // PARTNERS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-input-format-names-a-view-read-in-its-case-form"
+        },
+        {
+            "args": ["KEEP 7 YEARS"],
+            "expect": {
+                "recognition": {
+                    "inputFormat": "retention/block",
+                    "status": "complete",
+                    "surface": "retention"
+                }
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-view-with-no-role"
+        },
+        {
+            "args": ["CONFIDENTIAL\nKEEP 7 YEARS"],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "role": "whole",
+                    "status": "complete"
+                },
+                "rendered": "CONFIDENTIAL\nKEEP 7 YEARS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-whole-written-on-two-surfaces-reads-back-as-written"
+        },
+        {
+            "args": ["CONF\nKEEP 7 YEARS"],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "status": "complete"
+                },
+                "rendered": "CONFIDENTIAL\nKEEP 7 YEARS",
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "process",
+            "name": "surfaces-process-part-written-on-two-surfaces-reads-back-uncorrected"
+        },
+        {
+            "args": ["(CONF // PARTNERS)"],
+            "expect": {
+                "count": 1,
+                "results": [
+                    {
+                        "inner": "CONF // PARTNERS",
+                        "role": "part",
+                        "type": "sensitivity/short",
+                        "wrapped": true
+                    }
+                ]
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "scan",
+            "name": "surfaces-scan-wrapped-part"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "CONFIDENTIAL",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "sharing",
+                        "conceptId": "PARTNERS",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                "full_line_2019"
+            ],
+            "expect": {
+                "result": "CONFIDENTIAL // PARTNERS"
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "render",
+            "name": "surfaces-render-read-only-form-stands-for-its-view"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "CONFIDENTIAL",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "sharing",
+                        "conceptId": "PARTNERS",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                "short"
+            ],
+            "expect": {
+                "result": "CONF // PARTNERS"
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "render",
+            "name": "surfaces-render-view-case-holds"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "CONFIDENTIAL",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                "short"
+            ],
+            "expect": {
+                "result": "CONF"
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "render",
+            "name": "surfaces-render-view-base-format"
+        },
+        {
+            "args": [
+                "CONF // PARTNERS",
+                {
+                    "context": {
+                        "role": "whole"
+                    }
+                }
+            ],
+            "expect": {
+                "appliedFixes": [
+                    {
+                        "ruleId": "_recognition_role"
+                    }
+                ],
+                "inputWasValid": false,
+                "recognition": {
+                    "inputFormat": "sensitivity/short",
+                    "role": "part",
+                    "status": "complete"
+                },
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-text-of-the-other-role-departs-from-the-context"
+        },
+        {
+            "args": [
+                "CONFIDENTIAL // PARTNERS",
+                {
+                    "context": {
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "appliedFixes": [
+                    {
+                        "ruleId": "_recognition_role"
+                    }
+                ],
+                "inputWasValid": false,
+                "recognition": {
+                    "inputFormat": "sensitivity/full",
+                    "role": "whole",
+                    "status": "complete"
+                },
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "process",
+            "name": "surfaces-process-text-of-the-other-role-departs-from-the-context"
+        },
+        {
+            "args": [
+                "CONF // PARTNERS",
+                {
+                    "context": {
+                        "role": "whole"
+                    },
+                    "inputFormat": "short"
+                }
+            ],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "inputFormat": "sensitivity/short",
+                    "role": "part"
+                },
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-named-input-format-raises-no-role-departure"
+        },
+        {
+            "args": [
+                "CONF",
+                {
+                    "context": {
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "status": "complete",
+                    "surface": "sensitivity"
+                },
+                "valid": true
+            },
+            "fixture": "ref-surfaces-1",
+            "method": "validate",
+            "name": "surfaces-validate-undecided-role-raises-no-role-departure"
+        }
+    ],
+    "slice": "engine"
+}

@@ -1,0 +1,159 @@
+{
+    "cases": [
+        {
+            "args": [""],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW"
+                    },
+                    {
+                        "conceptId": "MED"
+                    },
+                    {
+                        "conceptId": "HIGH"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-empty-prefix-returns-level-concepts"
+        },
+        {
+            "args": ["L"],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-prefix-l-returns-low"
+        },
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "HIGH",
+                        "label": "HIGH",
+                        "name": "High"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-result-has-label"
+        },
+        {
+            "args": ["MED"],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "MED"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-suggestions-is-array"
+        },
+        {
+            "args": ["h"],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "HIGH"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-lowercase-h-returns-high-first"
+        },
+        {
+            "args": ["HIGH/"],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "HIGH"
+                    },
+                    {
+                        "conceptId": "CTRL-A"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-after-high-ctrl-a-available"
+        },
+        {
+            "args": ["HIGH/C"],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "HIGH"
+                    },
+                    {
+                        "conceptId": "CTRL-A"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-controls-prefix-after-level"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "HIGH",
+                        "selected": true
+                    },
+                    {
+                        "conceptId": "CTRL-A",
+                        "selected": false
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-facts-mark-what-is-chosen"
+        },
+        {
+            "args": [[]],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW",
+                        "selected": false
+                    },
+                    {
+                        "conceptId": "MED",
+                        "selected": false
+                    },
+                    {
+                        "conceptId": "HIGH",
+                        "selected": false
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "suggest",
+            "name": "suggest-empty-facts-offer-every-level"
+        }
+    ],
+    "slice": "engine"
+}
