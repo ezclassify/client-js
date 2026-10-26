@@ -80,6 +80,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Build
+        run: npm run build
+
       - name: Test
         run: npm test
 
@@ -90,9 +93,6 @@ jobs:
       # is checked. It is its own script because it binds a port.
       - name: Conformance server (wire corpus over HTTP)
         run: npm run test:conformance-server
-
-      - name: Build
-        run: npm run build
 
       # package.json declares `prepublishOnly: npm run verify:publish-ready`,
       # and npm will not run it here: .npmrc sets `ignore-scripts=true`, which
