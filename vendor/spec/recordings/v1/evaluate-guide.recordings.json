@@ -1,0 +1,149 @@
+{
+  "engineVersion": "1.0.0-dev.30",
+  "openapiVersion": "1.0.0-dev.30",
+  "responses": {
+    "0b22ab38dc0a82d4a23ee45bb2474bf96805c810aa4a707a9da9cd9618356b34": {
+      "argsSummary": "[[]]",
+      "method": "evaluateGuide",
+      "response": {
+        "aggregatedMarking": "",
+        "selectedRules": []
+      }
+    },
+    "0e46bdd20d05955c5dd16aabe1dda13a325831367a91e608a6f5dbbbf98eb8f4": {
+      "argsSummary": "[[\"rule-high\"]]",
+      "method": "evaluateMany",
+      "response": {
+        "aggregatedMarking": "HIGH",
+        "selectedRules": [
+          {
+            "id": "rule-high",
+            "name": "High Sensitivity"
+          }
+        ]
+      }
+    },
+    "10cccfa42799ca789918e440771e3082785886337e1e53d7aaf15ed7aa85d9c3": {
+      "argsSummary": "[\"sensitive and controlled data\"]",
+      "method": "guideScan",
+      "response": {
+        "count": 2,
+        "firstEnd": 9,
+        "firstRuleId": "rule-high",
+        "firstStart": 0
+      }
+    },
+    "239066ea4cf600c00ee395c7ff1a35f5e1d7f521a618a8346f84fefddd074769": {
+      "argsSummary": "[\"This is a sensitive document\"]",
+      "method": "guideScan",
+      "response": {
+        "count": 1,
+        "firstEnd": 19,
+        "firstRuleId": "rule-high",
+        "firstStart": 10
+      }
+    },
+    "24ca0f2821e27bd2158cc436926cbc4bab4c0557017f0dcadde4fed2bd4b74d1": {
+      "argsSummary": "[[\"rule-high\",\"rule-low\",\"rule-ctrl-a\"]]",
+      "method": "evaluateGuide",
+      "response": {
+        "aggregatedMarking": "HIGH/CTRL-A",
+        "selectedRules": [
+          {
+            "id": "rule-high",
+            "name": "High Sensitivity"
+          },
+          {
+            "id": "rule-low",
+            "name": "Low Sensitivity"
+          },
+          {
+            "id": "rule-ctrl-a",
+            "name": "Control A"
+          }
+        ]
+      }
+    },
+    "49905d1bfa825895a62caf625f948e4766233588f1ab8718db41cc52c571ea4a": {
+      "argsSummary": "[[\"rule-high\"]]",
+      "method": "evaluateGuide",
+      "response": {
+        "aggregatedMarking": "HIGH",
+        "selectedRules": [
+          {
+            "id": "rule-high",
+            "name": "High Sensitivity"
+          }
+        ]
+      }
+    },
+    "7a0cf21242f3d365bd7725c8dc05d4f25f0b8923363c2a98f66fd071cdf0e077": {
+      "argsSummary": "[[\"rule-high\",\"rule-ctrl-a\"]]",
+      "method": "evaluateGuide",
+      "response": {
+        "aggregatedMarking": "HIGH/CTRL-A",
+        "selectedRules": [
+          {
+            "id": "rule-high",
+            "name": "High Sensitivity"
+          },
+          {
+            "id": "rule-ctrl-a",
+            "name": "Control A"
+          }
+        ]
+      }
+    },
+    "8afa23093e39df846a96a8df464d12a09f4ba582997e39c46ef76f29b239c0dc": {
+      "argsSummary": "[\"This document is for the public\"]",
+      "method": "guideScan",
+      "response": {
+        "count": 1,
+        "firstEnd": 31,
+        "firstRuleId": "rule-low",
+        "firstStart": 25
+      }
+    },
+    "a3a41192f5a99722dcac91795a0078fe84fc9e5b989882f46d35ee95cb523795": {
+      "argsSummary": "[\"no relevant keywords here\"]",
+      "method": "guideScan",
+      "response": {
+        "count": 0,
+        "firstEnd": null,
+        "firstRuleId": null,
+        "firstStart": null
+      }
+    },
+    "c9feaf8784fd3e679e09c1be8470f550ba71feffe3a478ea26ebef553220e9c6": {
+      "argsSummary": "[[\"rule-high\",\"rule-low\"]]",
+      "method": "evaluateMany",
+      "response": {
+        "aggregatedMarking": "HIGH",
+        "selectedRules": [
+          {
+            "id": "rule-high",
+            "name": "High Sensitivity"
+          },
+          {
+            "id": "rule-low",
+            "name": "Low Sensitivity"
+          }
+        ]
+      }
+    },
+    "f5677f4a90be62854d18a9c5bc2b3576f222da3e0d984319a2c893b4d2d78efd": {
+      "argsSummary": "[[\"rule-low\"]]",
+      "method": "evaluateGuide",
+      "response": {
+        "aggregatedMarking": "LOW",
+        "selectedRules": [
+          {
+            "id": "rule-low",
+            "name": "Low Sensitivity"
+          }
+        ]
+      }
+    }
+  },
+  "version": "0.1.0"
+}

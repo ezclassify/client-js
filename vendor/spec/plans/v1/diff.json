@@ -1,0 +1,127 @@
+{
+    "cases": [
+        {
+            "args": ["HIGH", "HIGH"],
+            "expect": {
+                "added": [],
+                "common": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "removed": []
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-identical"
+        },
+        {
+            "args": ["LOW", "HIGH"],
+            "expect": {
+                "added": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "common": [],
+                "removed": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "LOW"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-upgrade"
+        },
+        {
+            "args": ["HIGH", "HIGH/CTRL-A"],
+            "expect": {
+                "added": [
+                    {
+                        "categoryId": "controls",
+                        "conceptId": "CTRL-A"
+                    }
+                ],
+                "common": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "removed": []
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-add-control"
+        },
+        {
+            "args": ["HIGH/CTRL-A", "HIGH"],
+            "expect": {
+                "added": [],
+                "common": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "removed": [
+                    {
+                        "categoryId": "controls",
+                        "conceptId": "CTRL-A"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-remove-control"
+        },
+        {
+            "args": ["", "HIGH"],
+            "expect": {
+                "added": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "common": [],
+                "removed": []
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-empty-to-high"
+        },
+        {
+            "args": ["HIGH", ""],
+            "expect": {
+                "added": [],
+                "common": [],
+                "removed": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-high-to-empty"
+        },
+        {
+            "args": ["", ""],
+            "expect": {
+                "added": [],
+                "common": [],
+                "removed": []
+            },
+            "fixture": "ref-scheme-1",
+            "method": "diff",
+            "name": "diff-empty-to-empty"
+        }
+    ],
+    "slice": "engine"
+}

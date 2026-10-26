@@ -1,0 +1,22 @@
+{
+    "access": {
+        "description": "Conformance test access policy for ref-access-1 scheme.",
+        "id": "ref-access-rules-1",
+        "name": "Reference Access Rules 1",
+        "rules": {
+            "inline": [
+                {
+                    "attribute": "level",
+                    "categoryId": "level",
+                    "id": "level-rule",
+                    "name": "Level",
+                    "strategy": "gte"
+                }
+            ]
+        },
+        "targetScheme": {
+            "id": "ref-access-1"
+        },
+        "version": "1.0.0"
+    }
+}

@@ -1,0 +1,92 @@
+{
+    "cases": [
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "result": "HIGH"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "render",
+            "name": "render-single-high"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "LOW",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "result": "LOW"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "render",
+            "name": "render-single-low"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "controls",
+                        "conceptId": "CTRL-A",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "result": "HIGH/CTRL-A"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "render",
+            "name": "render-compound"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "MED",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "result": "MED"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "render",
+            "name": "render-med"
+        },
+        {
+            "args": [[]],
+            "expect": {
+                "result": ""
+            },
+            "fixture": "ref-scheme-1",
+            "method": "render",
+            "name": "render-empty-assertions"
+        }
+    ],
+    "slice": "engine"
+}

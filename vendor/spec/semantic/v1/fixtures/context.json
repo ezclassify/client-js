@@ -1,0 +1,28 @@
+{
+  "id": "document-assessment-context",
+  "version": "1.0.0",
+  "schemeFixture": "../../../fixtures/v1/ref-scheme-1.json",
+  "guideFixture": "../../../fixtures/v1/ref-guide-1.json",
+  "accessFixture": "../../../fixtures/v1/ref-scheme-1.access.json",
+  "variants": {
+    "no-guide": { "guideFixture": null },
+    "no-access": { "accessFixture": null },
+    "share-list": { "schemeFixture": "../../../fixtures/v1/ref-scheme-2.json", "guideFixture": null, "accessFixture": null }
+  },
+  "artifacts": {
+    "scheme": { "kind": "scheme", "id": "ref-scheme-1", "version": "1.0.0" },
+    "guide": { "kind": "guide", "id": "ref-guide-1", "version": "1.0.0" }
+  },
+  "rules": {
+    "high": {
+      "artifact": { "kind": "guide", "id": "ref-guide-1", "version": "1.0.0" },
+      "ruleId": "rule-high",
+      "ruleDigest": "sha256:31a637e4f249733ae655416a3e53a2a9a77b270d6fb26bf121aa476498753d5d"
+    },
+    "low": {
+      "artifact": { "kind": "guide", "id": "ref-guide-1", "version": "1.0.0" },
+      "ruleId": "rule-low",
+      "ruleDigest": "sha256:9275bb728af0245bd5f0441ad8cd264e557fa8a045a21ae07e925b64ee81b609"
+    }
+  }
+}

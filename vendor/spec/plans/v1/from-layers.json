@@ -1,0 +1,279 @@
+{
+    "cases": [
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-base-only-high-valid"
+        },
+        {
+            "args": ["CTRL-A"],
+            "expect": {
+                "valid": false
+            },
+            "fixture": ["ref-layer-base"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-base-only-unknown-concept-invalid"
+        },
+        {
+            "args": ["HIGH/CTRL-A"],
+            "expect": {
+                "rendered": "HIGH/CTRL-A",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-add"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-base-add-extension-concept-valid"
+        },
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-add"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-base-add-base-concept-still-valid"
+        },
+        {
+            "args": [["LOW", "HIGH"]],
+            "expect": {
+                "rendered": "HIGH"
+            },
+            "fixture": ["ref-layer-base"],
+            "method": "aggregate",
+            "mode": "fromLayers",
+            "name": "from-layers-base-aggregate-renders-max"
+        },
+        {
+            "args": [""],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW"
+                    },
+                    {
+                        "conceptId": "MED"
+                    },
+                    {
+                        "conceptId": "HIGH"
+                    }
+                ]
+            },
+            "fixture": ["ref-layer-base"],
+            "method": "suggest",
+            "mode": "fromLayers",
+            "name": "from-layers-base-suggest-returns-base-concepts"
+        },
+        {
+            "args": ["MED"],
+            "expect": {
+                "valid": false
+            },
+            "fixture": ["ref-layer-base", "ref-layer-remove"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-remove-med-invalid"
+        },
+        {
+            "args": ["LOW"],
+            "expect": {
+                "rendered": "LOW",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-remove"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-remove-sibling-concept-still-valid"
+        },
+        {
+            "args": ["CRITICAL"],
+            "expect": {
+                "rendered": "CRITICAL",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-override"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-override-renders-new-label"
+        },
+        {
+            "args": ["CRITCAL"],
+            "expect": {
+                "errors": [
+                    { "constraintId": "_recognition_incomplete" },
+                    {
+                        "constraintId": "_unmatched_token",
+                        "didYouMean": ["HIGH"]
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": ["ref-layer-base", "ref-layer-override"],
+            "method": "validate",
+            "mode": "fromLayers",
+            "name": "from-layers-override-misspelling-hints-the-concept-id"
+        },
+        {
+            "args": ["HIGH/CTRL-A"],
+            "expect": {
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-add", "ref-layer-remove"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-three-layer-add-then-remove"
+        },
+        {
+            "args": [["MED"]],
+            "expect": {
+                "rendered": ""
+            },
+            "fixture": ["ref-layer-base", "ref-layer-remove"],
+            "method": "aggregate",
+            "mode": "fromLayers",
+            "name": "from-layers-remove-aggregate-of-removed-concept-empty"
+        },
+        {
+            "args": [["HIGH"]],
+            "expect": {
+                "rendered": "CRITICAL"
+            },
+            "fixture": ["ref-layer-base", "ref-layer-override"],
+            "method": "aggregate",
+            "mode": "fromLayers",
+            "name": "from-layers-override-aggregate-renders-critical"
+        },
+        {
+            "args": [""],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW"
+                    },
+                    {
+                        "conceptId": "HIGH"
+                    }
+                ]
+            },
+            "fixture": ["ref-layer-base", "ref-layer-remove"],
+            "method": "suggest",
+            "mode": "fromLayers",
+            "name": "from-layers-remove-suggest-excludes-removed-concept"
+        },
+        {
+            "args": [""],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW"
+                    },
+                    {
+                        "conceptId": "MED"
+                    },
+                    {
+                        "conceptId": "HIGH"
+                    }
+                ]
+            },
+            "fixture": ["ref-layer-base", "ref-layer-add"],
+            "method": "suggest",
+            "mode": "fromLayers",
+            "name": "from-layers-add-suggest-base-concepts-still-present"
+        },
+        {
+            "args": ["HIGH/TAG-A"],
+            "expect": {
+                "rendered": "HIGH/TAG-A",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-cat-insert"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-cat-insert-process-new-concept-valid"
+        },
+        {
+            "args": [""],
+            "expect": {
+                "suggestions": [
+                    {
+                        "conceptId": "LOW"
+                    },
+                    {
+                        "conceptId": "MED"
+                    },
+                    {
+                        "conceptId": "HIGH"
+                    },
+                    {
+                        "conceptId": "TAG-A"
+                    }
+                ]
+            },
+            "fixture": ["ref-layer-base", "ref-layer-cat-insert"],
+            "method": "suggest",
+            "mode": "fromLayers",
+            "name": "from-layers-cat-insert-suggest-includes-new-category"
+        },
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "rendered": "[[HIGH]]",
+                "valid": true
+            },
+            "fixture": ["ref-layer-base", "ref-layer-render-override"],
+            "method": "process",
+            "mode": "fromLayers",
+            "name": "from-layers-render-override-uses-bracketed-format"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ],
+                "default"
+            ],
+            "expect": {
+                "result": "HIGH"
+            },
+            "fixture": ["ref-layer-base", "ref-layer-render-override"],
+            "method": "render",
+            "mode": "fromLayers",
+            "name": "from-layers-render-override-base-format-still-available"
+        },
+        {
+            "args": [["LOW", "HIGH"]],
+            "expect": {
+                "rendered": "LOW"
+            },
+            "fixture": ["ref-layer-base", "ref-layer-rollup-replace"],
+            "method": "aggregate",
+            "mode": "fromLayers",
+            "name": "from-layers-rollup-replace-aggregate-uses-min"
+        },
+        {
+            "args": [["LOW", "HIGH"]],
+            "expect": {
+                "rendered": "HIGH"
+            },
+            "fixture": ["ref-layer-base"],
+            "method": "aggregate",
+            "mode": "fromLayers",
+            "name": "from-layers-rollup-replace-base-only-still-uses-max"
+        }
+    ],
+    "slice": "engine"
+}

@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Record<string,string>": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object"
+        }
+    },
+    "description": "A concept offered to the user in the suggest UI, with label, description, group, and current selection state.\n\nReturned in `SuggestResult.suggestions`. `selected: true` means the concept is already in the current marking; clicking it again removes it. `order` controls display position within the group. `views` carries all render-format representations so the UI can switch formats without a second query. `source` distinguishes concepts from parsing the input (`'parse'`), preset shortcuts (`'preset'`), or alias matches (`'alias'`).",
+    "properties": {
+        "categoryId": {
+            "description": "The category the concept belongs to.",
+            "type": "string"
+        },
+        "conceptId": {
+            "description": "The id of the suggested concept.",
+            "type": "string"
+        },
+        "description": {
+            "description": "Secondary label (longer name or alternate view).",
+            "type": "string"
+        },
+        "gated": {
+            "description": "True when this concept matches the active filter but is currently gated by the scheme's rules (a rule prerequisite is unmet, or a constraint forbids it). Gated suggestions are surfaced as non-selectable, explanatory rows so the user can see why the concept is unavailable. Only populated when the caller passes `includeGated: true` and a filter is active.",
+            "type": "boolean"
+        },
+        "group": {
+            "description": "Category label for UI grouping.",
+            "type": "string"
+        },
+        "label": {
+            "description": "Primary display label in the current render format.",
+            "type": "string"
+        },
+        "name": {
+            "description": "Human-readable concept name.",
+            "type": "string"
+        },
+        "order": {
+            "description": "Sort order.",
+            "type": "integer"
+        },
+        "requires": {
+            "description": "When `gated` is true, the unmet prerequisite concept ids that would unlock this concept. Empty array when the concept is gated by a constraint with no specific prerequisite (e.g. mutual exclusion).",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "requiresDisplay": {
+            "description": "Resolved operational display (rendered marking view) for each id in `requires`, index-aligned, so the unlock row can read \"add X first\" with the marking rather than the raw id. `requires` stays as the machine keys.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "selected": {
+            "description": "True if this concept is already in the current marking.",
+            "type": "boolean"
+        },
+        "source": {
+            "description": "`preset` on a row that offers a label preset, whose `conceptId` is `preset:` followed by the preset id. A concept row leaves it unset.",
+            "enum": ["parse", "preset", "alias"],
+            "type": "string"
+        },
+        "views": {
+            "$ref": "#/definitions/Record%3Cstring%2Cstring%3E",
+            "description": "All views for this concept."
+        }
+    },
+    "required": [
+        "conceptId",
+        "categoryId",
+        "label",
+        "description",
+        "name",
+        "views",
+        "group",
+        "selected",
+        "order"
+    ],
+    "type": "object"
+}

@@ -1,0 +1,34 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "level",
+          "label": "Level",
+          "position": 0,
+          "required": true,
+          "rollup": "min",
+          "single": true
+        }
+      ],
+      "concepts": {
+        "inline": []
+      }
+    },
+    "description": "Layer that overrides the level category rollup operator from max to min. Validates that composeLayers applies category layer composition:override, changing aggregation behavior.",
+    "id": "ref-layer-rollup-replace",
+    "layer": {
+      "base": "ref-layer-base@1.0.0"
+    },
+    "name": "Rollup Replace Layer",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "rollup_pipelines": [],
+    "rules": [],
+    "type": "layer",
+    "version": "1.0.0"
+  }
+}

@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {},
+    "description": "One step in the engine's explanation trace: which stage acted, what it did, and which concept/rule was involved.\n\nLives in `ExplanationTrace.entries`. Consumers use the trace to render a \"why was this marking produced?\" breakdown. `stage` is one of `parse | repair | infer | validate | render`; `conceptId` and `ruleId` identify the specific element that drove the action.",
+    "properties": {
+        "action": {
+            "description": "What the stage did, as a short machine-readable token, such as `asserted`, `inferred`, `removed` or `unmatched`. An open string.",
+            "type": "string"
+        },
+        "categoryId": {
+            "description": "Category the action landed in, when the acting rule declared one. This is the structured channel for the category: `detail` is human-facing prose and must never be parsed to recover it.",
+            "type": "string"
+        },
+        "conceptId": {
+            "description": "The concept the step acted on, when it acted on one.",
+            "type": "string"
+        },
+        "conceptName": {
+            "description": "Resolved operational display for `conceptId` (the concept's rendered marking view), so a \"why\" breakdown UI can show the marking rather than the raw id. `conceptId` stays as the machine key.",
+            "type": "string"
+        },
+        "detail": {
+            "description": "A sentence describing the step for a person. It is prose and must not be parsed; the structured fields carry the ids.",
+            "type": "string"
+        },
+        "ruleId": {
+            "description": "The scheme rule that drove the step, when one did.",
+            "type": "string"
+        },
+        "stage": {
+            "description": "The pipeline stage that acted, such as `parse`, `normalize`, `repair`, `infer`, `validate`, `render`, `aggregate` or `context`. An open string.",
+            "type": "string"
+        },
+        "triggerConceptIds": {
+            "description": "Concept IDs that triggered the rule producing this entry.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": ["stage", "action", "detail"],
+    "type": "object"
+}

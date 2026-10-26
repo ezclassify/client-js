@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "version", "schemeFixture", "guideFixture", "accessFixture", "variants", "artifacts", "rules"],
+  "properties": {
+    "id": { "type": "string" }, "version": { "type": "string" },
+    "schemeFixture": { "type": "string" }, "guideFixture": { "type": "string" }, "accessFixture": { "type": "string" },
+    "variants": {
+      "description": "The context a request's `fixtureVariant` names. A variant starts from the three fixtures above and replaces each one it names; null means the context has no guide or no access policy. `artifacts` and `rules` describe the base context only; a variant does not change them, and its scheme's identity is the one its scheme fixture declares.",
+      "type": "object", "additionalProperties": { "$ref": "#/$defs/variant" }
+    },
+    "artifacts": { "type": "object", "additionalProperties": false, "required": ["scheme", "guide"], "properties": { "scheme": { "$ref": "#/$defs/scheme" }, "guide": { "$ref": "#/$defs/guide" } } },
+    "rules": { "type": "object", "additionalProperties": { "$ref": "#/$defs/rule" }, "minProperties": 2 }
+  },
+  "$defs": {
+    "variant": {
+      "type": "object", "additionalProperties": false, "minProperties": 1,
+      "properties": { "schemeFixture": { "type": "string" }, "guideFixture": { "type": ["string", "null"] }, "accessFixture": { "type": ["string", "null"] } }
+    },
+    "base": { "type": "object", "additionalProperties": false, "required": ["kind", "id", "version"], "properties": { "kind": { "type": "string" }, "id": { "type": "string" }, "version": { "type": "string" } } },
+    "scheme": { "allOf": [{ "$ref": "#/$defs/base" }, { "properties": { "kind": { "const": "scheme" } } }] },
+    "guide": { "allOf": [{ "$ref": "#/$defs/base" }, { "properties": { "kind": { "const": "guide" } } }] },
+    "rule": { "type": "object", "additionalProperties": false, "required": ["artifact", "ruleId", "ruleDigest"], "properties": { "artifact": { "$ref": "#/$defs/guide" }, "ruleId": { "type": "string" }, "ruleDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" } } }
+  }
+}

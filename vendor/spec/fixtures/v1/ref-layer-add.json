@@ -1,0 +1,76 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "controls",
+          "label": "Controls",
+          "position": 1,
+          "required": false,
+          "rollup": "union",
+          "single": false
+        }
+      ],
+      "concepts": {
+        "inline": [
+          {
+            "categories": [
+              "controls"
+            ],
+            "id": "CTRL-A",
+            "name": "Control A",
+            "parents": [
+              "HIGH"
+            ],
+            "position": 0,
+            "views": {
+              "default": "CTRL-A"
+            }
+          }
+        ]
+      }
+    },
+    "default_scope": "banner",
+    "description": "Extension layer that adds the CTRL-A concept in the controls category. Depends on ref-layer-base for the HIGH parent concept.",
+    "id": "ref-layer-add",
+    "layer": {
+      "base": "ref-layer-base@1.0.0"
+    },
+    "name": "Add Layer",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "render": {
+      "default": "default",
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            },
+            {
+              "category": "controls",
+              "separator": "/"
+            }
+          ],
+          "id": "default",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner"
+        }
+      ]
+    },
+    "rules": [],
+    "scopes": [
+      {
+        "id": "banner",
+        "label": "Banner"
+      }
+    ],
+    "type": "layer",
+    "version": "1.0.0"
+  }
+}
