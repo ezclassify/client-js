@@ -1,0 +1,11 @@
+{
+    "exclude": ["node_modules"],
+    "extends": "./tsconfig.json",
+    "include": [
+        "src/**/*.ts",
+        "tests/contract.spec.ts",
+        "tests/request-schema-conformance.spec.ts",
+        "tests/wire-*.ts",
+        "tests/integration/**/*.ts"
+    ]
+}

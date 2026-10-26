@@ -1,0 +1,91 @@
+{
+    "name": "@ezclassify/rest-client",
+    "version": "1.0.0-dev.30",
+    "type": "module",
+    "description": "Thin TypeScript client for EzClassify REST deployments",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ezclassify/client-js.git"
+    },
+    "homepage": "https://github.com/ezclassify/client-js#readme",
+    "bugs": {
+        "url": "https://github.com/ezclassify/client-js/issues"
+    },
+    "author": "EzClassify, LLC",
+    "license": "Apache-2.0",
+    "engines": {
+        "node": ">=22.0.0"
+    },
+    "main": "./dist/lib/index.cjs",
+    "types": "./dist/lib/index.d.ts",
+    "module": "./dist/lib/index.mjs",
+    "exports": {
+        ".": {
+            "types": "./dist/lib/index.d.ts",
+            "import": "./dist/lib/index.mjs",
+            "require": "./dist/lib/index.cjs"
+        }
+    },
+    "files": [
+        "dist/",
+        "examples/first-app/",
+        "README.md",
+        "LICENSE",
+        "!dist/**/*.map"
+    ],
+    "keywords": [
+        "ezclassify",
+        "classification",
+        "marking",
+        "rest",
+        "client",
+        "http"
+    ],
+    "scripts": {
+        "build": "node scripts/generate-spec-version.mjs && node scripts/generate-response-shapes.mjs && vite build",
+        "check:dependency-age": "node scripts/check-dependency-age.mjs",
+        "check:lockfile-portable": "node scripts/check-lockfile-portable.mjs",
+        "deps:relock": "node -e \"const{rmSync}=require('node:fs');for(const path of ['node_modules','package-lock.json'])rmSync(path,{force:true,recursive:true})\" && node scripts/relock.mjs --strip && npm install --package-lock-only --include=optional --ignore-scripts --before=\"$(node -e 'console.log(new Date(Date.now()-7*864e5).toISOString())')\" && node scripts/relock.mjs --restore && npm install --package-lock-only --include=optional --ignore-scripts --tag=dev && node scripts/relock.mjs --normalize && npm run check:lockfile-portable && npm run check:dependency-age",
+        "docs": "npm exec --yes --package=typedoc@0.28.20 --package=typescript@5.9.3 -- typedoc --options typedoc.json",
+        "docs:source": "npm exec --yes --package=typedoc@0.28.20 --package=typescript@5.9.3 -- typedoc --options typedoc.source.json",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "npx eslint src tests scripts",
+        "prepublishOnly": "npm run verify:publish-ready",
+        "test": "node scripts/generate-spec-version.mjs && node scripts/generate-response-shapes.mjs && vitest run",
+        "test:conformance-server": "node scripts/generate-spec-version.mjs && node scripts/generate-response-shapes.mjs && vitest run --config vitest.integration.mjs",
+        "test:verbose": "node scripts/generate-spec-version.mjs && node scripts/generate-response-shapes.mjs && vitest run --reporter=verbose --no-file-parallelism",
+        "typecheck": "node scripts/generate-spec-version.mjs && node scripts/generate-response-shapes.mjs && tsc -p tsconfig.json && tsc -p tsconfig.contract.json",
+        "verify:publish-ready": "npm run test && npm run typecheck && npm run build && npm pack --dry-run"
+    },
+    "dependencies": {
+        "@ezclassify/types": "^1.0.0-0"
+    },
+    "devDependencies": {
+        "@ezclassify/conformance": "^1.0.0-0",
+        "@ezclassify/conformance-server": "^1.0.0-0",
+        "@ezclassify/openapi": "^1.0.0-0",
+        "@ezclassify/tsconfig": "^1.0.0-0",
+        "@types/node": "^22.20.1",
+        "@types/semver": "^7.8.0",
+        "@typescript-eslint/eslint-plugin": "^8.0.0",
+        "@typescript-eslint/parser": "^8.0.0",
+        "ajv": "^8.0.0",
+        "eslint": "^10.12.0",
+        "js-yaml": "^4.0.0",
+        "prettier": "^3.5.0",
+        "prettier-plugin-jsdoc": "^1.3.0",
+        "prettier-plugin-organize-attributes": "^1.0.0",
+        "prettier-plugin-pkg": "^0.21.0",
+        "prettier-plugin-sort-json": "^4.1.0",
+        "semver": "^7.8.5",
+        "typescript": "5.9.3",
+        "vite": "^8.0.0",
+        "vite-plugin-dts": "^5.0.0",
+        "vitest": "^4.1.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "sideEffects": false
+}

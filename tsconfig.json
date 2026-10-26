@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "noEmit": true,
+        "outDir": "dist/out-tsc"
+    },
+    "exclude": ["node_modules"],
+    "extends": "@ezclassify/tsconfig/app.json",
+    "include": ["src/**/*.ts"]
+}

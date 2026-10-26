@@ -1,0 +1,192 @@
+name: Publish mirror (GitHub Packages)
+
+# Nightly republish of @ezclassify/rest-client to the organization's GitHub
+# Packages development mirror.
+#
+# Repositories that consume this package between releases install it from
+# the mirror. The slot is 06:10 UTC, after the contracts packages this
+# repository installs and before the consumers that install this one.
+#
+# The mirror carries prerelease versions only: 1.0.0-mirror.N, never a plain
+# 1.0.0. The real npm publish belongs to the release process.
+
+on:
+  schedule:
+    - cron: '10 6 * * *' # 06:10 UTC nightly, after contracts (05:45)
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Publish even if no commit landed in the last 24h
+        type: boolean
+        default: false
+
+permissions:
+  packages: write
+  contents: read
+
+concurrency:
+  group: publish-mirror
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # Publication authority is repository configuration, not repository
+    # identity: only a repository that sets this variable, alongside the token
+    # below, runs the job.
+    if: vars.EZ_DEVELOPMENT_MIRROR_PUBLISHER == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Gate on a commit in the last 24h
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
+            echo "forced publish"; echo "run=yes" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          age=$(( $(date +%s) - $(git show -s --format=%ct HEAD) ))
+          if [ "$age" -lt 86400 ]; then
+            echo "HEAD is ${age}s old (<24h): publishing"; echo "run=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "HEAD is ${age}s old (>=24h): nothing landed today, skipping"; echo "run=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      # `scope` + `registry-url` is what routes @ezclassify to GitHub Packages:
+      # setup-node writes `@ezclassify:registry` and the auth line into a
+      # runner-local npmrc. Third-party packages keep coming from npmjs, and the
+      # tracked .npmrc is left alone, so `ignore-scripts=true` still holds.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.gate.outputs.run == 'yes'
+        with:
+          node-version: '24'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@ezclassify'
+
+      - name: Install
+        # The same two commands CI runs: `deps:relock` resolves a lockfile
+        # from an empty dependency tree and `npm ci` installs those exact
+        # bytes.
+        #
+        # The token is required: the five contracts packages this tree needs
+        # live on the mirror at 1.0.0-mirror.N, and an unauthenticated read of
+        # GitHub Packages fails outright rather than falling through to npmjs.
+        if: steps.gate.outputs.run == 'yes'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN }}
+        run: npm run deps:relock && npm ci
+
+      - name: Resolve the mirror version
+        id: plan
+        if: steps.gate.outputs.run == 'yes'
+        run: echo "version=1.0.0-mirror.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Stamp mirror version
+        if: steps.gate.outputs.run == 'yes'
+        run: npm pkg set "version=${{ steps.plan.outputs.version }}"
+
+      - name: Every range admits a mirror version, and there is still one package
+        if: steps.gate.outputs.run == 'yes'
+        # Runs AFTER the stamp so it checks what is about to be published rather
+        # than what was committed. Catches a first-party dependency written
+        # "^1.0.0", which npm will not match against 1.0.0-mirror.N and which
+        # would make this tarball uninstallable anywhere but here; a stamp that
+        # did not land; and a repository that grew workspaces this single-package
+        # workflow would silently leave unpublished.
+        run: node scripts/check-mirror-publish.mjs --expect-version "${{ steps.plan.outputs.version }}"
+
+      - name: Build
+        if: steps.gate.outputs.run == 'yes'
+        # The library entrypoints live under dist/, so an unbuilt tree packs
+        # the application example without a compiled client. npm would not complain.
+        run: npm run build
+
+      # `--access restricted`: on GitHub Packages a public package reads as
+      # organization-public, which is not what a development mirror is for.
+      # The flag describes the mirror, not the license.
+      - name: Publish to GitHub Packages
+        if: steps.gate.outputs.run == 'yes'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN }}
+        run: npm publish --tag dev --access restricted
+
+      - name: Install what was just published and run it
+        if: steps.gate.outputs.run == 'yes'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN }}
+        # The step that makes a silent no-op impossible. Everything above can
+        # succeed while producing something no consumer can use: a tarball whose
+        # `files` missed dist/, an export map pointing at a path that was never
+        # emitted, a dependency range that resolves in this workspace and
+        # nowhere else. So this leaves the repository entirely, installs the
+        # version this run produced from the registry it just pushed it to, and
+        # exercises both entry points.
+        #
+        # The behavioral half matters as much as the import half. A bundle that
+        # loads and answers wrongly is worse than one that fails to load, so the
+        # denial-shape predicate is called with a body that is the denial shape
+        # and then with one that is not. If the second call does not come back
+        # false, the published code is inert and this job fails even though the
+        # publish succeeded.
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.plan.outputs.version }}"
+          PROOF="$RUNNER_TEMP/mirror-proof"
+
+          mkdir -p "$PROOF" && cd "$PROOF"
+          echo '{"name":"mirror-proof","private":true,"version":"0.0.0"}' > package.json
+          npm install --no-audit --no-fund "@ezclassify/rest-client@${VERSION}"
+
+          # shellcheck disable=SC2016  # the ${} below are JavaScript template
+          # literals inside a single-quoted script; the shell must not touch them
+          node -e '
+            const fs = require("node:fs");
+            const path = require("node:path");
+
+            // A type-only dependency is still a real dependency: the emitted
+            // .d.ts files re-export @ezclassify/types, so a consumer install
+            // has to bring it along. If the manifest lost it, this is where it
+            // shows.
+            const types = path.join("node_modules", "@ezclassify", "types", "package.json");
+            if (!fs.existsSync(types)) {
+              throw new Error("@ezclassify/types did not arrive with the client; the declared dependency did not resolve");
+            }
+            console.log(`dependency present: @ezclassify/types@${JSON.parse(fs.readFileSync(types, "utf8")).version}`);
+
+            // Read the installed manifest by path rather than require.resolve:
+            // the export map declares "." only, so "./package.json" is not an
+            // exported subpath and resolving it throws.
+            const home = path.join("node_modules", "@ezclassify", "rest-client");
+            const manifest = JSON.parse(fs.readFileSync(path.join(home, "package.json"), "utf8"));
+            const dts = path.join(home, manifest.types);
+            if (!fs.existsSync(dts)) throw new Error(`published types entry is missing: ${dts}`);
+            if (!fs.readFileSync(dts, "utf8").includes("EzClassifyClient")) {
+              throw new Error("published .d.ts does not declare EzClassifyClient");
+            }
+            console.log("types entry present and declares EzClassifyClient");
+
+            const cjs = require("@ezclassify/rest-client");
+            for (const name of ["EzClassifyClient", "connectContext", "isDenialShapedBody", "EzClassifyError"]) {
+              if (typeof cjs[name] !== "function") throw new Error(`CJS entry does not export ${name}`);
+            }
+            if (!cjs.ErrorCodes || cjs.ErrorCodes.NETWORK !== "NETWORK") {
+              throw new Error("CJS entry does not carry the error code table");
+            }
+            console.log("CJS entry exports the public surface");
+
+            if (cjs.isDenialShapedBody({ error: "not_found" }) !== true) {
+              throw new Error("published client does not recognize the denial shape");
+            }
+            if (cjs.isDenialShapedBody({ error: "not_found", path: "/v1/schemes" }) !== false) {
+              throw new Error("published client calls a genuine not-found a denial: it is matching loosely, or not at all");
+            }
+            console.log("published client tells a denial from a genuine not-found");
+          '
+
+          node --input-type=module -e '
+            import { EzClassifyClient, connectContext } from "@ezclassify/rest-client";
+            if (typeof EzClassifyClient !== "function" || typeof connectContext !== "function") {
+              throw new Error("ESM entry does not export the public surface");
+            }
+            console.log("ESM entry exports the public surface");
+          '

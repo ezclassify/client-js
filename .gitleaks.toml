@@ -1,0 +1,23 @@
+# Repo-local gitleaks config. Extends the default ruleset; entries below only
+# suppress known non-secrets.
+
+[extend]
+useDefault = true
+
+# The bot-owned manifest stores a content digest, not a credential. Match the
+# field and value shape as well as the path so other secret shapes still fire.
+[[allowlists]]
+description = "OpenAPI content digest in the vendored manifest"
+condition = "AND"
+targetRules = ["generic-api-key"]
+paths = ['''vendor/spec/MANIFEST\.json''']
+regexes = ['''\b[a-f0-9]{64}\b''']
+
+# The replayer contract publishes one worked SHA-256 lookup-key example. Keep
+# the exception tied to that exact assignment shape inside the bot-owned file.
+[[allowlists]]
+description = "SHA-256 replayer lookup-key example"
+condition = "AND"
+targetRules = ["generic-api-key"]
+paths = ['''vendor/spec/replayer-contract/v1/README\.md''']
+regexes = ['''\b[a-f0-9]{64}\b''']

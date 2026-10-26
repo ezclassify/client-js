@@ -1,0 +1,81 @@
+# REST client reference
+
+`@ezclassify/rest-client` connects a JavaScript application to an EzClassify
+REST deployment. The server evaluates markings, guides, and access policies.
+The client handles transport, response decoding, connection state, and caching.
+
+## Generate and browse
+
+After installing the repository's dependencies, run `npm run docs` and open
+`docs/api/index.html`. The public reference starts at [`src/index.ts`](../src/index.ts) and follows
+the client facade, operation classes, and inherited adapter methods. The
+`client-ops` and `scheme-state` modules explain types reachable through client
+properties; they are not supported package import subpaths. Shared request and result
+types come from the public `@ezclassify/types` package.
+
+`npm run docs:source` separately writes `docs/source/index.html` for maintained
+source modules and scripts. Those exports include internal implementation
+details; they are not additional supported npm import subpaths. Tests,
+generated spec-version output, vendored specifications, build output, and
+dependency trees are excluded. TypeDoc describes exported source symbols;
+it does not document shell workflows or prove implementation behavior.
+
+Both commands fetch pinned TypeDoc and TypeScript tools through npm when they
+are not cached. Generated references stay local and are excluded from Git and
+the npm tarball.
+
+## Connect and dispose
+
+Use `connectContext` or `EzClassifyClient.connect` to establish a ready client.
+They return promises and perform connection work before resolving. The
+constructor creates an unconnected client and performs no handshake or
+heartbeat setup. Prefer the asynchronous entrypoints for a ready adapter. Call
+`destroy()` when the host
+is finished with it to stop monitoring and release cached state.
+
+Connection arguments select a Context and may supply separate credentials:
+`auth` identifies the caller, while `contextToken` authorizes the application
+and Context binding. `connectContext` requires `contextId` and refuses a
+connection without one before sending a request. Omit the version to let the
+server choose: the Context token's default, or the newest published. A concrete
+`contextVersion` pins the client to that version. It gives `auth` precedence
+over the simpler `accessToken` argument. One `timeout` covers the
+whole request, including the token suppliers, `onAuthFailure` and its single
+replay, so caller code that never settles ends in `TIMEOUT`. See generated
+option descriptions for token suppliers, refresh behavior, headers, deadlines,
+and cancellation.
+
+## Operation surfaces
+
+| Surface          | Responsibility                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `client.scheme`  | Marking processing, validation, aggregation, rendering, scanning, suggestions, and scheme descriptions           |
+| `client.guide`   | Guide scanning, evaluation, rule descriptions, and guide views                                                   |
+| `client.access`  | Access checks and access-policy descriptions                                                                     |
+| `client.context` | Operations on the resolved composition, including document audits, access assessments, and crosswalk translation |
+
+`EzClassifyClient` also satisfies `RemoteContextAdapter`, so consumers can use
+its adapter methods directly. Public operations can reject with
+`EzClassifyError`; inspect `code`, `status`, and the documented error fields.
+A 429 response sets `retryAfter`, the seconds the server asked the caller to
+wait.
+`ErrorCodes` describes the codes the client raises itself: transport
+failures, caller-input failures (`INVALID_INPUT`), and a 2xx response whose
+body the contract does not allow (`MALFORMED_RESPONSE`), which is never
+cached. Server responses can carry other codes, so `ErrorCode` is a string
+rather than a closed enum. `isDenialShapedBody` recognizes the constant denial
+body; it does not make an authorization decision.
+
+## Caching and connection state
+
+Caching and heartbeat monitoring are enabled by default. Access-decision caching
+requires an explicit opt-in and a concrete Context version pin. A `latest` or
+omitted version is mutable, so its entries expire: `cacheTtlMs` must be positive
+and at most one hour, and the constructor refuses anything else. Entries under a
+concrete version pin do not expire. Connection monitoring reports transport availability,
+not permission to perform a particular operation. The generated reference
+explains the circuit breaker, profile refresh, cache controls, and lifecycle
+methods at their owning symbols.
+
+See [the README](../README.md) for application examples and
+[DEVELOPMENT.md](../DEVELOPMENT.md) for native tests and conformance replay.

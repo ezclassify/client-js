@@ -1,0 +1,21 @@
+node_modules/
+package-lock.json
+
+# Transient backups written by scripts/relock.mjs --strip and removed again by
+# --restore. Ignored so an interrupted relock cannot get them committed.
+*.relock-backup
+
+dist/
+*.local
+.env
+.DS_Store
+coverage/
+*.tsbuildinfo
+*.tgz
+
+CLAUDE.local.md
+.claude/
+
+# Local generated API references
+docs/api/
+docs/source/

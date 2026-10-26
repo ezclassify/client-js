@@ -1,0 +1,17 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "disableSources": true,
+    "entryPoints": ["src/index.ts", "src/client-ops.ts", "src/scheme-state.ts"],
+    "excludeInternal": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "name": "@ezclassify/rest-client API reference",
+    "out": "docs/api",
+    "readme": "docs/API.md",
+    "treatWarningsAsErrors": true,
+    "tsconfig": "tsconfig.lib.json",
+    "validation": {
+        "invalidLink": true,
+        "notExported": false
+    }
+}

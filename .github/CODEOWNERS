@@ -1,0 +1,7 @@
+# Default owner for everything not matched by a later, more specific rule.
+* @ezclassify/maintainers
+
+# The vendored public contract, written by the spec bot from
+# ezclassify/contracts, never by hand here; the vendor-readonly workflow
+# enforces it.
+vendor/spec/ @ezclassify/maintainers

@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        node-version: [22, 24]
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Configure package registry
+        # Routes the @ezclassify scope to the GitHub Packages development
+        # mirror, where prerelease builds of the five public contracts packages
+        # this tree installs are published.
+        #
+        # Written to a throwaway user config rather than the repository's
+        # .npmrc, which stays as committed: `ignore-scripts=true` is a project
+        # setting and this file must not disturb it.
+        #
+        # setup-node's own `registry-url`/`scope` inputs are deliberately not
+        # used. They write a second npmrc and export the same
+        # NPM_CONFIG_USERCONFIG this step overwrites, so the pair would be two
+        # lines that look like configuration and change nothing.
+        run: |
+          cat > "$RUNNER_TEMP/ci-npmrc" << 'NPMRC'
+          @ezclassify:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          NPMRC
+          echo "NPM_CONFIG_USERCONFIG=$RUNNER_TEMP/ci-npmrc" >> "$GITHUB_ENV"
+
+      # Resolve a lockfile from an empty dependency tree against the
+      # registries configured above, then prove those exact bytes with npm ci.
+      #
+      # Only the @ezclassify scope is routed to the mirror. Third-party
+      # packages still come from npmjs, and the dependency gate at the bottom
+      # of this file holds the line on which first-party names may arrive.
+      #
+      # deps:relock resolves third-party packages only from versions at least
+      # seven days old, then resolves the first-party ones with `--tag=dev`,
+      # the tag the mirror publishes every build under.
+      - name: Install
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN || github.token }}
+        run: npm run deps:relock && npm ci
+
+      - name: Format check
+        run: npm run format:check
+
+      # Both rules in eslint.config.mjs are errors, so this step can go red.
+      # It is the only automated check on the `any`-free and no-unused-binding
+      # rules STANDARDS.md states. A test file that needs `any` says so at the
+      # top of the file rather than turning the rule back down for everyone.
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      # The wire corpus again, this time over a socket. `npm test` replays it
+      # through a transport stub in process, which cannot see what a real HTTP
+      # round trip does to header casing, query parsing, or a status the
+      # platform fetch surfaces differently. This lane is the only place that
+      # is checked. It is its own script because it binds a port.
+      - name: Conformance server (wire corpus over HTTP)
+        run: npm run test:conformance-server
+
+      - name: Build
+        run: npm run build
+
+      # package.json declares `prepublishOnly: npm run verify:publish-ready`,
+      # and npm will not run it here: .npmrc sets `ignore-scripts=true`, which
+      # suppresses npm's own lifecycle hooks along with dependencies'. So the
+      # steps above run the verification explicitly, and this one covers the
+      # half they do not. The declaration stays because publish tooling runs
+      # it with `npm run`; tests/publish-lifecycle.spec.ts holds the line.
+      - name: Publish-readiness (pack)
+        run: npm pack --dry-run
+
+      - name: No proprietary dependency crept in
+        # The one invariant this repository cannot afford to lose. Public code
+        # never resolves a private package, in any dependency section. Checked
+        # against every package in the installed tree, not the manifest or just
+        # the root node_modules scope, so a nested transitive arrival fails too.
+        #
+        # Every name in ALLOWED is published Apache-2.0 out of the public
+        # contracts repository, and each is listed with the reason it is here:
+        #
+        #   types               the contract types the emitted .d.ts re-export
+        #   tsconfig            the shared compiler settings
+        #   conformance         the golden wire corpus every EzClassify SDK
+        #                       replays
+        #   conformance-server  the replay server for that corpus
+        #   openapi             the wire types the tests check against, and
+        #                       the contract the replay server validates a
+        #                       request against
+        #
+        # Names are matched whole and spelled out one at a time in the script.
+        # A pattern would admit an unrelated package on a shared prefix.
+        run: node scripts/check-installed-public-deps.mjs

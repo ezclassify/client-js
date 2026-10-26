@@ -1,0 +1,64 @@
+{
+    "arrowParens": "always",
+    "bracketSameLine": true,
+    "bracketSpacing": true,
+    "embeddedLanguageFormatting": "auto",
+    "overrides": [
+        {
+            "files": "*.yaml",
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": "*.yml",
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": ["**/package.json"],
+            "options": {
+                "trailingComma": "none"
+            }
+        },
+        {
+            "excludeFiles": ["**/package.json"],
+            "files": ["*.json", "**/*.json"],
+            "options": {
+                "jsonRecursiveSort": true,
+                "trailingComma": "none"
+            }
+        },
+        {
+            "files": ["**/src/**/*.ts"],
+            "options": {
+                "trailingComma": "all",
+                "tsdoc": true
+            }
+        },
+        {
+            "files": ["**/src/**/*.html"],
+            "options": {
+                "bracketSameLine": true,
+                "htmlWhitespaceSensitivity": "css",
+                "parser": "angular",
+                "singleAttributePerLine": true,
+                "singleQuote": false
+            }
+        }
+    ],
+    "plugins": [
+        "prettier-plugin-sort-json",
+        "prettier-plugin-pkg",
+        "prettier-plugin-organize-attributes",
+        "prettier-plugin-jsdoc"
+    ],
+    "printWidth": 80,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "useTabs": false
+}

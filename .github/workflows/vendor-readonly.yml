@@ -1,0 +1,337 @@
+name: vendor-readonly
+
+# Gates every change that touches vendor/spec/ or vendor/SPEC.md. Those paths
+# are written only by the `ezclassify-spec-bot` GitHub App, which vendors the
+# published contract from ezclassify/contracts.
+#
+# Two gates run in series:
+#   1. Identity gate, every commit touching vendor/ must be authored as
+#      `ezclassify-spec-bot[bot]
+#      <ezclassify-spec-bot[bot]@users.noreply.github.com>`, name AND email
+#      (or, on a pull request carrying the spec-mirror-override label, by a
+#      maintainer).
+#   2. Subject gate, every commit touching vendor/ must have a subject
+#      starting with `chore(spec):`.
+# Either failure blocks the change.
+#
+# Both gates match strings the commit author chose, so what they stop is the
+# accidental hand-edit, not a determined writer. The reasoning and the
+# measurement are with the subject gate below; read them before treating a
+# green check here as an authentication result.
+#
+# The identity gate compares the author name AND email of every vendor/
+# commit, on both paths, and on a pull request it also checks who opened it.
+#
+# Both triggers are load-bearing. `pull_request` covers the bot's pull
+# requests; `push` covers commits that land on a branch directly.
+#
+# The two path lists are written out twice rather than shared through a YAML
+# anchor because GitHub Actions does not resolve anchors in workflow files.
+# They must stay identical; scripts/vendor-spec-provenance.spec.ts asserts it.
+
+on:
+  pull_request:
+    paths:
+      - 'vendor/spec/**'
+      - 'vendor/SPEC.md'
+  push:
+    # No branch filter. A vendor/ commit is gated wherever it lands, not only
+    # on the default branch.
+    paths:
+      - 'vendor/spec/**'
+      - 'vendor/SPEC.md'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-vendor-changes:
+    name: Reject unauthorized vendor/ changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Resolve the commit range this event introduced
+        id: range
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
+          PUSH_FORCED: ${{ github.event.forced }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "mode=range" >> "$GITHUB_OUTPUT"
+            echo "base=$PR_BASE_SHA" >> "$GITHUB_OUTPUT"
+            echo "head=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Push path. Resolve the widest range this checkout can actually
+          # inspect, then degrade one step at a time. What must never happen is
+          # a range that resolves EMPTY while the push touched vendor/ paths:
+          # the gate would exit 0 having read no commits, which is the exact
+          # failure this workflow exists to prevent. The last resort is the
+          # HEAD commit plus a warning naming what went uninspected, never a
+          # silent pass and never a blanket refusal.
+          #
+          # A branch-creation push (before = all zeros) is NOT an error here.
+          # The spec bot creates `chore/spec-update-<sha>` and pushes it, so
+          # refusing branch creation would block the very flow this gate tells
+          # operators to use.
+          ZERO=0000000000000000000000000000000000000000
+          HEAD_SHA="${PUSH_AFTER:-$(git rev-parse HEAD)}"
+
+          BASE=""
+          if [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "$ZERO" ] \
+            && git cat-file -e "${PUSH_BEFORE}^{commit}" 2>/dev/null \
+            && git merge-base --is-ancestor "$PUSH_BEFORE" "$HEAD_SHA" 2>/dev/null; then
+            BASE="$PUSH_BEFORE"
+            echo "Range: recorded pre-push commit $PUSH_BEFORE..$HEAD_SHA"
+          else
+            if [ "$PUSH_FORCED" = "true" ]; then
+              REASON="force-push: recorded pre-push commit $PUSH_BEFORE is not an ancestor of $HEAD_SHA"
+            elif [ -z "$PUSH_BEFORE" ] || [ "$PUSH_BEFORE" = "$ZERO" ]; then
+              REASON="branch creation: this push has no pre-push commit"
+            else
+              REASON="recorded pre-push commit $PUSH_BEFORE is not in this checkout"
+            fi
+            echo "NOTE: $REASON."
+            echo "      Falling back to commits reachable from HEAD but not"
+            echo "      from origin/${DEFAULT_BRANCH}."
+
+            FALLBACK="origin/${DEFAULT_BRANCH}"
+            # `--is-ancestor`, not a string comparison. If HEAD is already an
+            # ancestor of the default branch then `origin/<default>..HEAD` is
+            # EMPTY, and an inequality test would happily hand that empty range
+            # to the gate.
+            if git rev-parse --verify --quiet "${FALLBACK}^{commit}" >/dev/null \
+              && ! git merge-base --is-ancestor "$HEAD_SHA" "$FALLBACK" 2>/dev/null; then
+              BASE="$FALLBACK"
+              echo "Range: $FALLBACK..$HEAD_SHA"
+            fi
+          fi
+
+          if [ -n "$BASE" ] && [ -n "$(git log "$BASE..$HEAD_SHA" --format='%H')" ]; then
+            echo "mode=range" >> "$GITHUB_OUTPUT"
+            echo "base=$BASE" >> "$GITHUB_OUTPUT"
+            echo "head=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo
+          echo "WARNING: the commit range this push introduced could not be"
+          echo "         resolved. Inspecting the HEAD commit $HEAD_SHA ONLY."
+          echo "         NOT INSPECTED: every other commit this push may have"
+          echo "         introduced, i.e. everything reachable from $HEAD_SHA"
+          echo "         that is not reachable from origin/${DEFAULT_BRANCH}"
+          echo "         except $HEAD_SHA itself. If any of those touched"
+          echo "         vendor/, they went through this gate unchecked."
+          echo
+          echo "mode=single" >> "$GITHUB_OUTPUT"
+          echo "base=" >> "$GITHUB_OUTPUT"
+          echo "head=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Enforce bot identity + commit-subject for vendor/ commits
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RANGE_MODE: ${{ steps.range.outputs.mode }}
+          BASE_SHA: ${{ steps.range.outputs.base }}
+          HEAD_SHA: ${{ steps.range.outputs.head }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          # Comma-separated list of PR labels (we only care about
+          # spec-mirror-override as an explicit human override).
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          ALLOWED_BOT_LOGIN: ezclassify-spec-bot[bot]
+          # The exact git author identity the spec bot commits under. The
+          # per-commit gate matches name AND email against it; a name on its
+          # own is settable by anyone.
+          ALLOWED_BOT_EMAIL: ezclassify-spec-bot[bot]@users.noreply.github.com
+          OVERRIDE_LABEL: spec-mirror-override
+        run: |
+          set -euo pipefail
+
+          # Collect commits that touch vendor/spec/ or vendor/SPEC.md. In
+          # `single` mode the previous step could not bound
+          # the push and already printed what it could not see; all we can
+          # honestly read is the HEAD commit.
+          if [ "$RANGE_MODE" = "single" ]; then
+            # `diff-tree`, not `git log -1 <sha> -- <paths>`. The log form
+            # WALKS: given a HEAD that does not touch vendor/ it happily
+            # returns the nearest ancestor that does, so the gate would report
+            # inspecting HEAD while actually inspecting some older commit that
+            # was never part of this push. diff-tree asks only what THIS commit
+            # changed.
+            #
+            # A merge commit yields no output here, so it falls through to the
+            # empty-set refusal below. That is the safe direction.
+            VENDOR_COMMITS=""
+            if [ -n "$(git diff-tree --no-commit-id --name-only -r "$HEAD_SHA" \
+              -- 'vendor/spec/' 'vendor/SPEC.md')" ]; then
+              VENDOR_COMMITS="$HEAD_SHA"
+            fi
+          else
+            VENDOR_COMMITS=$(git log "$BASE_SHA..$HEAD_SHA" --format='%H' \
+              -- 'vendor/spec/' 'vendor/SPEC.md')
+          fi
+
+          if [ -z "$VENDOR_COMMITS" ]; then
+            # On a push the workflow only ran because the push touched a
+            # watched path. Finding nothing therefore means the commit set we
+            # were able to read is not the set that was pushed, so passing
+            # here would be the inert-control failure: green having inspected
+            # nothing. Only the pull_request path may legitimately come up
+            # empty (a re-run after the vendor commits left the branch).
+            if [ "$EVENT_NAME" != "pull_request" ] && [ "$RANGE_MODE" = "single" ]; then
+              echo "ERROR: this push touched vendor/ paths (that is why this"
+              echo "       workflow ran), the pushed commit range could not be"
+              echo "       resolved, and HEAD $HEAD_SHA does not touch vendor/"
+              echo "       itself. The commits that did touch vendor/ are"
+              echo "       therefore unreadable here and this gate has checked"
+              echo "       nothing. Refusing to pass."
+              echo
+              echo "       Re-push the branch on top of the default branch so"
+              echo "       the range resolves, or land the change through the"
+              echo "       publish-spec pull request."
+              exit 1
+            fi
+            echo "No commits touch vendor/ paths, nothing to check."
+            exit 0
+          fi
+
+          echo "Commits touching vendor/:"
+          echo "$VENDOR_COMMITS"
+          echo
+
+          # ---------- Identity gate ----------
+          # Two layers, and BOTH of them run on the pull_request path.
+          #
+          # The PR-author layer says who OPENED the pull request. The
+          # per-commit layer says who WROTE each commit that touches vendor/.
+          # Only the second one can stop a pull request opened by the spec bot
+          # from carrying a hand-authored vendor/ commit, which is the shape a
+          # mis-scoped automation or an ordinary maintainer mistake produces.
+          # Running the first alone and calling the result an identity check
+          # is a claim wider than the code.
+          #
+          # The per-commit comparison is against `%an <%ae>`, both halves. The
+          # author name on its own is a free-text header: `git -c
+          # user.name='ezclassify-spec-bot[bot]' commit` sets it from any
+          # machine, with any email, and a name-only comparison admits that
+          # commit. The email is no harder to forge in a local clone, but it
+          # is what the spec bot actually configures, so requiring both is
+          # requiring the whole recorded identity rather than the half that is
+          # conventionally cosmetic.
+          #
+          # Neither half is a cryptographic proof of authorship; that would be
+          # signature verification, and this gate does not do it. It is a
+          # match against the identity the authorized writer uses.
+          #
+          # The override label is a pull_request concept: on a push PR_LABELS
+          # is empty, the case below cannot match, and the per-commit layer is
+          # the whole gate with no bypass. A direct push of vendor/ is not a
+          # reviewable event, so the only way through is the pull request.
+          OVERRIDE_APPLIED=0
+          case ",$PR_LABELS," in
+            *",${OVERRIDE_LABEL},"*)
+              OVERRIDE_APPLIED=1
+              echo "Identity gate: bypassed by ${OVERRIDE_LABEL} label (pull request only) ✓"
+              ;;
+          esac
+
+          if [ "$OVERRIDE_APPLIED" -ne 1 ]; then
+            if [ "$EVENT_NAME" = "pull_request" ]; then
+              if [ "$PR_AUTHOR" != "$ALLOWED_BOT_LOGIN" ]; then
+                echo "ERROR: PR touches vendor/ but is authored by '$PR_AUTHOR',"
+                echo "       not '$ALLOWED_BOT_LOGIN'."
+                echo
+                echo "vendor/spec/ is written only by the ezclassify-spec-bot"
+                echo "GitHub App, vendoring from ezclassify/contracts. To change"
+                echo "what is vendored, change the source in contracts and the"
+                echo "spec bot re-vendors it; do not edit vendor/ here."
+                echo
+                echo "If a maintainer genuinely has to change vendor/ by hand,"
+                echo "attach the '${OVERRIDE_LABEL}' label to bypass."
+                exit 1
+              fi
+              echo "Identity gate: PR authored by ${ALLOWED_BOT_LOGIN} ✓"
+            fi
+
+            WRONG_AUTHOR=""
+            for SHA in $VENDOR_COMMITS; do
+              AUTHOR=$(git log -1 --format='%an <%ae>' "$SHA")
+              if [ "$AUTHOR" != "$ALLOWED_BOT_LOGIN <$ALLOWED_BOT_EMAIL>" ]; then
+                WRONG_AUTHOR="$WRONG_AUTHOR  $SHA  $AUTHOR"$'\n'
+              fi
+            done
+            if [ -n "$WRONG_AUTHOR" ]; then
+              echo "ERROR: vendor/-touching commits not authored by the spec bot:"
+              printf "%s" "$WRONG_AUTHOR"
+              echo
+              echo "Every commit touching vendor/spec/ or vendor/SPEC.md must"
+              echo "be authored as '$ALLOWED_BOT_LOGIN <$ALLOWED_BOT_EMAIL>'."
+              echo
+              echo "vendor/spec/ is written only by the ezclassify-spec-bot"
+              echo "GitHub App, vendoring from ezclassify/contracts. To change"
+              echo "what is vendored, change the source in contracts and the"
+              echo "spec bot re-vendors it; do not edit vendor/ here."
+              echo
+              echo "There is no label bypass on the push path. If a human"
+              echo "genuinely has to touch vendor/, open a pull request and"
+              echo "use the '${OVERRIDE_LABEL}' label there."
+              exit 1
+            fi
+            echo "Identity gate: all vendor/ commits authored by ${ALLOWED_BOT_LOGIN} <${ALLOWED_BOT_EMAIL}> ✓"
+          fi
+
+          # ---------- Commit-subject gate ----------
+          # Every commit touching vendor/ must have a subject starting with
+          # `chore(spec):`.
+          #
+          # What both gates are for: ACCIDENTS. A maintainer who edits vendor/
+          # by hand commits it under their own name and their own subject, so
+          # both gates catch it and the error text says where the source
+          # actually lives. A read-only path with nothing watching it is
+          # read-only by convention only.
+          #
+          # What they are not: authentication. `%an`, `%ae` and `%s` are
+          # free-text fields of the commit object, set by whoever writes the
+          # commit, and GitHub does not verify them. Two `git config` lines
+          # plus a matching `-m` produce a commit that passes both gates.
+          #
+          # Authenticating the writer takes branch protection restricting who
+          # may push the vendored paths, or required verified signatures, so
+          # the check rests on a key instead of on a string. Both are
+          # repository settings, not this workflow's to configure.
+          DISALLOWED=""
+          for SHA in $VENDOR_COMMITS; do
+            SUBJECT=$(git log -1 --format='%s' "$SHA")
+            if ! echo "$SUBJECT" | grep -qE '^chore\(spec\):'; then
+              DISALLOWED="$DISALLOWED  $SHA  $SUBJECT"$'\n'
+            fi
+          done
+
+          if [ -n "$DISALLOWED" ]; then
+            echo
+            echo "ERROR: vendor/-touching commits with disallowed subject:"
+            printf "%s" "$DISALLOWED"
+            echo
+            echo "Every commit touching vendor/spec/ or vendor/SPEC.md must"
+            echo "have a subject starting with 'chore(spec):'. Change the"
+            echo "source in ezclassify/contracts and the spec bot re-vendors it."
+            exit 1
+          fi
+
+          echo "All vendor/ commits pass identity + subject gates."

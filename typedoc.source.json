@@ -1,0 +1,25 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "disableSources": true,
+    "entryPointStrategy": "expand",
+    "entryPoints": ["src/", "scripts/", "vite.config.ts"],
+    "exclude": [
+        "**/*.spec.*",
+        "**/*.test.*",
+        "**/generated/**",
+        "**/spec-version.ts",
+        "**/response-shapes.ts"
+    ],
+    "excludeInternal": false,
+    "excludePrivate": false,
+    "excludeProtected": false,
+    "name": "client-js source reference",
+    "out": "docs/source",
+    "readme": "none",
+    "treatWarningsAsErrors": true,
+    "tsconfig": "docs/tsconfig.source.json",
+    "validation": {
+        "invalidLink": true,
+        "notExported": false
+    }
+}

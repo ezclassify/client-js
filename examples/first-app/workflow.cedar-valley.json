@@ -1,0 +1,10 @@
+{
+    "allowedAttributes": {
+        "clearance": "CONFIDENTIAL",
+        "recipient_organizations": ["CEDAR_VALLEY_DISTRICT"]
+    },
+    "deniedAttributes": {},
+    "marking": "CONFIDENTIAL",
+    "resourceId": "cedar-valley-demo-document",
+    "userId": "cedar-valley-demo-user"
+}
