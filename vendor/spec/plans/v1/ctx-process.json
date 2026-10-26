@@ -1,0 +1,63 @@
+{
+    "cases": [
+        {
+            "args": ["High"],
+            "ctxId": "ref-ctx-1",
+            "ctxVersion": "1.0.0",
+            "expect": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "ctxProcess",
+            "name": "ctx process valid marking"
+        },
+        {
+            "args": ["high"],
+            "ctxId": "ref-ctx-1",
+            "ctxVersion": "1.0.0",
+            "expect": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "ctxProcess",
+            "name": "ctx process case-insensitive alias"
+        },
+        {
+            "args": ["NOPE"],
+            "ctxId": "ref-ctx-1",
+            "ctxVersion": "1.0.0",
+            "expect": {
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "ctxProcess",
+            "name": "ctx process invalid marking returns not valid"
+        },
+        {
+            "args": ["High\nThis line is plain prose with no marking"],
+            "ctxId": "ref-ctx-1",
+            "ctxVersion": "1.0.0",
+            "expect": {
+                "count": 1,
+                "firstMarking": "High"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "ctxScan",
+            "name": "ctx scan finds marking on its own line"
+        },
+        {
+            "args": ["High"],
+            "ctxId": "ref-ctx-1",
+            "ctxVersion": "1.0.0",
+            "expect": {
+                "overallVerdict": "pass"
+            },
+            "fixture": "ref-scheme-1",
+            "method": "ctxDocumentAudit",
+            "name": "ctx document audit returns pass for fully-marked text"
+        }
+    ],
+    "slice": "server"
+}

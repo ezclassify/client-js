@@ -1,0 +1,698 @@
+{
+    "cases": [
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.overallVerdict",
+                    "value": "pass"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.wholeCoversParts.covered",
+                    "value": true
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.status",
+                    "value": "pending-determination"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.projectedWholeCoverage.covered",
+                    "value": false
+                }
+            ],
+            "implementation": "recorded",
+            "number": 1,
+            "operation": "auditDocument",
+            "requestId": "case-01",
+            "required": true,
+            "semanticId": "unresolved-compilation-nomination"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.overallVerdict",
+                    "value": "pass"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.status",
+                    "value": "determined-insufficient"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.acceptedCount",
+                    "value": 1
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.determinedWholeCoverage.covered",
+                    "value": false
+                }
+            ],
+            "implementation": "recorded",
+            "number": 2,
+            "operation": "auditDocument",
+            "requestId": "case-02",
+            "required": true,
+            "semanticId": "accepted-compilation-failure"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.status",
+                    "value": "pending-determination"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.determinedWholeCoverage.covered",
+                    "value": false
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.projectedWholeCoverage.covered",
+                    "value": true
+                },
+                {
+                    "operator": "present",
+                    "path": "result.guideAssessment.evaluation.units[0].projected.overriddenRules[0].ruleId"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 3,
+            "operation": "auditDocument",
+            "requestId": "case-03",
+            "required": true,
+            "semanticId": "non-monotonic-computed-override"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.overallVerdict",
+                    "value": "pass"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.acceptedCount",
+                    "value": 0
+                },
+                {
+                    "operator": "minItems",
+                    "path": "result.guideAssessment.evaluation.nominations",
+                    "value": 1
+                }
+            ],
+            "implementation": "recorded",
+            "number": 4,
+            "operation": "auditDocument",
+            "requestId": "case-04",
+            "required": true,
+            "semanticId": "incidental-lexical-match"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.evaluation.supportCatalog[0].factReferences[0].kind",
+                    "value": "manual-selection"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 5,
+            "operation": "auditDocument",
+            "requestId": "case-05",
+            "required": true,
+            "semanticId": "missed-rephrasing"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "minItems",
+                    "path": "result.guideAssessment.evaluation.nominations",
+                    "value": 2
+                },
+                {
+                    "operator": "present",
+                    "path": "result.guideAssessment.evaluation.nominations[1].findingId"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.acceptedCount",
+                    "value": 1
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.rejectedCount",
+                    "value": 1
+                }
+            ],
+            "implementation": "recorded",
+            "number": 6,
+            "operation": "auditDocument",
+            "requestId": "case-06",
+            "required": true,
+            "semanticId": "finding-occurrence-isolation"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "error.detail",
+                    "value": "stale-guide-determination"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 7,
+            "operation": "auditDocument",
+            "requestId": "case-07",
+            "required": true,
+            "semanticId": "stale-determination"
+        },
+        {
+            "assertions": [
+                { "operator": "equals", "path": "result.whole", "value": null },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.determinedWholeCoverage.covered",
+                    "value": false
+                },
+                {
+                    "operator": "minItems",
+                    "path": "result.guideAssessment.determinedWholeCoverage.missing",
+                    "value": 1
+                }
+            ],
+            "implementation": "recorded",
+            "number": 8,
+            "operation": "auditDocument",
+            "requestId": "case-08",
+            "required": true,
+            "semanticId": "missing-whole"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "present",
+                    "path": "result.authoritative.contentRequirements[0].assertion"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 9,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-09",
+            "required": true,
+            "semanticId": "assertion-based-denial"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "present",
+                    "path": "result.authoritative.contextRequirements[0].contextPath"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 10,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-10",
+            "required": true,
+            "semanticId": "subject-context-denial"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "present",
+                    "path": "result.authoritative.decision.rules[0].activation.assertions"
+                },
+                {
+                    "operator": "present",
+                    "path": "result.authoritative.decision.rules[0].activation.contextPaths"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 11,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-11",
+            "required": true,
+            "semanticId": "combined-activation-comparison"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.authoritative.status",
+                    "value": "granted"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.projected.status",
+                    "value": "denied"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.projected.advisory",
+                    "value": true
+                },
+                {
+                    "operator": "present",
+                    "path": "result.projected.contentRequirements"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 12,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-12",
+            "required": true,
+            "semanticId": "projected-only-denial"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.authoritative.decision.rules[0].comparisons[0].right.source",
+                    "value": "literal"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 13,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-13",
+            "required": true,
+            "semanticId": "literal-policy-denial"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "present",
+                    "path": "result.authoritative.limitations[0].code"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 14,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-14",
+            "required": true,
+            "semanticId": "unsupported-authored-assertion"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "error.detail",
+                    "value": "stale-guide-determination"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 15,
+            "operation": "auditDocument",
+            "requestId": "case-15",
+            "required": true,
+            "semanticId": "revised-document"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment",
+                    "value": null
+                }
+            ],
+            "implementation": "recorded",
+            "number": 16,
+            "operation": "auditDocument",
+            "requestId": "case-16",
+            "required": true,
+            "semanticId": "no-guide"
+        },
+        {
+            "assertions": [{ "operator": "present", "path": "error.code" }],
+            "implementation": "recorded",
+            "number": 17,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-17",
+            "required": true,
+            "semanticId": "no-access-policy"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "resolution.sources[0].providerId",
+                    "value": "fixture-source"
+                },
+                {
+                    "operator": "equals",
+                    "path": "resolution.sources[0].reproducibility",
+                    "value": "reproducible"
+                },
+                {
+                    "operator": "present",
+                    "path": "resolution.sources[0].snapshotId"
+                },
+                {
+                    "operator": "present",
+                    "path": "resolution.sources[0].attribution.name"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 18,
+            "operation": "auditDocument",
+            "requestId": "case-18",
+            "required": true,
+            "semanticId": "reproducible-source"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "resolution.sources[0].reproducibility",
+                    "value": "best-effort"
+                },
+                {
+                    "operator": "equals",
+                    "path": "resolution.sources[0].locator",
+                    "value": "https://example.test/live"
+                },
+                {
+                    "operator": "absent",
+                    "path": "resolution.sources[0].snapshotId"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 19,
+            "operation": "auditDocument",
+            "requestId": "case-19",
+            "required": true,
+            "semanticId": "best-effort-http-source"
+        },
+        {
+            "assertions": [
+                { "operator": "present", "path": "result.documentDigest" },
+                {
+                    "operator": "equals",
+                    "path": "resolution.sources[0].reproducibility",
+                    "value": "best-effort"
+                },
+                {
+                    "operator": "equals",
+                    "path": "operationLimitations[0].code",
+                    "value": "best-effort-source"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 20,
+            "operation": "auditDocument",
+            "requestId": "case-20",
+            "required": true,
+            "semanticId": "single-operation-resolution"
+        },
+        {
+            "assertions": [
+                { "operator": "present", "path": "resolution.resolvedVersion" },
+                { "operator": "present", "path": "operationLimitations" }
+            ],
+            "implementation": "recorded",
+            "number": 21,
+            "operation": "auditDocument",
+            "requestId": "case-21",
+            "required": true,
+            "semanticId": "context-envelope"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "responseProjection.profile",
+                    "value": "standard"
+                },
+                {
+                    "operator": "equals",
+                    "path": "responseProjection.detailsComplete",
+                    "value": false
+                },
+                {
+                    "operator": "equals",
+                    "path": "responseProjection.counts.nominations",
+                    "value": 1
+                },
+                {
+                    "operator": "contains",
+                    "path": "responseProjection.omittedFields",
+                    "value": "/result/parts/*/text"
+                },
+                {
+                    "operator": "minItems",
+                    "path": "result.guideAssessment.evaluation.supportCatalog",
+                    "value": 1
+                }
+            ],
+            "implementation": "recorded",
+            "number": 22,
+            "operation": "auditDocument",
+            "requestId": "case-22",
+            "required": true,
+            "semanticId": "response-profiles"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "minItems",
+                    "path": "result.assertions",
+                    "value": 1
+                },
+                {
+                    "operator": "minItems",
+                    "path": "result.appliedRules",
+                    "value": 1
+                },
+                {
+                    "operator": "contains",
+                    "path": "result.combinedAttributesNeeded",
+                    "value": "level"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 23,
+            "operation": "documentAccessRequirements",
+            "requestId": "case-23",
+            "required": true,
+            "semanticId": "access-requirements-parity"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.evaluation.nominations[0].evidence[0].offsetEncoding",
+                    "value": "utf-8-bytes"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 24,
+            "operation": "auditDocument",
+            "requestId": "case-24",
+            "required": true,
+            "semanticId": "unicode-spans"
+        },
+        {
+            "assertions": [
+                { "operator": "present", "path": "resolution.contextId" }
+            ],
+            "implementation": "recorded",
+            "number": 25,
+            "operation": "auditDocument",
+            "requestId": "case-25",
+            "required": true,
+            "semanticId": "generic-schemes"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "present",
+                    "path": "result.guideAssessment.evaluation.determinations"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 26,
+            "operation": "auditDocument",
+            "requestId": "case-26",
+            "required": true,
+            "semanticId": "determination-duplicate-sets"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "error.detail",
+                    "value": "empty-document"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 27,
+            "operation": "auditDocument",
+            "requestId": "case-27",
+            "required": true,
+            "semanticId": "empty-document"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "error.detail",
+                    "value": "invalid-unicode"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 28,
+            "operation": "auditDocument",
+            "requestId": "case-28",
+            "required": true,
+            "semanticId": "invalid-unicode"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "error.detail",
+                    "value": "manual-selection-duplicates-finding"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 29,
+            "operation": "auditDocument",
+            "requestId": "case-29",
+            "required": true,
+            "semanticId": "nomination-manual-collision"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "minItems",
+                    "path": "result.guideAssessment.evaluation.nominations",
+                    "value": 2
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.evaluation.nominations[0].findingId",
+                    "value": "sha256:d76eea18ec73f4e1e8c1da9f8c0863ec49e3741fb54b7b3582048c9f23bc074b"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.guideAssessment.evaluation.supportCatalog[0].supportId",
+                    "value": "sha256:501b3d7673879eba184e9bd4e210b8ea1ee4a61a995fd1074396cffb5b7fbbae"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 30,
+            "operation": "auditDocument",
+            "requestId": "case-30",
+            "required": true,
+            "semanticId": "canonical-ordering"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "responseProjection.profile",
+                    "value": "standard"
+                },
+                {
+                    "operator": "equals",
+                    "path": "responseProjection.detailsComplete",
+                    "value": false
+                },
+                {
+                    "operator": "contains",
+                    "path": "responseProjection.omittedFields",
+                    "value": "/result/audit/unmarkedSpans/*/text"
+                },
+                {
+                    "operator": "absent",
+                    "path": "result.audit.unmarkedSpans[0].text"
+                }
+            ],
+            "implementation": "recorded",
+            "number": 31,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-31",
+            "required": true,
+            "semanticId": "sensitive-data-redaction"
+        },
+        {
+            "assertions": [
+                { "operator": "present", "path": "result.overallVerdict" }
+            ],
+            "implementation": "recorded",
+            "number": 32,
+            "operation": "cliDocument",
+            "requestId": "case-32",
+            "required": true,
+            "semanticId": "cli-parity"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "present",
+                    "path": "result.authoritative.contentRequirements[*].supportIds"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.audit.guideAssessment.evaluation.supportCatalog[0].factReferences[0].kind",
+                    "value": "accepted-finding"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.audit.guideAssessment.evaluation.determinations[0].reason",
+                    "value": "Applicable."
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.audit.guideAssessment.evaluation.rejectedFindingIds",
+                    "value": []
+                }
+            ],
+            "implementation": "recorded",
+            "number": 33,
+            "operation": "assessDocumentAccess",
+            "requestId": "case-33",
+            "required": true,
+            "semanticId": "decision-reason-reachability"
+        },
+        {
+            "assertions": [
+                {
+                    "operator": "equals",
+                    "path": "result.overallVerdict",
+                    "value": "inadequate-coverage"
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.wholeCoversParts.covered",
+                    "value": false
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.wholeCoversParts.missing",
+                    "value": []
+                },
+                {
+                    "operator": "equals",
+                    "path": "result.wholeCoversParts.excessLabels",
+                    "value": ["ALPHA", "CHARLIE"]
+                }
+            ],
+            "implementation": "recorded",
+            "number": 34,
+            "operation": "auditDocument",
+            "requestId": "case-34",
+            "required": true,
+            "semanticId": "whole-carries-share-beyond-parts"
+        }
+    ],
+    "fixtureSet": "fixtures/context.json",
+    "slice": "context-document",
+    "version": "1"
+}

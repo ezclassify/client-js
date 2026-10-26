@@ -1,0 +1,326 @@
+{
+    "cases": [
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-high-valid"
+        },
+        {
+            "args": ["LOW"],
+            "expect": {
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-low-valid"
+        },
+        {
+            "args": ["HIGH/CTRL-A"],
+            "expect": {
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-compound-valid"
+        },
+        {
+            "args": ["UNKNOWN"],
+            "expect": {
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-unknown-invalid"
+        },
+        {
+            "args": ["HIGH/BOGUS"],
+            "expect": {
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-mixed-valid-invalid-tokens"
+        },
+        {
+            "args": [
+                "H",
+                {
+                    "context": {
+                        "partOf": {
+                            "rendered": "LOW"
+                        },
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "constraintId": "part-above-whole"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-part-against-its-whole"
+        },
+        {
+            "args": [
+                "H",
+                {
+                    "context": {
+                        "partOf": {
+                            "rendered": "OLD-LOW"
+                        },
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "constraintId": "part-above-whole"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-part-against-a-whole-spelled-with-a-retired-concept"
+        },
+        {
+            "args": [
+                "HIGH",
+                {
+                    "context": {
+                        "partOf": {
+                            "rendered": "MED"
+                        },
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "affectedConcepts": ["HIGH"],
+                        "categoryId": "level",
+                        "constraintId": "_exceeds_whole"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-part-that-exceeds-its-whole"
+        },
+        {
+            "args": [
+                "HIGH",
+                {
+                    "context": {
+                        "partOf": {
+                            "rendered": "CTRL-A"
+                        },
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "valid": true,
+                "warnings": [
+                    {
+                        "kind": "notice",
+                        "ruleId": "_whole_unverified"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-part-is-not-compared-with-an-invalid-whole"
+        },
+        {
+            "args": [
+                "HIGH",
+                {
+                    "context": {
+                        "partOf": {
+                            "rendered": "LOW/MED"
+                        },
+                        "role": "part"
+                    }
+                }
+            ],
+            "expect": {
+                "valid": true,
+                "warnings": [
+                    {
+                        "kind": "notice",
+                        "ruleId": "_whole_unverified"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "validate",
+            "name": "validate-part-is-not-compared-with-a-whole-that-does-not-read"
+        },
+        {
+            "args": ["H"],
+            "expect": {
+                "inputWasValid": true,
+                "recognition": {
+                    "inputFormat": "short_line",
+                    "status": "complete"
+                },
+                "rendered": "HIGH//SEALED",
+                "valid": true
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-rule-adds-a-fact-the-view-read-does-not-write"
+        },
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "appliedFixes": [
+                    {
+                        "action": "add",
+                        "ruleId": "high-is-sealed"
+                    }
+                ],
+                "inputWasValid": false,
+                "recognition": {
+                    "inputFormat": "line",
+                    "status": "complete"
+                },
+                "valid": true
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-rule-adds-a-fact-the-view-read-writes"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "handling",
+                        "conceptId": "SEALED",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "review",
+                        "conceptId": "REVIEW_ON",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "20351231"
+                    }
+                ]
+            ],
+            "expect": {
+                "assertions": [
+                    {
+                        "conceptId": "HIGH"
+                    },
+                    {
+                        "conceptId": "SEALED"
+                    },
+                    {
+                        "conceptId": "REVIEW_ON",
+                        "value": "2035-12-31"
+                    }
+                ],
+                "rendered": "HIGH//SEALED//REVIEW 20351231",
+                "valid": true
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-value-handed-in-settles-as-text-reads-it"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "handling",
+                        "conceptId": "SEALED",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "review",
+                        "conceptId": "REVIEW_ON",
+                        "confidence": "certain",
+                        "source": "user"
+                    }
+                ]
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "affectedConcepts": ["REVIEW_ON"],
+                        "constraintId": "_missing_assertion_value"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-value-taking-fact-handed-in-with-no-value"
+        },
+        {
+            "args": [
+                [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "handling",
+                        "conceptId": "SEALED",
+                        "confidence": "certain",
+                        "source": "user"
+                    },
+                    {
+                        "categoryId": "review",
+                        "conceptId": "REVIEW_ON",
+                        "confidence": "certain",
+                        "source": "user",
+                        "value": "20350231"
+                    }
+                ]
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "affectedConcepts": ["REVIEW_ON"],
+                        "constraintId": "_invalid_assertion_value"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-settling-1",
+            "method": "validate",
+            "name": "validate-value-the-encoding-cannot-read"
+        }
+    ],
+    "slice": "engine"
+}

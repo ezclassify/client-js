@@ -1,0 +1,95 @@
+{
+    "$id": "https://ezclassify.dev/conformance/document-assessment-contract.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+        "cases": {
+            "items": {
+                "additionalProperties": false,
+                "properties": {
+                    "assertions": {
+                        "items": {
+                            "additionalProperties": false,
+                            "allOf": [
+                                {
+                                    "if": {
+                                        "properties": {
+                                            "operator": {
+                                                "enum": [
+                                                    "equals",
+                                                    "minItems",
+                                                    "contains"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "then": { "required": ["value"] }
+                                }
+                            ],
+                            "properties": {
+                                "operator": {
+                                    "enum": [
+                                        "equals",
+                                        "present",
+                                        "absent",
+                                        "minItems",
+                                        "contains"
+                                    ]
+                                },
+                                "path": { "minLength": 1, "type": "string" },
+                                "value": {}
+                            },
+                            "required": ["path", "operator"],
+                            "type": "object"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                    },
+                    "implementation": {
+                        "enum": ["pending-engine-replay", "recorded"]
+                    },
+                    "number": {
+                        "maximum": 34,
+                        "minimum": 1,
+                        "type": "integer"
+                    },
+                    "operation": {
+                        "enum": [
+                            "auditDocument",
+                            "assessDocumentAccess",
+                            "documentAccessRequirements",
+                            "cliDocument"
+                        ]
+                    },
+                    "requestId": {
+                        "pattern": "^case-[0-9]{2}$",
+                        "type": "string"
+                    },
+                    "required": { "const": true },
+                    "semanticId": {
+                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "number",
+                    "semanticId",
+                    "operation",
+                    "requestId",
+                    "required",
+                    "implementation",
+                    "assertions"
+                ],
+                "type": "object"
+            },
+            "maxItems": 34,
+            "minItems": 34,
+            "type": "array"
+        },
+        "fixtureSet": { "minLength": 1, "type": "string" },
+        "slice": { "const": "context-document" },
+        "version": { "const": "1" }
+    },
+    "required": ["version", "slice", "fixtureSet", "cases"],
+    "type": "object"
+}

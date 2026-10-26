@@ -1,0 +1,1083 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "anyOf": [
+        {
+            "$ref": "#/definitions/CrosswalkCompletedTranslationResult"
+        },
+        {
+            "$ref": "#/definitions/CrosswalkForbiddenTranslationResult"
+        }
+    ],
+    "definitions": {
+        "ArtifactKind": {
+            "description": "Closed artifact families participating in a composed operation.",
+            "enum": [
+                "scheme",
+                "layer",
+                "guide",
+                "access",
+                "crosswalk",
+                "context"
+            ],
+            "type": "string"
+        },
+        "ArtifactReference": {
+            "description": "Identifies an immutable artifact participating in a composed operation.",
+            "properties": {
+                "digest": {
+                    "description": "Content digest when the resolver can supply one.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Artifact identifier.",
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/ArtifactKind",
+                    "description": "Artifact family."
+                },
+                "version": {
+                    "description": "Resolved immutable artifact version.",
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "id", "version"],
+            "type": "object"
+        },
+        "Assertion": {
+            "description": "A concept asserted in a category during processing, with confidence level and provenance metadata.\n\nAssertions are the core data unit flowing through the engine pipeline. `confidence` records how the assertion was produced: `'certain'` when read or handed in as stated, `'inferred'` when an inference rule added it, and `'repaired'` when the engine added or rewrote it while repairing the marking. The engine does not assign `'uncertain'` itself. `source` says where the assertion came from. `expiresAt` records caller-supplied expiry metadata. The engine does not evaluate that date or automatically change confidence or the marking; the host applies its expiry policy.",
+            "properties": {
+                "categoryId": {
+                    "description": "The id of the category the concept is asserted in.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "The id of the concept.",
+                    "type": "string"
+                },
+                "confidence": {
+                    "$ref": "#/definitions/AssertionConfidence",
+                    "description": "How the assertion was produced: `certain` when read or handed in as stated, `inferred` when an inference rule added it, or `repaired` when the engine added or rewrote it while repairing the marking. The engine does not assign `uncertain` itself."
+                },
+                "expiresAt": {
+                    "description": "Caller-supplied ISO 8601 expiry date; the engine does not evaluate it.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/Record%3Cstring%2Cunknown%3E",
+                    "description": "Caller-defined data attached to the assertion. The engine assigns it no meaning."
+                },
+                "provenance": {
+                    "$ref": "#/definitions/SourceReference",
+                    "description": "Source provenance for the concept that backed this assertion.\n\nPopulated only when the concept came from an external source whose records were loaded with the scheme (typically one a scheme's `concepts.external` block declares). Inline-backed assertions leave this field undefined to keep payloads compact for the common single-source case. A concept a scheme document declares in its `inline` list has none, even when one of that document's `external` sources also serves a record with its id. A concept read through a queryable-only source (`SourceCapabilities.queryableOnly`) has none either: that source is asked per lookup and never loaded whole, and a lookup does not say which source answered. Such a source still appears in a composed operation's `resolution.sources`. Across a layered stack the later layer decides: a concept a later layer's source supplies carries that source's provenance even when an earlier document declares it inline, and a concept a later layer declares inline carries none.\n\nIdentity fields mirror the source's `sourceIdentity()` observation at engine-load time (or the immutable value the Context pinned)."
+                },
+                "replacedConceptId": {
+                    "description": "The deprecated concept this assertion was modernized from.\n\nSet when processing rewrote a deprecated concept into the replacement its scheme declares. `conceptId` is the current concept every downstream stage evaluates; this field records what the data was actually marked with, so an explanation can show the substitution (\"concept A was replaced by concept B; B is what your access was compared against\") instead of silently presenting a concept the document never carried.\n\nIt travels on the assertion rather than alongside it because assertion arrays are the engine's state transport: an access check made from transported assertions can still explain the substitution.",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "Where this assertion came from. An open string: the engine labels the facts it adds, and a caller or a host may label the facts it hands in however it likes.\n\nFour labels mean the engine derived the fact, so it derives the fact again each time it settles a marking: `infer`, and `repair` with a `sourceRule`, a fact a scheme rule adds; `default`, a category's default concept; and `context`, a value a part took from its whole. When validate, process or explain settles a marking, a fact handed in under one of them is set aside and comes back only if the engine derives it again, so no label can make a removal silent.\n\nEvery other label is the author's statement and is kept as given: `parse` (read from text), `user` (handed in by a caller), `aggregate` (a value a rollup states as its own, even one a contributor derived or took from its whole), every other label the engine writes on a result, and any label a caller or host chooses, such as `stated`.",
+                    "type": "string"
+                },
+                "sourceRule": {
+                    "description": "The id of the scheme rule that produced this assertion, when one did. Otherwise an engine-owned id beginning with `_`, set when the scheme's structure, not a rule, added the assertion. The engine writes two: `_tier_child_requires_parent` (a tier parent required by a stated child) and `_header_of_stated_member` (a header filled in for a stated member). A scheme rule id never begins with `_`.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "The value of a concept that takes one (`text_input`).\n\nA value handed in is read the way a value in text is: it settles in the spelling the concept's encoding stores. One the encoding cannot read is reported as the error `_invalid_assertion_value`, and a concept that takes a value, handed in with none, as `_missing_assertion_value`. See `ValidationError`.",
+                    "type": "string"
+                }
+            },
+            "required": ["categoryId", "conceptId", "confidence", "source"],
+            "type": "object"
+        },
+        "AssertionConfidence": {
+            "description": "Confidence assigned to an assertion by the processing pipeline.",
+            "enum": ["certain", "inferred", "repaired", "uncertain"],
+            "type": "string"
+        },
+        "AssertionRef": {
+            "description": "A reference to one assertion of the state being rendered.",
+            "properties": {
+                "categoryId": {
+                    "description": "The category it was asserted in.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "The concept asserted.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Its value, for a concept that carries free text.",
+                    "type": "string"
+                }
+            },
+            "required": ["conceptId", "categoryId"],
+            "type": "object"
+        },
+        "AssertionReference": {
+            "description": "Compact reference to an assertion without engine-production metadata.",
+            "properties": {
+                "categoryId": {
+                    "description": "Category containing the asserted concept.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Asserted concept identifier.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Captured value for value-bearing concepts.",
+                    "type": "string"
+                }
+            },
+            "required": ["categoryId", "conceptId"],
+            "type": "object"
+        },
+        "Attribution": {
+            "description": "Provenance attached to every source so downstream consumers can render proper attribution and license notices.\n\nMandatory because most source data we'll integrate (NIST, ICS, IANA, external taxonomies) requires citation. Sources that don't have a formal license should set `license: 'unspecified'` rather than omit it.",
+            "properties": {
+                "citation": {
+                    "description": "Suggested citation string for academic / regulatory use.",
+                    "type": "string"
+                },
+                "license": {
+                    "description": "SPDX identifier or short license token (e.g. \"CC-BY-4.0\", \"public-domain\").",
+                    "type": "string"
+                },
+                "licenseUrl": {
+                    "description": "Canonical URL where the license terms can be inspected.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Display name of the upstream source (e.g. \"NIST CSWP-29\").",
+                    "type": "string"
+                }
+            },
+            "required": ["name", "license"],
+            "type": "object"
+        },
+        "BestEffortSourceReference": {
+            "description": "Best-effort source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the mutable content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["attribution", "providerId", "reproducibility"],
+            "type": "object"
+        },
+        "Change": {
+            "description": "A change the engine actually made while processing. Lives in `appliedFixes`; a declined addition is not a change.",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/FixAction",
+                    "description": "'add' (only `add` set), 'remove' (only `remove` set), 'replace' (both), 'reorder' (neither: the input parsed via a tolerant rule; the canonical form is in the result's `rendered`)."
+                },
+                "add": {
+                    "description": "Concepts the change added. Set for `add` and `replace`.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "message": {
+                    "description": "What the change did, in words.",
+                    "type": "string"
+                },
+                "remove": {
+                    "description": "Concepts the change removed. Set for `remove` and `replace`.",
+                    "items": {
+                        "$ref": "#/definitions/FixConceptReference"
+                    },
+                    "type": "array"
+                },
+                "ruleId": {
+                    "description": "Rule that made this change: a scheme rule's id, or an id the engine keeps for a change no scheme rule names.\n\n`_recognition_role` is one of them: the text was read as a view of one role, for a request whose context names the other. See `ValidateResult.inputWasValid`, and `ValidateResult.appliedFixes` for how it is shown.",
+                    "type": "string"
+                },
+                "triggerConceptIds": {
+                    "description": "Concept IDs whose presence triggered the rule that made this change.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": ["ruleId", "action", "message"],
+            "type": "object"
+        },
+        "CollectedNotice": {
+            "description": "A notice that was resolved and collected for a specific concept in a processed marking. Notices originate from the concept's `documentation.notices` definitions and may be conditional (only fire when another concept is simultaneously asserted) or unconditional.\n\nReturned by `SchemeEngine.collectNotices()`, and carried on every result that describes a marking, so reading the notices for a processed marking does not take a second call. The `required` flag indicates whether the notice represents a mandatory acknowledgment the UI must surface before the user can submit the marking.",
+            "properties": {
+                "conceptId": {
+                    "description": "The concept the notice is attached to.",
+                    "type": "string"
+                },
+                "conceptName": {
+                    "description": "The concept's display name, for showing beside the notice.",
+                    "type": "string"
+                },
+                "required": {
+                    "description": "Whether the notice must be shown. A host surfaces a required notice before the marking is accepted.",
+                    "type": "boolean"
+                },
+                "text": {
+                    "description": "The notice text the marking requires.",
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/ConceptNoticeType",
+                    "description": "What kind of notice this is."
+                },
+                "views": {
+                    "$ref": "#/definitions/NoticeViewValues",
+                    "description": "The notice's own `ConceptNotice.views`, carried through unchanged.\n\nA host that emits a notice into a structured form needs the value the form's own vocabulary registers it under, and it has the collected notice rather than the concept it came from. Absent when the notice declares no registration at all."
+                }
+            },
+            "required": [
+                "conceptId",
+                "conceptName",
+                "type",
+                "text",
+                "required"
+            ],
+            "type": "object"
+        },
+        "ConceptColor": {
+            "description": "Portable scheme-default display colors, carried as a text/background pair so contrast is authored together. In category mode they are declared only on concepts in the category named by `render.color_from`; consuming hosts may override them.\n\nBoth values are CSS hex (`#rgb` or `#rrggbb`). The pair travels together so a host never composes one authored color against an unknown surface (the white-on-white failure mode).",
+            "properties": {
+                "background": {
+                    "description": "Background color as a CSS hex string.",
+                    "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+                    "type": "string"
+                },
+                "text": {
+                    "description": "Text/foreground color as a CSS hex string.",
+                    "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+                    "type": "string"
+                }
+            },
+            "required": ["background", "text"],
+            "type": "object"
+        },
+        "ConceptNoticeType": {
+            "description": "What kind of notice a concept carries.",
+            "enum": [
+                "warning",
+                "handling",
+                "admonition",
+                "distribution",
+                "info"
+            ],
+            "type": "string"
+        },
+        "CrosswalkCompletedTranslationResult": {
+            "description": "Translation that reached target-scheme processing.",
+            "properties": {
+                "crosswalk": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Crosswalk artifact used for the operation."
+                },
+                "outcomes": {
+                    "description": "Ordered treatment of every source assertion.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkOutcome"
+                    },
+                    "type": "array"
+                },
+                "selections": {
+                    "description": "Cross-field candidate chosen for every declared selection.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkSelectionOutcome"
+                    },
+                    "type": "array"
+                },
+                "source": {
+                    "$ref": "#/definitions/ValidateResult",
+                    "description": "What validate answers for the source marking: its facts, whether it stands, and how it was read. A translation reads the source; it does not correct it, so the answer carries no fix paths."
+                },
+                "sourceScheme": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Source scheme artifact."
+                },
+                "status": {
+                    "$ref": "#/definitions/CrosswalkCompletedTranslationStatus",
+                    "description": "Completion state after source and target processing."
+                },
+                "target": {
+                    "$ref": "#/definitions/ValidateResult",
+                    "description": "What validate answers for the target marking, built only from the carried assertions. Nothing was read, so it has no `recognition`."
+                },
+                "targetScheme": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Target scheme artifact."
+                }
+            },
+            "required": [
+                "crosswalk",
+                "outcomes",
+                "selections",
+                "source",
+                "sourceScheme",
+                "status",
+                "target",
+                "targetScheme"
+            ],
+            "type": "object"
+        },
+        "CrosswalkCompletedTranslationStatus": {
+            "description": "Completion state of a crosswalk that reached target-scheme processing.",
+            "enum": ["complete", "partial", "invalid-source"],
+            "type": "string"
+        },
+        "CrosswalkDisposition": {
+            "description": "Decision a reviewed crosswalk makes for one source assertion.",
+            "enum": ["carry", "review", "omit", "forbid"],
+            "type": "string"
+        },
+        "CrosswalkForbidMatch": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/CrosswalkMappingForbidMatch"
+                },
+                {
+                    "$ref": "#/definitions/CrosswalkSelectionForbidMatch"
+                }
+            ],
+            "description": "A matched prohibition that aborted a crosswalk translation.\n\nBoth branches are named types rather than anonymous object literals because the wire mirrors this union, and a generated SDK needs a name for each side."
+        },
+        "CrosswalkForbiddenTranslationResult": {
+            "description": "Translation aborted before target processing by one or more prohibitions.",
+            "properties": {
+                "crosswalk": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Crosswalk artifact used for the operation."
+                },
+                "forbiddenBy": {
+                    "description": "Every matched prohibition, in deterministic evaluation order.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkForbidMatch"
+                    },
+                    "type": "array"
+                },
+                "outcomes": {
+                    "description": "Ordered treatment of every source assertion.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkOutcome"
+                    },
+                    "type": "array"
+                },
+                "selections": {
+                    "description": "Cross-field candidate chosen for every declared selection.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkSelectionOutcome"
+                    },
+                    "type": "array"
+                },
+                "source": {
+                    "$ref": "#/definitions/ValidateResult",
+                    "description": "What validate answers for the source marking: its facts, whether it stands, and how it was read. A translation reads the source; it does not correct it, so the answer carries no fix paths."
+                },
+                "sourceScheme": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Source scheme artifact."
+                },
+                "status": {
+                    "const": "forbidden",
+                    "description": "Terminal hard-stop state.",
+                    "type": "string"
+                },
+                "target": {
+                    "description": "No target result exists when translation is forbidden.",
+                    "not": {}
+                },
+                "targetScheme": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Target scheme artifact."
+                }
+            },
+            "required": [
+                "crosswalk",
+                "forbiddenBy",
+                "outcomes",
+                "selections",
+                "source",
+                "sourceScheme",
+                "status",
+                "targetScheme"
+            ],
+            "type": "object"
+        },
+        "CrosswalkMappingForbidMatch": {
+            "description": "A per-assertion mapping that prohibited a crosswalk translation.",
+            "properties": {
+                "authority": {
+                    "description": "Authority copied from the mapping, when declared.",
+                    "type": "string"
+                },
+                "citation": {
+                    "description": "Supporting citation copied from the mapping, when declared.",
+                    "type": "string"
+                },
+                "guidance": {
+                    "description": "Operator guidance copied from the mapping, when declared.",
+                    "type": "string"
+                },
+                "kind": {
+                    "const": "mapping",
+                    "description": "A per-assertion mapping prohibited the translation.",
+                    "type": "string"
+                },
+                "mappingId": {
+                    "description": "Stable mapping id.",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "Human-readable basis for the prohibition.",
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/AssertionReference",
+                    "description": "Source assertion that matched the mapping."
+                }
+            },
+            "required": ["kind", "mappingId", "source", "reason"],
+            "type": "object"
+        },
+        "CrosswalkOutcome": {
+            "description": "Per-assertion decision produced by a crosswalk translation.",
+            "properties": {
+                "authority": {
+                    "description": "Authority copied from the mapping, when declared.",
+                    "type": "string"
+                },
+                "citation": {
+                    "description": "Supporting citation copied from the mapping, when declared.",
+                    "type": "string"
+                },
+                "disposition": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/CrosswalkDisposition"
+                        },
+                        {
+                            "const": "unmapped",
+                            "type": "string"
+                        }
+                    ],
+                    "description": "Mapping decision, or `unmapped` when the artifact has no rule."
+                },
+                "guidance": {
+                    "description": "Operator guidance copied from the mapping, when declared.",
+                    "type": "string"
+                },
+                "mappingId": {
+                    "description": "Matched mapping id, absent when no mapping covers the assertion.",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "Reviewable explanation of the decision.",
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/AssertionReference",
+                    "description": "Source assertion considered by the crosswalk."
+                },
+                "targets": {
+                    "description": "Emitted targets for `carry`, proposed targets for `review`.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkTarget"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": ["source", "disposition", "targets", "reason"],
+            "type": "object"
+        },
+        "CrosswalkSelectionForbidMatch": {
+            "description": "A selected cross-field candidate that prohibited a crosswalk translation.",
+            "properties": {
+                "authority": {
+                    "description": "Authority copied from the candidate, when declared.",
+                    "type": "string"
+                },
+                "candidateId": {
+                    "description": "Selected candidate id.",
+                    "type": "string"
+                },
+                "citation": {
+                    "description": "Supporting citation copied from the candidate, when declared.",
+                    "type": "string"
+                },
+                "guidance": {
+                    "description": "Operator guidance copied from the candidate, when declared.",
+                    "type": "string"
+                },
+                "kind": {
+                    "const": "selection-candidate",
+                    "description": "A selected cross-field candidate prohibited the translation.",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "Human-readable basis for the prohibition.",
+                    "type": "string"
+                },
+                "selectionId": {
+                    "description": "Selection definition id.",
+                    "type": "string"
+                },
+                "sources": {
+                    "description": "Source assertions explicitly covered by the candidate.",
+                    "items": {
+                        "$ref": "#/definitions/AssertionReference"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "kind",
+                "selectionId",
+                "candidateId",
+                "sources",
+                "reason"
+            ],
+            "type": "object"
+        },
+        "CrosswalkSelectionOutcome": {
+            "description": "Selected branch of one cross-field crosswalk decision.",
+            "properties": {
+                "authority": {
+                    "description": "Authority copied from the selected candidate, when declared.",
+                    "type": "string"
+                },
+                "candidateId": {
+                    "description": "Candidate chosen by the selection strategy.",
+                    "type": "string"
+                },
+                "citation": {
+                    "description": "Supporting citation copied from the selected candidate, when declared.",
+                    "type": "string"
+                },
+                "disposition": {
+                    "$ref": "#/definitions/CrosswalkDisposition",
+                    "description": "Treatment applied by the selected candidate."
+                },
+                "guidance": {
+                    "description": "Operator guidance copied from the selected candidate, when declared.",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "Human-readable basis copied from the selected candidate.",
+                    "type": "string"
+                },
+                "selectionId": {
+                    "description": "Selection definition id.",
+                    "type": "string"
+                },
+                "targets": {
+                    "description": "Targets emitted for `carry`, or proposed for `review`.",
+                    "items": {
+                        "$ref": "#/definitions/CrosswalkTarget"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "selectionId",
+                "candidateId",
+                "disposition",
+                "targets",
+                "reason"
+            ],
+            "type": "object"
+        },
+        "CrosswalkTarget": {
+            "description": "One target assertion a crosswalk can emit or propose.",
+            "properties": {
+                "categoryId": {
+                    "description": "Category containing the asserted concept.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Asserted concept identifier.",
+                    "type": "string"
+                },
+                "copyValue": {
+                    "description": "Copy the source assertion's captured value onto this target.",
+                    "type": "boolean"
+                },
+                "value": {
+                    "description": "Captured value for value-bearing concepts.",
+                    "type": "string"
+                }
+            },
+            "required": ["categoryId", "conceptId"],
+            "type": "object"
+        },
+        "FixAction": {
+            "description": "Discrete mutation represented by an engine `Change`.",
+            "enum": ["add", "remove", "replace", "reorder"],
+            "type": "string"
+        },
+        "FixConceptReference": {
+            "description": "Stable reference to a concept a fix or change touches.",
+            "properties": {
+                "categoryId": {
+                    "description": "Owning category identifier.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Concept identifier.",
+                    "type": "string"
+                }
+            },
+            "required": ["conceptId", "categoryId"],
+            "type": "object"
+        },
+        "InputSpan": {
+            "description": "One span of the input, by offset and text.",
+            "properties": {
+                "end": {
+                    "description": "End offset in the input string.",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "Start offset in the input string.",
+                    "type": "integer"
+                },
+                "text": {
+                    "description": "The text at that span.",
+                    "type": "string"
+                }
+            },
+            "required": ["start", "end", "text"],
+            "type": "object"
+        },
+        "NoticeViewValues": {
+            "$ref": "#/definitions/Record%3Cstring%2Cstring%3E",
+            "description": "The value a notice is registered under, keyed by view name, e.g. `{ ism: 'RD' }`.\n\nStructurally the same map as `ViewLabels` and deliberately not the same type. A view label is how a view spells something for a reader; this is the token a view's own vocabulary files the notice under, and one is never substitutable for the other."
+        },
+        "ProcessingRole": {
+            "description": "Structural role of a marking within a processing operation.",
+            "enum": ["whole", "part"],
+            "type": "string"
+        },
+        "RecognitionResult": {
+            "description": "What recognition made of an input string: how far it got, what it read, and what it could not account for.\n\nEvery character of the marking region is accounted for: `complete` means recognized content, declared syntax, or permitted whitespace, with nothing left over. Finding one field is never enough to stop reading. An input that supports two distinct readings is `ambiguous` rather than read as either, because picking one by declaration order, category order, rank, or assertion count is how a guess becomes a confident answer.\n\nThis is what a reader needs and what validate returns. Process returns `RecognitionWithCorrections`, which adds how to correct the text.",
+            "properties": {
+                "inputFormat": {
+                    "description": "What the text was read as, when that is decided.\n\nFor a scheme without `render.surfaces`, the format recognized, when exactly one was. For a scheme with them, the output address, `surface/view`, of the view the text was read as, decided as `RenderConfigDoc.surfaces` states: the same key that view's output has in `renders`. The form it happened to be read in is not reported. Absent when no one view is decided, as for text that carries the categories of more than one surface.",
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/ProcessingRole",
+                    "description": "Whether the text is spelled as a whole or a part marking: the role of the view it was read as, or, when no one view is decided, the role `RenderConfigDoc.surfaces` decides for it.\n\nPresent only for a scheme that declares `render.surfaces`, and only when that role is decided, as `RenderConfigDoc.surfaces` states. A request that names no output and gives no context role is written in its surfaces' defaults for this role. A context role the request gives, or the place a document gives the marking, decides the role it is judged and written in."
+                },
+                "status": {
+                    "$ref": "#/definitions/RecognitionStatus",
+                    "description": "How far recognition got."
+                },
+                "surface": {
+                    "description": "The surface the input was read as, by scheme scope id.\n\nA caller that named a surface gets it back. A caller that named none gets the surface the recognized format declares, or with `render.surfaces` the surface whose categories the text carries, which tells it which part of a marking the text turned out to be. Absent for text that carries the categories of more than one surface, unless the caller named one.",
+                    "type": "string"
+                },
+                "unmatched": {
+                    "description": "Input not accounted for as content, syntax, or permitted whitespace.",
+                    "items": {
+                        "$ref": "#/definitions/InputSpan"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": ["status", "unmatched"],
+            "type": "object"
+        },
+        "RecognitionStatus": {
+            "description": "How far recognition got.",
+            "enum": [
+                "complete",
+                "partial",
+                "ambiguous",
+                "unrecognized",
+                "resource-limit"
+            ],
+            "type": "string"
+        },
+        "Record<string,string>": {
+            "additionalProperties": {
+                "type": "string"
+            },
+            "type": "object"
+        },
+        "Record<string,unknown>": {
+            "additionalProperties": {},
+            "type": "object"
+        },
+        "RenderAssessment": {
+            "description": "What a render did to the state it was given, bound to that state and that format.\n\nAnswered against the state actually rendered: what was emitted, what was left out, what collapsed into an equivalent, and what could not be written at all.\n\nA caller that needs full-state preservation reads this. A caller that wants a human projection can ignore it and still get a useful string.",
+            "properties": {
+                "collapsed": {
+                    "description": "Groups of facts that collapsed into one written equivalent.",
+                    "items": {
+                        "items": {
+                            "$ref": "#/definitions/AssertionRef"
+                        },
+                        "type": "array"
+                    },
+                    "type": "array"
+                },
+                "conflicts": {
+                    "description": "Fields that two assertions both claim.",
+                    "items": {
+                        "$ref": "#/definitions/RenderFieldConflict"
+                    },
+                    "type": "array"
+                },
+                "emitted": {
+                    "description": "Facts this render wrote.",
+                    "items": {
+                        "$ref": "#/definitions/AssertionRef"
+                    },
+                    "type": "array"
+                },
+                "omitted": {
+                    "description": "Facts this render did not write.\n\nSome of them come back when the written text is read in the same context, because the scheme derives them from what was written: a fact a rule adds, a category's default, a value a part takes from its whole. The rest are lost to the string, such as a fact of a scope or a surface this render does not write, or one a field that writes only its own view's spellings has no spelling for (`view_only`). Either way the string is a projection of the facts, and a `'full'` render refuses any omission.",
+                    "items": {
+                        "$ref": "#/definitions/AssertionRef"
+                    },
+                    "type": "array"
+                },
+                "unrepresentable": {
+                    "description": "Facts that cannot be written in this format at all, and outputs refused whole.",
+                    "items": {
+                        "$ref": "#/definitions/UnrepresentableValue"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "emitted",
+                "omitted",
+                "collapsed",
+                "conflicts",
+                "unrepresentable"
+            ],
+            "type": "object"
+        },
+        "RenderFieldConflict": {
+            "description": "Two fields of one format that both claim the same assertion.",
+            "properties": {
+                "assertions": {
+                    "description": "The assertions in conflict.",
+                    "items": {
+                        "$ref": "#/definitions/AssertionRef"
+                    },
+                    "type": "array"
+                },
+                "field": {
+                    "description": "The field, by `name` or category id.",
+                    "type": "string"
+                }
+            },
+            "required": ["field", "assertions"],
+            "type": "object"
+        },
+        "ReproducibleSourceReference": {
+            "description": "Reproducible source identity and mandatory attribution for an operation.",
+            "properties": {
+                "attribution": {
+                    "$ref": "#/definitions/Attribution",
+                    "description": "Attribution and license information for the observed source."
+                },
+                "locator": {
+                    "description": "Location from which the content was observed.",
+                    "type": "string"
+                },
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable content identity.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "attribution",
+                "providerId",
+                "reproducibility",
+                "snapshotId"
+            ],
+            "type": "object"
+        },
+        "SourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortSourceReference"
+                }
+            ],
+            "description": "Records source identity and mandatory attribution for an operation."
+        },
+        "UnrepresentableFact": {
+            "description": "A fact this format has no way to write.",
+            "properties": {
+                "conceptId": {
+                    "description": "The concept that cannot be written.",
+                    "type": "string"
+                },
+                "detail": {
+                    "description": "Human-readable detail, for a message rather than a branch.",
+                    "type": "string"
+                },
+                "reason": {
+                    "$ref": "#/definitions/UnrepresentableFactReason",
+                    "description": "Why this format cannot write it."
+                }
+            },
+            "required": ["conceptId", "reason"],
+            "type": "object"
+        },
+        "UnrepresentableFactReason": {
+            "description": "Why this format cannot write a fact it was given.\n\nClosed, like the recognition-side reasons. `unframable` is a value carrying a character the syntax cannot frame; `reserved-literal` a free value equal to a fixed instruction beside it, which would read back as the other concept; `ambiguous-identity` a value indistinguishable from a differently typed one; `no-field` a fact this format's tree has no field for; `no-view` a concept with no spelling in this format's view; `value-lossy` a concept this format writes without its captured text.",
+            "enum": [
+                "unframable",
+                "reserved-literal",
+                "ambiguous-identity",
+                "no-field",
+                "no-view",
+                "value-lossy"
+            ],
+            "type": "string"
+        },
+        "UnrepresentableOutput": {
+            "description": "An output refused whole. Only a scheme that declares `render.surfaces` refuses one, because only its views choose a format by condition, and a choice that cannot be made is not a fact some format failed to write.",
+            "properties": {
+                "detail": {
+                    "description": "Human-readable detail, for a message rather than a branch.",
+                    "type": "string"
+                },
+                "output": {
+                    "description": "The output refused, by its `surface/view` address.",
+                    "type": "string"
+                },
+                "reason": {
+                    "$ref": "#/definitions/UnrepresentableOutputReason",
+                    "description": "Why it was refused."
+                }
+            },
+            "required": ["output", "reason"],
+            "type": "object"
+        },
+        "UnrepresentableOutputReason": {
+            "description": "Why an output was refused whole, before any of its facts was written.\n\nClosed. `unresolved-context` is an output whose choice of format turns on a condition the operation cannot decide, such as one that reads context the caller did not supply. `ambiguous-representation` is an output with more than one representation in force and nothing to choose between them, such as two of its cases holding at once.",
+            "enum": ["unresolved-context", "ambiguous-representation"],
+            "type": "string"
+        },
+        "UnrepresentableValue": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/UnrepresentableFact"
+                },
+                {
+                    "$ref": "#/definitions/UnrepresentableOutput"
+                }
+            ],
+            "description": "Something a render could not write: one fact, or a whole output. `reason` tells the two apart, and only a fact carries a `conceptId`."
+        },
+        "ValidateResult": {
+            "description": "What validate answers about one marking: the facts it states once settled, whether they stand, and what a reader needs to show why not.\n\nValidate is the reader's call. A host that displays a marking, gates on it, stores it, or hands its facts to an access check or a rollup calls it. The result carries no fix paths, no corrections to the text and no output beyond the one rendering, because a reader is not writing the marking. The author's call is process, and a `ProcessResult` is this result with the authoring answers added.\n\nEach field means the same wherever it appears: on a validate or process result, on each region of a scan, in-process or over a wire.\n\nScheme and engine metadata (schemeVersion, schemeId) are not on the result; read them from `engine.version`, `engine.scheme.id` and `engine.scheme.version` instead.",
+            "properties": {
+                "appliedFixes": {
+                    "description": "Every change the engine actually made while settling the marking: a departure from canonical spelling or order that recognition read through, a repair, a fact a rule required, a handed-in fact settling removed, or text read in the other role from the one the request names. A removed fact is named with the reason it was removed, including a fact handed in with a derived source label that the run does not derive again. A requirement that conflicts with an existing concept is not added and appears in errors and proposed fixes, with no applied change. Repair never removes an author-stated concept. These are the reasons a marking can be `valid` while `inputWasValid` is false.\n\nA departure from spelling or order is reported here without a position. On a process result, `recognition.corrections` reports the same departure with the span of the text it covers. They are one change seen two ways, so a display shows one of them, not both. The role departure, `_recognition_role`, is about the whole text: it has no span and no entry in `recognition.corrections`, so it is reported only here, and a display that shows corrections in place of this list still shows it.",
+                    "items": {
+                        "$ref": "#/definitions/Change"
+                    },
+                    "type": "array"
+                },
+                "assertions": {
+                    "description": "The facts the marking states, as the engine settled them.\n\nListed in print order: the order the rendered marking places each concept; a concept the rendering leaves out appears where it would print. A concept the rendering has no place for at all follows the others of its category, or comes last when its category has none, in the order the scheme declares.",
+                    "items": {
+                        "$ref": "#/definitions/Assertion"
+                    },
+                    "type": "array"
+                },
+                "assessment": {
+                    "$ref": "#/definitions/RenderAssessment",
+                    "description": "The assessment of `rendered`: what it wrote of these facts, what it left out, what collapsed into an equivalent, and what it could not write at all. When `rendered` carries more than one surface, this is the combined assessment `RenderResult` describes. Read it before treating `rendered` as a transport."
+                },
+                "displayColor": {
+                    "$ref": "#/definitions/ConceptColor",
+                    "description": "Portable scheme-derived display color for the settled marking. Embedding hosts may override this presentation default."
+                },
+                "errors": {
+                    "description": "What the scheme's rules find wrong with the settled marking. An entry whose severity is `error` makes `valid` false.\n\nNo entry here points at a fix path: `suggestedFix` is set only on a result that carries the fix it names, and this result carries none.",
+                    "items": {
+                        "$ref": "#/definitions/ValidationError"
+                    },
+                    "type": "array"
+                },
+                "inputWasValid": {
+                    "description": "True when the text or facts as given needed no change to stand.\n\nDefined here once, and judged after the same settling as `valid`. A marking can be `valid` without having been valid as given: the engine settled it into one that stands. A result whose `inputWasValid` is false always says why: each change the engine made is in `appliedFixes`, and whatever it could not settle is in `errors`.\n\nRight as written is judged against the view the text was read as, the one `recognition.inputFormat` reports, or for text read on more than one surface, the view each surface's part was read as. A fact settling adds, including a restored tier parent, counts against it only when that view writes the fact. A view that leaves the fact out writes the same text with the fact as without it, so the text was right already. Text read as no single view counts the fact when any view that read it writes it. Facts handed in with no text are judged against what a request that names no output writes them in, by the rule `rendered` follows.\n\nText is also not right as written when the request's context names a role and recognition decided the text is a view of the other role, as `recognition.role` reports. The result carries that departure in `appliedFixes` under `_recognition_role`, and `valid` is judged as it would be without it. A request that names its input format has said which view the text is: the text is judged as that view, and no role departure is raised. On a scan region and on a marking a document audit judges, the role the marking's place gives it stands for the context's role: a region found inside a wrapper is a part, and an audit judges each marking in the role it has in the document.",
+                    "type": "boolean"
+                },
+                "notices": {
+                    "description": "The notices the scheme attaches to the concepts in `assertions`, collected the same way `SchemeEngine.collectNotices()` collects them. Always present, empty when the marking carries none, so a consumer can read the field without checking that it exists.",
+                    "items": {
+                        "$ref": "#/definitions/CollectedNotice"
+                    },
+                    "type": "array"
+                },
+                "recognition": {
+                    "$ref": "#/definitions/RecognitionResult",
+                    "description": "What recognition made of the text: how far it got, what it read the text as, and what it could not account for.\n\nPresent exactly when there was text to recognize. Given facts, nothing was read, and the field is absent rather than carrying a made-up status about an input that does not exist. The same holds for every other result built from carried facts, notably a crosswalk's target."
+                },
+                "rendered": {
+                    "description": "The settled marking, in one string.\n\nIt is written in the output the request names. With none named, a scheme without `render.surfaces` writes its default format, and a scheme with them writes each surface in its default for the marking's role, by the rule `RenderConfigDoc.surfaces` states. Every operation that returns this shape follows that one rule.\n\nFor a scheme that declares `render.surfaces`, the string is the output resolved on each surface the result writes, as `RenderConfigDoc.surfaces` describes, in declared surface order and joined by `render.surface_separator`. An output that writes nothing adds nothing, and outputs written as XML attributes in one namespace merge into one attribute list. One refused output refuses the whole string, and `assessment` says which one and why.",
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "True when the marking stands once the engine has settled it: read, repaired, completed by what the scheme's rules imply, and judged with no error left.\n\nDefined here once, and every result that reports `valid` means this, whichever operation produced it and whichever door it came through. Reading is tolerant on purpose, so the engine settles what it can. Whether the text was right as written is what `inputWasValid` and `appliedFixes` answer; no request asks the engine to settle less, so validate and process give the same `valid` for the same input, context, surface and parts.",
+                    "type": "boolean"
+                },
+                "warnings": {
+                    "description": "Advisories that do not affect `valid`, such as a deprecated concept. On a process result whose fix paths were not all proven, this carries a notice whose `ruleId` is `_fixes_unproven`, as `ProcessResult.proposedFixes` describes.",
+                    "items": {
+                        "$ref": "#/definitions/Warning"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "assertions",
+                "valid",
+                "inputWasValid",
+                "errors",
+                "warnings",
+                "appliedFixes",
+                "rendered",
+                "assessment",
+                "notices"
+            ],
+            "type": "object"
+        },
+        "ValidationError": {
+            "description": "A constraint violation detected during validation, referencing the constraint ID and a human-readable message.\n\nCarried in the `errors` of every result that judges a marking. `constraintId` identifies the rule that fired; `message` is human-readable. When `severity` is `'warning'`, the violation is advisory and does not set `valid` to `false`. Use `categoryId` and `affectedConcepts` to highlight the specific UI elements involved.\n\nTwo of the ids the engine keeps for itself are for a fact a caller hands in that cannot be settled as given: `_missing_assertion_value`, a concept that takes a value handed in with none, and `_invalid_assertion_value`, a value the concept's encoding cannot read. Each is an error on the result, not a refused request: the fact is left out of the settled marking and named in `affectedConcepts`.\n\nAnother, `_exceeds_whole`, is a part that carries more than the whole it is read in: the whole does not cover a value the part holds, carries one the part does not allow, or, in a category a rollup pipeline resolves, would change if rolled up with the part. It is given only for a part that is valid on its own, read in a whole that reads and is valid. `affectedConcepts` names every finding, and no fix answers it. See `ProcessingContext.partOf`.",
+            "properties": {
+                "affectedConcepts": {
+                    "description": "Concept IDs involved in this validation failure.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "categoryId": {
+                    "description": "Category ID this error relates to (when determinable from the constraint).",
+                    "type": "string"
+                },
+                "constraintId": {
+                    "description": "The id of the constraint that was violated: a scheme rule's id, or an engine-reserved id beginning with `_`.",
+                    "type": "string"
+                },
+                "didYouMean": {
+                    "description": "The ids of the concepts the unread token was likely meant as. Never empty. They are ids for a program to act on, not spellings to show an author: `message` gives the same hint in words, naming the spellings.\n\nSet only on an `_unmatched_token` error, which is about one token the engine could not read, and only when that token reads as a misspelling of some concept's spelling. The concepts named are tied for nearest, so their order ranks none above another.\n\nIts absence is no evidence that the token is stray text. A token too short to judge carries none, and so does one equally near to too many concepts. A token that already spells a concept, apart from case, carries none even when it is also near another concept: it was left unread for another reason, such as where it stands, and naming a different concept would point the author away from a word they spelled right.\n\nIt is not a fix: nothing here has been proven to make the marking valid, and `suggestedFix` and the result's fix paths do not depend on it.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "message": {
+                    "description": "What is wrong, in words a person can act on.",
+                    "type": "string"
+                },
+                "severity": {
+                    "$ref": "#/definitions/ValidationSeverity",
+                    "description": "Severity: 'error' blocks validity, 'warning' is advisory. Default: 'error'."
+                },
+                "suggestedFix": {
+                    "description": "The `message` of the proposed fix that answers this error, such as \"Add CTRL-A\".\n\nSet only on a result that carries that fix in its own `proposedFixes`. A result with no fix paths, such as a `ValidateResult` or a scan region, never sets it, so a reader never holds a pointer to a fix it was not given.",
+                    "type": "string"
+                }
+            },
+            "required": ["constraintId", "message"],
+            "type": "object"
+        },
+        "ValidationSeverity": {
+            "description": "Severity assigned to a validation issue.",
+            "enum": ["error", "warning"],
+            "type": "string"
+        },
+        "Warning": {
+            "description": "A non-blocking informational signal surfaced in a result's `warnings`.\n\nUnlike `ValidationError`, warnings never affect `valid`. `kind: 'deprecation'` fires when a deprecated concept is asserted, and `replacement` names a suggested successor concept. `kind: 'rule'` fires when a scheme's authored `warn` rule matches the marking, with the rule's id as `ruleId`. `kind: 'notice'` is the engine speaking about the operation itself rather than about anything the scheme declares; its `ruleId`, when present, is an engine-reserved id beginning with `_`, the same convention a `ValidationError` follows.\n\nA marking's warnings come in a fixed order: deprecations first, then the scheme's rule warnings in the order the scheme declares its rules, then the engine's notices. An aggregate's warnings are about the rolled-up marking, not about each marking that fed it.",
+            "properties": {
+                "categoryId": {
+                    "description": "Category this warning relates to (when applicable)",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Concept this warning relates to (when applicable). A rule warning names one when the rule's `when` names exactly one concept the marking holds.",
+                    "type": "string"
+                },
+                "conceptName": {
+                    "description": "Resolved operational display for `conceptId` (the concept's rendered marking view), for a consumer that shows the warning next to the concept. `conceptId` stays as the machine key; this is the human-visible string.",
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/WarningKind",
+                    "description": "Warning kind: 'deprecation' for a deprecated concept, 'rule' for a scheme's authored `warn` rule, 'notice' for the engine's own notice."
+                },
+                "message": {
+                    "description": "Human-readable message",
+                    "type": "string"
+                },
+                "replacement": {
+                    "description": "When kind=deprecation, the suggested replacement concept id (if any)",
+                    "type": "string"
+                },
+                "replacementName": {
+                    "description": "When kind=deprecation, the resolved operational display for `replacement` (the successor concept's rendered marking view). `replacement` stays as the machine key; this is the human-visible string.",
+                    "type": "string"
+                },
+                "ruleId": {
+                    "description": "The scheme rule that gave a `rule` warning, or the engine-reserved id of a `notice`. Absent on a deprecation warning.",
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "message"],
+            "type": "object"
+        },
+        "WarningKind": {
+            "description": "Non-blocking warning category: a deprecated concept, a scheme's authored `warn` rule, or a notice the engine gives about the operation itself.",
+            "enum": ["deprecation", "rule", "notice"],
+            "type": "string"
+        }
+    },
+    "description": "Result of applying a reviewed directional crosswalk."
+}

@@ -1,0 +1,175 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "ArtifactKind": {
+            "description": "Closed artifact families participating in a composed operation.",
+            "enum": [
+                "scheme",
+                "layer",
+                "guide",
+                "access",
+                "crosswalk",
+                "context"
+            ],
+            "type": "string"
+        },
+        "ArtifactReference": {
+            "description": "Identifies an immutable artifact participating in a composed operation.",
+            "properties": {
+                "digest": {
+                    "description": "Content digest when the resolver can supply one.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Artifact identifier.",
+                    "type": "string"
+                },
+                "kind": {
+                    "$ref": "#/definitions/ArtifactKind",
+                    "description": "Artifact family."
+                },
+                "version": {
+                    "description": "Resolved immutable artifact version.",
+                    "type": "string"
+                }
+            },
+            "required": ["kind", "id", "version"],
+            "type": "object"
+        },
+        "BestEffortRuleSourceReference": {
+            "description": "Best-effort external source join carried by a qualified rule reference.",
+            "properties": {
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "best-effort",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Snapshot identity is forbidden when reproducibility is not proven.",
+                    "not": {}
+                }
+            },
+            "required": ["providerId", "reproducibility"],
+            "type": "object"
+        },
+        "ConceptRef": {
+            "description": "A reference to a concept in a dependent scheme. Resolved to a full Assertion during guide evaluation.",
+            "properties": {
+                "category": {
+                    "description": "Category ID: required when the concept belongs to multiple categories.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Concept ID: must exist in one of the guide's target schemes.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Value for text-input concepts (e.g., country codes, project names).",
+                    "type": "string"
+                }
+            },
+            "required": ["id"],
+            "type": "object"
+        },
+        "GuideRuleOutcome": {
+            "description": "The effect of a guide rule: what it contributes to the marking.",
+            "properties": {
+                "concepts": {
+                    "description": "Direct concept references: converted to assertions, then engine.process()'d.",
+                    "items": {
+                        "$ref": "#/definitions/ConceptRef"
+                    },
+                    "type": "array"
+                },
+                "rendered": {
+                    "description": "Pre-rendered marking string: parsed by engine.process() during evaluation.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ReproducibleRuleSourceReference": {
+            "description": "Compact source join carried by a qualified rule reference.",
+            "properties": {
+                "providerId": {
+                    "description": "Stable identifier for the source provider.",
+                    "type": "string"
+                },
+                "reproducibility": {
+                    "const": "reproducible",
+                    "description": "Whether the source observation can be reproduced byte-for-byte.",
+                    "type": "string"
+                },
+                "snapshotId": {
+                    "description": "Immutable snapshot containing the rule.",
+                    "type": "string"
+                }
+            },
+            "required": ["providerId", "reproducibility", "snapshotId"],
+            "type": "object"
+        },
+        "RuleReference": {
+            "description": "Identifies the exact resolved semantics of one policy rule.",
+            "properties": {
+                "artifact": {
+                    "$ref": "#/definitions/ArtifactReference",
+                    "description": "Artifact that owns the rule."
+                },
+                "ruleDigest": {
+                    "description": "RFC 8785/SHA-256 digest of the canonical resolved rule content.",
+                    "type": "string"
+                },
+                "ruleId": {
+                    "description": "Rule identifier within the owning artifact.",
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/RuleSourceReference",
+                    "description": "External source identity when the rule was not supplied inline."
+                }
+            },
+            "required": ["artifact", "ruleId", "ruleDigest"],
+            "type": "object"
+        },
+        "RuleSourceReference": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ReproducibleRuleSourceReference"
+                },
+                {
+                    "$ref": "#/definitions/BestEffortRuleSourceReference"
+                }
+            ],
+            "description": "Compact source join carried by a qualified rule reference."
+        }
+    },
+    "description": "Per-rule breakdown in a guide evaluation result.",
+    "properties": {
+        "isComputed": {
+            "description": "Whether the rule was activated from other guide facts.",
+            "type": "boolean"
+        },
+        "outcome": {
+            "$ref": "#/definitions/GuideRuleOutcome",
+            "description": "Rule outcome evaluated by the guide engine."
+        },
+        "overriddenBy": {
+            "$ref": "#/definitions/RuleReference",
+            "description": "Qualified overriding rule when this outcome was replaced."
+        },
+        "rule": {
+            "$ref": "#/definitions/RuleReference",
+            "description": "Qualified rule whose outcome was evaluated."
+        },
+        "wasOverridden": {
+            "description": "Whether an active rule replaced this rule's outcome.",
+            "type": "boolean"
+        }
+    },
+    "required": ["rule", "outcome", "isComputed", "wasOverridden"],
+    "type": "object"
+}

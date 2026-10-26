@@ -1,0 +1,63 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "FixAction": {
+            "description": "Discrete mutation represented by an engine `Change`.",
+            "enum": ["add", "remove", "replace", "reorder"],
+            "type": "string"
+        },
+        "FixConceptReference": {
+            "description": "Stable reference to a concept a fix or change touches.",
+            "properties": {
+                "categoryId": {
+                    "description": "Owning category identifier.",
+                    "type": "string"
+                },
+                "conceptId": {
+                    "description": "Concept identifier.",
+                    "type": "string"
+                }
+            },
+            "required": ["conceptId", "categoryId"],
+            "type": "object"
+        }
+    },
+    "description": "A change the engine actually made while processing. Lives in `appliedFixes`; a declined addition is not a change.",
+    "properties": {
+        "action": {
+            "$ref": "#/definitions/FixAction",
+            "description": "'add' (only `add` set), 'remove' (only `remove` set), 'replace' (both), 'reorder' (neither: the input parsed via a tolerant rule; the canonical form is in the result's `rendered`)."
+        },
+        "add": {
+            "description": "Concepts the change added. Set for `add` and `replace`.",
+            "items": {
+                "$ref": "#/definitions/FixConceptReference"
+            },
+            "type": "array"
+        },
+        "message": {
+            "description": "What the change did, in words.",
+            "type": "string"
+        },
+        "remove": {
+            "description": "Concepts the change removed. Set for `remove` and `replace`.",
+            "items": {
+                "$ref": "#/definitions/FixConceptReference"
+            },
+            "type": "array"
+        },
+        "ruleId": {
+            "description": "Rule that made this change: a scheme rule's id, or an id the engine keeps for a change no scheme rule names.\n\n`_recognition_role` is one of them: the text was read as a view of one role, for a request whose context names the other. See `ValidateResult.inputWasValid`, and `ValidateResult.appliedFixes` for how it is shown.",
+            "type": "string"
+        },
+        "triggerConceptIds": {
+            "description": "Concept IDs whose presence triggered the rule that made this change.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": ["ruleId", "action", "message"],
+    "type": "object"
+}

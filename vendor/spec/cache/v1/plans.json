@@ -1,0 +1,2414 @@
+{
+    "$schema": "./plans.schema.json",
+    "planVersion": "v1",
+    "description": "Executable cache conformance plans. CACHE-SEMANTICS.md is the contract they measure; every case id names an exchange in the wire corpus.",
+    "corpus": "../../wire/v1/corpus.json",
+    "denialCase": "denial.context-without-carrier",
+    "operations": [
+        {
+            "name": "scheme.process",
+            "method": "POST",
+            "route": "scheme/process",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.validate",
+            "method": "POST",
+            "route": "scheme/validate",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.explain",
+            "method": "POST",
+            "route": "scheme/explain",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.normalize",
+            "method": "POST",
+            "route": "scheme/normalize",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.render",
+            "method": "POST",
+            "route": "scheme/render",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.diff",
+            "method": "POST",
+            "route": "scheme/diff",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.aggregate",
+            "method": "POST",
+            "route": "scheme/aggregate",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.aggregateAssertions",
+            "method": "POST",
+            "route": "scheme/aggregate",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.applyPreset",
+            "method": "POST",
+            "route": "scheme/apply-preset",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.suggest",
+            "method": "POST",
+            "route": "scheme/suggest",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.suggestForCategories",
+            "method": "POST",
+            "route": "scheme/suggest-for-categories",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.scan",
+            "method": "POST",
+            "route": "scheme/scan",
+            "treatment": "cached"
+        },
+        {
+            "name": "scheme.describeConcept",
+            "method": "GET",
+            "route": "scheme/describe-concept",
+            "treatment": "cached"
+        },
+        {
+            "name": "access.describeAllAccessRules",
+            "method": "GET",
+            "route": "access/rules",
+            "treatment": "cached"
+        },
+        {
+            "name": "access.check",
+            "method": "POST",
+            "route": "access/check",
+            "treatment": "decision"
+        },
+        {
+            "name": "context.checkAccess",
+            "method": "POST",
+            "route": "access/check",
+            "treatment": "decision"
+        },
+        {
+            "name": "context.audit",
+            "method": "POST",
+            "route": "document/audit",
+            "treatment": "never"
+        },
+        {
+            "name": "context.assessDocumentAccess",
+            "method": "POST",
+            "route": "document/assess-access",
+            "treatment": "never"
+        },
+        {
+            "name": "context.accessRequirements",
+            "method": "POST",
+            "route": "access/describe-requirements",
+            "treatment": "never"
+        },
+        {
+            "name": "context.translate",
+            "method": "POST",
+            "route": "crosswalk/translate",
+            "treatment": "never"
+        },
+        {
+            "name": "scheme.buildSchemeView",
+            "method": "POST",
+            "route": "scheme/view",
+            "treatment": "uncached"
+        },
+        {
+            "name": "scheme.filterConcepts",
+            "method": "POST",
+            "route": "scheme/filter-concepts",
+            "treatment": "uncached"
+        },
+        {
+            "name": "scheme.checkCoverage",
+            "method": "POST",
+            "route": "scheme/check-coverage",
+            "treatment": "uncached"
+        },
+        {
+            "name": "scheme.collectNotices",
+            "method": "POST",
+            "route": "scheme/notices",
+            "treatment": "uncached"
+        },
+        {
+            "name": "guide.scan",
+            "method": "POST",
+            "route": "guide/scan",
+            "treatment": "uncached"
+        },
+        {
+            "name": "guide.evaluate",
+            "method": "POST",
+            "route": "guide/evaluate",
+            "treatment": "uncached"
+        },
+        {
+            "name": "guide.evaluateAll",
+            "method": "POST",
+            "route": "guide/evaluate",
+            "treatment": "uncached"
+        },
+        {
+            "name": "guide.describeRule",
+            "method": "POST",
+            "route": "guide/describe-rule",
+            "treatment": "uncached"
+        },
+        {
+            "name": "guide.filterRules",
+            "method": "POST",
+            "route": "guide/filter-rules",
+            "treatment": "uncached"
+        },
+        {
+            "name": "guide.buildGuideView",
+            "method": "POST",
+            "route": "guide/view",
+            "treatment": "uncached"
+        },
+        {
+            "name": "access.describeAccessRule",
+            "method": "POST",
+            "route": "access/describe-rule",
+            "treatment": "uncached"
+        },
+        {
+            "name": "access.describeAccessRequirements",
+            "method": "POST",
+            "route": "access/describe-requirements",
+            "treatment": "uncached"
+        },
+        {
+            "name": "scheme.summary",
+            "method": "GET",
+            "route": "scheme",
+            "treatment": "resource"
+        },
+        {
+            "name": "scheme.concepts",
+            "method": "GET",
+            "route": "scheme/concepts",
+            "treatment": "resource"
+        },
+        {
+            "name": "scheme.categories",
+            "method": "GET",
+            "route": "scheme/categories",
+            "treatment": "resource"
+        },
+        {
+            "name": "scheme.formats",
+            "method": "GET",
+            "route": "scheme/formats",
+            "treatment": "resource"
+        },
+        {
+            "name": "scheme.grammar",
+            "method": "GET",
+            "route": "scheme/grammar",
+            "treatment": "resource"
+        },
+        {
+            "name": "scheme.scopes",
+            "method": "GET",
+            "route": "scheme/scopes",
+            "treatment": "resource"
+        },
+        {
+            "name": "scheme.labelPresets",
+            "method": "GET",
+            "route": "scheme/label-presets",
+            "treatment": "resource"
+        }
+    ],
+    "checklist": [
+        {
+            "id": "C01",
+            "requirement": "A repeated identical cached operation costs one wire request."
+        },
+        {
+            "id": "C02",
+            "requirement": "Concurrent identical cached operations cost one wire request, and every caller is answered."
+        },
+        {
+            "id": "C03",
+            "requirement": "Every operation outside the cached set reaches the wire on every call, including the scheme resource reads."
+        },
+        {
+            "id": "C04",
+            "requirement": "Argument order does not create a second entry, a member passed as unset does not either, and an explicit null does."
+        },
+        {
+            "id": "C05",
+            "requirement": "Two operations sharing a route and body keep separate entries."
+        },
+        {
+            "id": "C06",
+            "requirement": "A rejected request is not cached; the next call retries."
+        },
+        {
+            "id": "C07",
+            "requirement": "A malformed 200 is not cached: the response check runs inside the cached call, and the next call retries."
+        },
+        {
+            "id": "C08",
+            "requirement": "One caller canceling settles only that caller."
+        },
+        {
+            "id": "C09",
+            "requirement": "The wire request is canceled only when its last caller has gone."
+        },
+        {
+            "id": "C10",
+            "requirement": "On a pinned binding an entry survives arbitrarily long, past any TTL."
+        },
+        {
+            "id": "C11",
+            "requirement": "On an unpinned binding an entry expires, and no later than one hour."
+        },
+        {
+            "id": "C12",
+            "requirement": "Access decisions reach the wire on every call by default."
+        },
+        {
+            "id": "C13",
+            "requirement": "Once the opt-in is on, access decisions are cached like any other entry."
+        },
+        {
+            "id": "C14",
+            "requirement": "The opt-in is refused on an unpinned binding."
+        },
+        {
+            "id": "C15",
+            "requirement": "The never operations reach the wire on every call, opt-in or not."
+        },
+        {
+            "id": "C16",
+            "requirement": "A composition change clears the cache."
+        },
+        {
+            "id": "C17",
+            "requirement": "The runtime's denial-shaped 404 clears the cache; a resource 404 does not."
+        },
+        {
+            "id": "C18",
+            "requirement": "Results are independent per caller."
+        }
+    ],
+    "capabilities": {
+        "responseGate": {
+            "description": "Hold a matched request in flight at the transport until a release step answers it."
+        },
+        "clock": {
+            "description": "Move the clock the response cache reads, so lifetimes are measured without waiting."
+        },
+        "scriptedResponses": {
+            "description": "Answer one request with a response derived from recorded bytes: a malformed success, the denial-shaped 404, or a moved resolved version."
+        },
+        "quiesce": {
+            "description": "Wait until the client has finished any background work a response started, such as rebuilding connection state."
+        },
+        "cancellation": {
+            "description": "Cancel one caller's call through the port's public cancellation surface.",
+            "notApplicable": "The port's public operations take no cancellation signal, token or context."
+        },
+        "explicitNullMember": {
+            "description": "Send a request whose optional member is an explicit null through the public API.",
+            "notApplicable": "The port's request types cannot carry an explicit null: an unset member is always omitted from the body."
+        },
+        "schemeResourceOperations": {
+            "description": "Read the scheme resources through per-call public operations.",
+            "notApplicable": "The port resolves the scheme resources once at connect into connection state, outside the response cache."
+        },
+        "sharedRouteOperations": {
+            "description": "Call two public operations that post the same body to the same route.",
+            "notApplicable": "The port exposes one method per wire operation, so no two of its operations share a route and body."
+        }
+    },
+    "knownGaps": [],
+    "plans": [
+        {
+            "id": "cached-repeat.scheme.process",
+            "title": "A repeated scheme.process on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.validate",
+            "title": "A repeated scheme.validate on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.validate",
+                    "case": "ctx-scheme-validate.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-validate.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.explain",
+            "title": "A repeated scheme.explain on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.explain",
+                    "case": "ctx-scheme-explain.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-explain.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.normalize",
+            "title": "A repeated scheme.normalize on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.normalize",
+                    "case": "ctx-scheme-normalize.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-normalize.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.render",
+            "title": "A repeated scheme.render on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.render",
+                    "case": "ctx-scheme-render.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-render.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.diff",
+            "title": "A repeated scheme.diff on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.diff",
+                    "case": "ctx-scheme-diff.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-diff.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.aggregate",
+            "title": "A repeated scheme.aggregate on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.aggregate",
+                    "case": "ctx-scheme-aggregate.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-aggregate.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.aggregateAssertions",
+            "title": "A repeated scheme.aggregateAssertions on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.aggregateAssertions",
+                    "case": "ctx-scheme-aggregate.assertion-sets",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-aggregate.assertion-sets",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.applyPreset",
+            "title": "A repeated scheme.applyPreset on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned",
+                "context": "ez-presets"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.applyPreset",
+                    "case": "ctx-scheme-apply-preset.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-apply-preset.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.suggest",
+            "title": "A repeated scheme.suggest on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.suggestForCategories",
+            "title": "A repeated scheme.suggestForCategories on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.suggestForCategories",
+                    "case": "ctx-scheme-suggest-for-categories.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest-for-categories.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.scan",
+            "title": "A repeated scheme.scan on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.scan",
+                    "case": "ctx-scheme-scan.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-scan.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.scheme.describeConcept",
+            "title": "A repeated scheme.describeConcept on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.describeConcept",
+                    "case": "ctx-scheme-describe-concept.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-describe-concept.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.access.describeAllAccessRules",
+            "title": "A repeated access.describeAllAccessRules on a pinned binding is answered from the entry the first call filed.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "access.describeAllAccessRules",
+                    "case": "ctx-access-rules.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-rules.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cached-repeat.unpinned",
+            "title": "An unpinned binding also answers an immediate repeat from its entry; only the lifetime differs.",
+            "covers": [
+                "C01"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "unpinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "concurrent-dedup",
+            "title": "Three callers asking while one request is in flight share it, and all three are answered.",
+            "covers": [
+                "C02"
+            ],
+            "capabilities": [
+                "responseGate"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "gate",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "callers": [
+                        "a",
+                        "b",
+                        "c"
+                    ]
+                },
+                {
+                    "step": "release",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "expectOk",
+                    "callers": [
+                        "a",
+                        "b",
+                        "c"
+                    ]
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "concurrent-outlives-ttl",
+            "title": "A request still in flight past its TTL stays joinable, and the TTL starts when the answer arrives.",
+            "covers": [
+                "C02"
+            ],
+            "capabilities": [
+                "responseGate",
+                "clock"
+            ],
+            "client": {
+                "binding": "unpinned"
+            },
+            "steps": [
+                {
+                    "step": "gate",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "callers": [
+                        "a"
+                    ]
+                },
+                {
+                    "step": "advanceClock",
+                    "ms": 7200000
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "callers": [
+                        "b"
+                    ]
+                },
+                {
+                    "step": "release",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "expectOk",
+                    "callers": [
+                        "a",
+                        "b"
+                    ]
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.buildSchemeView",
+            "title": "scheme.buildSchemeView is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.buildSchemeView",
+                    "case": "ctx-scheme-view.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-view.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.filterConcepts",
+            "title": "scheme.filterConcepts is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.filterConcepts",
+                    "case": "ctx-scheme-filter-concepts.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-filter-concepts.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.checkCoverage",
+            "title": "scheme.checkCoverage is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.checkCoverage",
+                    "case": "ctx-scheme-check-coverage.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-check-coverage.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.collectNotices",
+            "title": "scheme.collectNotices is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.collectNotices",
+                    "case": "ctx-scheme-notices.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-notices.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.guide.scan",
+            "title": "guide.scan is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "guide.scan",
+                    "case": "ctx-guide-scan.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-guide-scan.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.guide.evaluate",
+            "title": "guide.evaluate is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "guide.evaluate",
+                    "case": "ctx-guide-evaluate.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-guide-evaluate.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.guide.evaluateAll",
+            "title": "guide.evaluateAll is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "guide.evaluateAll",
+                    "case": "ctx-guide-evaluate.all-guides",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-guide-evaluate.all-guides",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.guide.describeRule",
+            "title": "guide.describeRule is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "guide.describeRule",
+                    "case": "ctx-guide-describe-rule.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-guide-describe-rule.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.guide.filterRules",
+            "title": "guide.filterRules is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "guide.filterRules",
+                    "case": "ctx-guide-filter-rules.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-guide-filter-rules.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.guide.buildGuideView",
+            "title": "guide.buildGuideView is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "guide.buildGuideView",
+                    "case": "ctx-guide-view.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-guide-view.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.access.describeAccessRule",
+            "title": "access.describeAccessRule is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "access.describeAccessRule",
+                    "case": "ctx-access-describe-rule.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-describe-rule.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.access.describeAccessRequirements",
+            "title": "access.describeAccessRequirements is outside the cached set and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "access.describeAccessRequirements",
+                    "case": "ctx-access-describe-requirements.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-describe-requirements.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.summary",
+            "title": "The scheme.summary resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.summary",
+                    "case": "ctx-scheme-summary.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-summary.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.concepts",
+            "title": "The scheme.concepts resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.concepts",
+                    "case": "ctx-scheme-concepts.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-concepts.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.categories",
+            "title": "The scheme.categories resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.categories",
+                    "case": "ctx-scheme-categories.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-categories.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.formats",
+            "title": "The scheme.formats resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.formats",
+                    "case": "ctx-scheme-formats.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-formats.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.grammar",
+            "title": "The scheme.grammar resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.grammar",
+                    "case": "ctx-scheme-grammar.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-grammar.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.scopes",
+            "title": "The scheme.scopes resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.scopes",
+                    "case": "ctx-scheme-scopes.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-scopes.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "uncached.scheme.labelPresets",
+            "title": "The scheme.labelPresets resource read is not a response-cache entry and reaches the wire on every call.",
+            "covers": [
+                "C03"
+            ],
+            "capabilities": [
+                "schemeResourceOperations"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.labelPresets",
+                    "case": "ctx-scheme-label-presets.full",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-label-presets.full",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "key-canonical-members",
+            "title": "A map built in a different order, or an optional member passed as unset, sends the same body and finds the same entry.",
+            "covers": [
+                "C04"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned",
+                "cacheAccessDecisions": true
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "context.checkAccess",
+                    "case": "ctx-access-check.two-attributes"
+                },
+                {
+                    "step": "call",
+                    "operation": "context.checkAccess",
+                    "case": "ctx-access-check.two-attributes",
+                    "variant": "reorderedMembers"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.two-attributes",
+                    "count": 1
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "variant": "unsetMember",
+                    "member": "outputFormat"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "key-explicit-null",
+            "title": "An explicit null is a different request from an absent member and gets its own entry.",
+            "covers": [
+                "C04"
+            ],
+            "capabilities": [
+                "explicitNullMember"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "variant": "explicitNullMember",
+                    "member": "outputFormat"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "variant": "explicitNullMember",
+                    "member": "outputFormat"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "variant": "explicitNullMember",
+                    "member": "outputFormat",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "shared-route-separate-entries",
+            "title": "access.check and context.checkAccess post the same body to the same route and keep separate entries.",
+            "covers": [
+                "C05",
+                "C13"
+            ],
+            "capabilities": [
+                "sharedRouteOperations"
+            ],
+            "client": {
+                "binding": "pinned",
+                "cacheAccessDecisions": true
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "access.check",
+                    "case": "ctx-access-check.assertions"
+                },
+                {
+                    "step": "call",
+                    "operation": "context.checkAccess",
+                    "case": "ctx-access-check.assertions"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.assertions",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "access.check",
+                    "case": "ctx-access-check.assertions"
+                },
+                {
+                    "step": "call",
+                    "operation": "context.checkAccess",
+                    "case": "ctx-access-check.assertions"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.assertions",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "rejected-not-cached",
+            "title": "A refused request is evicted as it settles, so the next identical call goes back to the server.",
+            "covers": [
+                "C06"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.describeConcept",
+                    "case": "ctx-scheme-describe-concept.unknown-concept",
+                    "times": 2,
+                    "expect": {
+                        "error": {
+                            "kind": "http",
+                            "status": 404
+                        }
+                    }
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-describe-concept.unknown-concept",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.undeclared-format",
+                    "times": 2,
+                    "expect": {
+                        "error": {
+                            "kind": "http",
+                            "status": 400
+                        }
+                    }
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.undeclared-format",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "malformed-success-not-cached",
+            "title": "A 200 missing a member the contract requires is a failed call: it is not filed, and the next call retries.",
+            "covers": [
+                "C07"
+            ],
+            "capabilities": [
+                "scriptedResponses"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "respond",
+                    "case": "ctx-scheme-process.ok",
+                    "synthetic": "malformed-success",
+                    "removeMembers": [
+                        "/result"
+                    ]
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "expect": {
+                        "error": {
+                            "kind": "malformed-response"
+                        }
+                    }
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 2
+                },
+                {
+                    "step": "respond",
+                    "case": "ctx-scheme-validate.ok",
+                    "synthetic": "malformed-success",
+                    "removeMembers": [
+                        "/result/valid"
+                    ]
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.validate",
+                    "case": "ctx-scheme-validate.ok",
+                    "expect": {
+                        "error": {
+                            "kind": "malformed-response"
+                        }
+                    }
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.validate",
+                    "case": "ctx-scheme-validate.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-validate.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "malformed-decision-not-cached",
+            "title": "Under the opt-in, a decision missing a required member is a failed call and is never filed.",
+            "covers": [
+                "C07",
+                "C13"
+            ],
+            "capabilities": [
+                "scriptedResponses"
+            ],
+            "client": {
+                "binding": "pinned",
+                "cacheAccessDecisions": true
+            },
+            "steps": [
+                {
+                    "step": "respond",
+                    "case": "ctx-access-check.assertions",
+                    "synthetic": "malformed-success",
+                    "removeMembers": [
+                        "/result/granted"
+                    ]
+                },
+                {
+                    "step": "call",
+                    "operation": "access.check",
+                    "case": "ctx-access-check.assertions",
+                    "expect": {
+                        "error": {
+                            "kind": "malformed-response"
+                        }
+                    }
+                },
+                {
+                    "step": "call",
+                    "operation": "access.check",
+                    "case": "ctx-access-check.assertions",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.assertions",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "cancel-one-caller",
+            "title": "Canceling one of three joined callers settles only that caller; the shared request and its entry survive.",
+            "covers": [
+                "C08"
+            ],
+            "capabilities": [
+                "responseGate",
+                "cancellation"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "gate",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "callers": [
+                        "a",
+                        "b",
+                        "c"
+                    ],
+                    "cancelable": [
+                        "a"
+                    ]
+                },
+                {
+                    "step": "cancel",
+                    "caller": "a"
+                },
+                {
+                    "step": "expectError",
+                    "callers": [
+                        "a"
+                    ],
+                    "error": {
+                        "kind": "aborted"
+                    }
+                },
+                {
+                    "step": "expectWireAborted",
+                    "case": "ctx-scheme-process.ok",
+                    "aborted": false
+                },
+                {
+                    "step": "release",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectOk",
+                    "callers": [
+                        "b",
+                        "c"
+                    ]
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cancel-before-and-after",
+            "title": "A caller that arrives canceled never touches the cache, and a cancellation after the answer arrived evicts nothing.",
+            "covers": [
+                "C08"
+            ],
+            "capabilities": [
+                "cancellation"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "caller": "early",
+                    "preCanceled": true,
+                    "expect": {
+                        "error": {
+                            "kind": "aborted"
+                        }
+                    }
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest.ok",
+                    "count": 0
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "callers": [
+                        "a",
+                        "b"
+                    ],
+                    "cancelable": [
+                        "a"
+                    ]
+                },
+                {
+                    "step": "expectOk",
+                    "callers": [
+                        "a",
+                        "b"
+                    ]
+                },
+                {
+                    "step": "cancel",
+                    "caller": "a"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "cancel-last-caller",
+            "title": "The shared request is canceled when its last caller walks away, and not before.",
+            "covers": [
+                "C09"
+            ],
+            "capabilities": [
+                "responseGate",
+                "cancellation"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "gate",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "callers": [
+                        "a",
+                        "b"
+                    ],
+                    "cancelable": [
+                        "a",
+                        "b"
+                    ]
+                },
+                {
+                    "step": "cancel",
+                    "caller": "a"
+                },
+                {
+                    "step": "expectWireAborted",
+                    "case": "ctx-scheme-process.ok",
+                    "aborted": false
+                },
+                {
+                    "step": "cancel",
+                    "caller": "b"
+                },
+                {
+                    "step": "expectWireAborted",
+                    "case": "ctx-scheme-process.ok",
+                    "aborted": true
+                },
+                {
+                    "step": "expectError",
+                    "callers": [
+                        "a",
+                        "b"
+                    ],
+                    "error": {
+                        "kind": "aborted"
+                    }
+                },
+                {
+                    "step": "release",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "pinned-no-expiry",
+            "title": "A pinned entry is still served after thirty days, past every per-operation TTL.",
+            "covers": [
+                "C10"
+            ],
+            "capabilities": [
+                "clock"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.scan",
+                    "case": "ctx-scheme-scan.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "advanceClock",
+                    "ms": 2592000000
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.scan",
+                    "case": "ctx-scheme-scan.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-scan.ok",
+                    "count": 1
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "unpinned-expiry",
+            "title": "An unpinned entry is gone once the one-hour ceiling has passed.",
+            "covers": [
+                "C11"
+            ],
+            "capabilities": [
+                "clock"
+            ],
+            "client": {
+                "binding": "unpinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.describeConcept",
+                    "case": "ctx-scheme-describe-concept.ok"
+                },
+                {
+                    "step": "advanceClock",
+                    "ms": 3601000
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.describeConcept",
+                    "case": "ctx-scheme-describe-concept.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-describe-concept.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "unpinned-expiry.token-defaulted",
+            "title": "A binding whose version the context token supplies is unpinned too, and its entries expire the same way.",
+            "covers": [
+                "C11"
+            ],
+            "capabilities": [
+                "clock"
+            ],
+            "client": {
+                "binding": "token-defaulted"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "advanceClock",
+                    "ms": 3601000
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "decisions-uncached-by-default",
+            "title": "Without the opt-in, every access decision is a wire trip, even on a pinned binding.",
+            "covers": [
+                "C12"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "access.check",
+                    "case": "ctx-access-check.assertions",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.assertions",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.checkAccess",
+                    "case": "ctx-access-check.marking",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.marking",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "decisions-opt-in",
+            "title": "With the opt-in on a pinned binding, a repeated decision is answered from its entry.",
+            "covers": [
+                "C13"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned",
+                "cacheAccessDecisions": true
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "access.check",
+                    "case": "ctx-access-check.assertions",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.assertions",
+                    "count": 1
+                },
+                {
+                    "step": "call",
+                    "operation": "context.checkAccess",
+                    "case": "ctx-access-check.marking",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-check.marking",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "decisions-opt-in-refused-unpinned",
+            "title": "The opt-in on a binding whose composition can move is refused when the client is built.",
+            "covers": [
+                "C14"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "unpinned",
+                "cacheAccessDecisions": true,
+                "construction": "refused"
+            },
+            "steps": []
+        },
+        {
+            "id": "decisions-opt-in-refused-token-defaulted",
+            "title": "The opt-in is refused when the context token, not the client, picks the version.",
+            "covers": [
+                "C14"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "token-defaulted",
+                "cacheAccessDecisions": true,
+                "construction": "refused"
+            },
+            "steps": []
+        },
+        {
+            "id": "never-cached.opt-in-off",
+            "title": "The never operations reach the wire on every call with the access-decision opt-in off.",
+            "covers": [
+                "C15"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "context.audit",
+                    "case": "ctx-document-audit.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-document-audit.ok",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.assessDocumentAccess",
+                    "case": "ctx-document-assess-access.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-document-assess-access.ok",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.accessRequirements",
+                    "case": "ctx-access-describe-requirements.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-describe-requirements.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "never-cached.opt-in-on",
+            "title": "The never operations reach the wire on every call with the access-decision opt-in on.",
+            "covers": [
+                "C15"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned",
+                "cacheAccessDecisions": true
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "context.audit",
+                    "case": "ctx-document-audit.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-document-audit.ok",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.assessDocumentAccess",
+                    "case": "ctx-document-assess-access.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-document-assess-access.ok",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.accessRequirements",
+                    "case": "ctx-access-describe-requirements.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-access-describe-requirements.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "never-cached.translate.opt-in-off",
+            "title": "A translation reaches the wire on every call, completed or forbidden, with the access-decision opt-in off.",
+            "covers": [
+                "C15"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned",
+                "context": "ez-crosswalk"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "context.translate",
+                    "case": "ctx-crosswalk-translate.translated",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-crosswalk-translate.translated",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.translate",
+                    "case": "ctx-crosswalk-translate.forbidden",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-crosswalk-translate.forbidden",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "never-cached.translate.opt-in-on",
+            "title": "A translation reaches the wire on every call, completed or forbidden, with the access-decision opt-in on.",
+            "covers": [
+                "C15"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned",
+                "context": "ez-crosswalk",
+                "cacheAccessDecisions": true
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "context.translate",
+                    "case": "ctx-crosswalk-translate.translated",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-crosswalk-translate.translated",
+                    "count": 2
+                },
+                {
+                    "step": "call",
+                    "operation": "context.translate",
+                    "case": "ctx-crosswalk-translate.forbidden",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-crosswalk-translate.forbidden",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "composition-change-clears",
+            "title": "A response naming a new resolved version on an unpinned binding clears what was filed under the old one.",
+            "covers": [
+                "C16"
+            ],
+            "capabilities": [
+                "scriptedResponses",
+                "quiesce"
+            ],
+            "client": {
+                "binding": "unpinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "times": 2
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                },
+                {
+                    "step": "respond",
+                    "synthetic": "resolved-version",
+                    "version": "1.0.1"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok"
+                },
+                {
+                    "step": "quiesce"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "denial-404-clears",
+            "title": "The runtime's denial-shaped 404 clears every held entry; the denied call fails and is not replayed.",
+            "covers": [
+                "C17"
+            ],
+            "capabilities": [
+                "scriptedResponses"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "respond",
+                    "case": "ctx-scheme-suggest.ok",
+                    "synthetic": "denial-404"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.suggest",
+                    "case": "ctx-scheme-suggest.ok",
+                    "expect": {
+                        "error": {
+                            "kind": "http",
+                            "status": 404
+                        }
+                    }
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-suggest.ok",
+                    "count": 1
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "resource-404-keeps",
+            "title": "A 404 that names a missing resource is an answer about that resource and leaves the cache in place.",
+            "covers": [
+                "C17"
+            ],
+            "capabilities": [],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.describeConcept",
+                    "case": "ctx-scheme-describe-concept.unknown-concept",
+                    "expect": {
+                        "error": {
+                            "kind": "http",
+                            "status": 404
+                        }
+                    }
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "id": "independent-results",
+            "title": "Mutating one caller's result changes neither a joined caller's result nor a later cached read.",
+            "covers": [
+                "C18"
+            ],
+            "capabilities": [
+                "responseGate"
+            ],
+            "client": {
+                "binding": "pinned"
+            },
+            "steps": [
+                {
+                    "step": "gate",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "concurrent",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "callers": [
+                        "a",
+                        "b"
+                    ]
+                },
+                {
+                    "step": "release",
+                    "case": "ctx-scheme-process.ok"
+                },
+                {
+                    "step": "expectOk",
+                    "callers": [
+                        "a",
+                        "b"
+                    ]
+                },
+                {
+                    "step": "mutateResult",
+                    "caller": "a"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "caller": "c"
+                },
+                {
+                    "step": "mutateResult",
+                    "caller": "c"
+                },
+                {
+                    "step": "call",
+                    "operation": "scheme.process",
+                    "case": "ctx-scheme-process.ok",
+                    "caller": "d"
+                },
+                {
+                    "step": "expectIndependentResults",
+                    "callers": [
+                        "b",
+                        "d"
+                    ]
+                },
+                {
+                    "step": "expectWireCount",
+                    "case": "ctx-scheme-process.ok",
+                    "count": 1
+                }
+            ]
+        }
+    ]
+}

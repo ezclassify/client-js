@@ -1,0 +1,100 @@
+{
+    "$id": "https://ezclassify.com/schemas/conformance-plan/v1",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+        "TestCase": {
+            "additionalProperties": false,
+            "properties": {
+                "accessFixture": {
+                    "description": "Fixture file name (without .json) for an access-rules document. Required for checkAccess.",
+                    "type": "string"
+                },
+                "args": {
+                    "description": "Positional arguments to pass to the method.",
+                    "type": "array"
+                },
+                "ctxId": {
+                    "description": "Context ID for ctx-family methods (ctxProcess, ctxScan, ctxDocumentAudit). Identifies the server-side context that pins scheme, guides, and access policy.",
+                    "type": "string"
+                },
+                "ctxVersion": {
+                    "description": "Explicit context version for ctx-family methods; omit or leave blank for server default (latest). Pass a semver string or 'latest'.",
+                    "type": "string"
+                },
+                "expect": {
+                    "description": "Partial expected result. The runner performs a deep subset-match: every key present in expect must match the actual result.",
+                    "minProperties": 1,
+                    "type": "object"
+                },
+                "fixture": {
+                    "description": "Fixture file name (without .json) to load as the scheme, or an array for fromLayers.",
+                    "oneOf": [
+                        { "type": "string" },
+                        {
+                            "items": { "type": "string" },
+                            "minItems": 1,
+                            "type": "array"
+                        }
+                    ]
+                },
+                "guideFixture": {
+                    "description": "Fixture file name (without .json) for a guide document. Required for evaluateGuide and guideScan methods.",
+                    "type": "string"
+                },
+                "method": {
+                    "description": "Engine method to invoke. normalize/render/diff wrap their return value as {result}. aggregateAssertions takes a single arg: an array of assertion arrays (each inner array is one marking's already-parsed assertions). evaluateGuide/guideScan require guideFixture. checkAccess requires accessFixture. registry* methods register the fixture engine in a SchemeRegistry. ctx* methods use ctxId and ctxVersion to target a server-side context.",
+                    "enum": [
+                        "process",
+                        "aggregate",
+                        "aggregateAssertions",
+                        "suggest",
+                        "scan",
+                        "checkAccess",
+                        "validate",
+                        "normalize",
+                        "render",
+                        "diff",
+                        "evaluateGuide",
+                        "evaluateMany",
+                        "guideScan",
+                        "registryProcessAll",
+                        "registrySuggestAcross",
+                        "ctxProcess",
+                        "ctxScan",
+                        "ctxDocumentAudit"
+                    ],
+                    "type": "string"
+                },
+                "mode": {
+                    "default": "fromJSON",
+                    "description": "How to construct the SchemeEngine: fromJSON (single fixture) or fromLayers (array of fixtures).",
+                    "enum": ["fromJSON", "fromLayers"],
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Human-readable identifier for this test case.",
+                    "type": "string"
+                }
+            },
+            "required": ["name", "fixture", "method", "args", "expect"],
+            "type": "object"
+        }
+    },
+    "description": "Schema for a conformance plan file: a sliced collection of test cases for a single engine capability.",
+    "properties": {
+        "cases": {
+            "description": "Ordered list of test cases exercising this capability.",
+            "items": { "$ref": "#/definitions/TestCase" },
+            "type": "array"
+        },
+        "slice": {
+            "description": "Determines which conformance pipeline processes this plan. 'engine' plans are run per-PR by every language SDK replayer using recorded responses. 'server' plans require a live REST API server and are run only in the nightly cross-SDK Docker workflow.",
+            "enum": ["engine", "server"],
+            "type": "string"
+        }
+    },
+    "required": ["slice", "cases"],
+    "title": "ConformancePlanFile",
+    "type": "object"
+}

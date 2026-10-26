@@ -1,0 +1,174 @@
+{
+    "cases": [
+        {
+            "args": [["rule-high"]],
+            "expect": {
+                "aggregatedMarking": "HIGH",
+                "selectedRules": [
+                    {
+                        "id": "rule-high"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateGuide",
+            "name": "evaluate-guide-single-rule-high"
+        },
+        {
+            "args": [["rule-low"]],
+            "expect": {
+                "aggregatedMarking": "LOW",
+                "selectedRules": [
+                    {
+                        "id": "rule-low"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateGuide",
+            "name": "evaluate-guide-single-rule-low"
+        },
+        {
+            "args": [["rule-high", "rule-ctrl-a"]],
+            "expect": {
+                "aggregatedMarking": "HIGH/CTRL-A",
+                "selectedRules": [
+                    {
+                        "id": "rule-high"
+                    },
+                    {
+                        "id": "rule-ctrl-a"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateGuide",
+            "name": "evaluate-guide-two-rules-aggregate"
+        },
+        {
+            "args": [[]],
+            "expect": {
+                "aggregatedMarking": "",
+                "selectedRules": []
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateGuide",
+            "name": "evaluate-guide-empty-selection"
+        },
+        {
+            "args": ["This is a sensitive document"],
+            "expect": {
+                "count": 1,
+                "firstRuleId": "rule-high"
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "guideScan",
+            "name": "evaluate-guide-scan-finds-sensitive"
+        },
+        {
+            "args": ["sensitive and controlled data"],
+            "expect": {
+                "count": 2
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "guideScan",
+            "name": "evaluate-guide-scan-finds-two-keywords"
+        },
+        {
+            "args": ["no relevant keywords here"],
+            "expect": {
+                "count": 0,
+                "firstRuleId": null
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "guideScan",
+            "name": "evaluate-guide-scan-no-match"
+        },
+        {
+            "args": [["rule-high", "rule-low", "rule-ctrl-a"]],
+            "expect": {
+                "aggregatedMarking": "HIGH/CTRL-A",
+                "selectedRules": [
+                    {
+                        "id": "rule-high"
+                    },
+                    {
+                        "id": "rule-low"
+                    },
+                    {
+                        "id": "rule-ctrl-a"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateGuide",
+            "name": "evaluate-guide-all-three-rules-aggregate"
+        },
+        {
+            "args": ["This document is for the public"],
+            "expect": {
+                "count": 1,
+                "firstRuleId": "rule-low"
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "guideScan",
+            "name": "guideScan-single-rule-match-via-public-keyword"
+        },
+        {
+            "args": ["This is a sensitive document"],
+            "expect": {
+                "count": 1,
+                "firstEnd": 19,
+                "firstRuleId": "rule-high",
+                "firstStart": 10
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "guideScan",
+            "name": "guideScan-span-position-first-hit"
+        },
+        {
+            "args": [["rule-high"]],
+            "expect": {
+                "aggregatedMarking": "HIGH",
+                "selectedRules": [
+                    {
+                        "id": "rule-high"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateMany",
+            "name": "evaluateMany-single-guide-rule-high"
+        },
+        {
+            "args": [["rule-high", "rule-low"]],
+            "expect": {
+                "aggregatedMarking": "HIGH",
+                "selectedRules": [
+                    {
+                        "id": "rule-high"
+                    },
+                    {
+                        "id": "rule-low"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "guideFixture": "ref-guide-1",
+            "method": "evaluateMany",
+            "name": "evaluateMany-single-guide-two-rules-aggregate"
+        }
+    ],
+    "slice": "engine"
+}

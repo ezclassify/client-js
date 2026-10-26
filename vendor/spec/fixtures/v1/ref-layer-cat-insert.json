@@ -1,0 +1,75 @@
+{
+  "scheme": {
+    "data": {
+      "categories": [
+        {
+          "id": "tags",
+          "label": "Tags",
+          "position": 1,
+          "required": false,
+          "rollup": "union",
+          "single": false
+        }
+      ],
+      "concepts": {
+        "inline": [
+          {
+            "categories": [
+              "tags"
+            ],
+            "id": "TAG-A",
+            "name": "Tag A",
+            "parents": [],
+            "position": 0,
+            "views": {
+              "default": "TAG-A"
+            }
+          }
+        ]
+      }
+    },
+    "default_scope": "banner",
+    "description": "Extension layer that adds the tags category with concept TAG-A. No parent requirements \u2014 validates that a new category and its concept surface in suggestions after layer composition.",
+    "id": "ref-layer-cat-insert",
+    "layer": {
+      "base": "ref-layer-base@1.0.0"
+    },
+    "name": "Category Insert Layer",
+    "parse": {
+      "case_sensitive": false,
+      "normalize": [],
+      "strip_whitespace": true
+    },
+    "render": {
+      "default": "default",
+      "formats": [
+        {
+          "fields": [
+            {
+              "category": "level",
+              "separator": "/"
+            },
+            {
+              "category": "tags",
+              "separator": "/"
+            }
+          ],
+          "id": "default",
+          "mode": "inline",
+          "separator": "/",
+          "surface": "banner"
+        }
+      ]
+    },
+    "rollup_pipelines": [],
+    "rules": [],
+    "scopes": [
+      {
+        "id": "banner",
+        "label": "Banner"
+      }
+    ],
+    "type": "layer",
+    "version": "1.0.0"
+  }
+}

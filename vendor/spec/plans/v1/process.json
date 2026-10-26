@@ -1,0 +1,177 @@
+{
+    "cases": [
+        {
+            "args": ["HIGH"],
+            "expect": {
+                "assertions": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-high-valid"
+        },
+        {
+            "args": ["LOW"],
+            "expect": {
+                "rendered": "LOW",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-low-valid"
+        },
+        {
+            "args": ["MED"],
+            "expect": {
+                "rendered": "MED",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-med-valid"
+        },
+        {
+            "args": ["UNKNOWN"],
+            "expect": {
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-unknown-invalid"
+        },
+        {
+            "args": ["HIGH/CTRL-A"],
+            "expect": {
+                "rendered": "HIGH/CTRL-A",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-high-ctrl-a-valid"
+        },
+        {
+            "args": ["high"],
+            "expect": {
+                "rendered": "HIGH",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-case-insensitive"
+        },
+        {
+            "args": ["LOW"],
+            "expect": {
+                "assertions": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "LOW",
+                        "confidence": "certain"
+                    }
+                ]
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-assertion-concept-id"
+        },
+        {
+            "args": ["ZZZMISS"],
+            "expect": {
+                "rendered": "",
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-invalid-has-no-assertions"
+        },
+        {
+            "args": [""],
+            "expect": {
+                "assertions": [],
+                "rendered": "",
+                "valid": true
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-empty-string-is-valid"
+        },
+        {
+            "args": ["LOW/HIGH"],
+            "expect": {
+                "assertions": [
+                    {
+                        "categoryId": "level",
+                        "conceptId": "LOW"
+                    },
+                    {
+                        "categoryId": "level",
+                        "conceptId": "HIGH"
+                    }
+                ],
+                "errors": [
+                    {
+                        "constraintId": "single-category:level"
+                    }
+                ],
+                "rendered": "LOW/HIGH",
+                "valid": false
+            },
+            "fixture": "ref-scheme-1",
+            "method": "process",
+            "name": "process-two-level-concepts"
+        },
+        {
+            "args": [
+                "OLD-LOW",
+                {
+                    "parts": ["H"]
+                }
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "constraintId": "_invalid_part"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-settling-1",
+            "method": "process",
+            "name": "process-parts-against-a-whole-spelled-with-a-retired-concept"
+        },
+        {
+            "args": [
+                "",
+                {
+                    "assertions": [
+                        {
+                            "categoryId": "level",
+                            "conceptId": "LOW",
+                            "confidence": "certain",
+                            "source": "user"
+                        }
+                    ],
+                    "parts": ["H"]
+                }
+            ],
+            "expect": {
+                "errors": [
+                    {
+                        "constraintId": "_invalid_part"
+                    }
+                ],
+                "valid": false
+            },
+            "fixture": "ref-settling-1",
+            "method": "process",
+            "name": "process-parts-against-a-whole-given-as-facts"
+        }
+    ],
+    "slice": "engine"
+}
