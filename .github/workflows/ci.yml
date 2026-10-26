@@ -56,8 +56,7 @@ jobs:
       # registries configured above, then prove those exact bytes with npm ci.
       #
       # Only the @ezclassify scope is routed to the mirror. Third-party
-      # packages still come from npmjs, and the dependency gate at the bottom
-      # of this file holds the line on which first-party names may arrive.
+      # packages still come from npmjs, and the installed dependency gate below holds the line on which first-party names may arrive.
       #
       # deps:relock resolves third-party packages only from versions at least
       # seven days old, then resolves the first-party ones with `--tag=dev`,
@@ -66,6 +65,28 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN || github.token }}
         run: npm run deps:relock && npm ci
+
+      - name: No proprietary dependency crept in
+        # The one invariant this repository cannot afford to lose. Public code
+        # never resolves a private package, in any dependency section. Checked
+        # against every package in the installed tree, not the manifest or just
+        # the root node_modules scope, so a nested transitive arrival fails too.
+        #
+        # Every name in ALLOWED is published Apache-2.0 out of the public
+        # contracts repository, and each is listed with the reason it is here:
+        #
+        #   types               the contract types the emitted .d.ts re-export
+        #   tsconfig            the shared compiler settings
+        #   conformance         the golden wire corpus every EzClassify SDK
+        #                       replays
+        #   conformance-server  the replay server for that corpus
+        #   openapi             the wire types the tests check against, and
+        #                       the contract the replay server validates a
+        #                       request against
+        #
+        # Names are matched whole and spelled out one at a time in the script.
+        # A pattern would admit an unrelated package on a shared prefix.
+        run: node scripts/check-installed-public-deps.mjs
 
       - name: Format check
         run: npm run format:check
@@ -102,25 +123,3 @@ jobs:
       # it with `npm run`; tests/publish-lifecycle.spec.ts holds the line.
       - name: Publish-readiness (pack)
         run: npm pack --dry-run
-
-      - name: No proprietary dependency crept in
-        # The one invariant this repository cannot afford to lose. Public code
-        # never resolves a private package, in any dependency section. Checked
-        # against every package in the installed tree, not the manifest or just
-        # the root node_modules scope, so a nested transitive arrival fails too.
-        #
-        # Every name in ALLOWED is published Apache-2.0 out of the public
-        # contracts repository, and each is listed with the reason it is here:
-        #
-        #   types               the contract types the emitted .d.ts re-export
-        #   tsconfig            the shared compiler settings
-        #   conformance         the golden wire corpus every EzClassify SDK
-        #                       replays
-        #   conformance-server  the replay server for that corpus
-        #   openapi             the wire types the tests check against, and
-        #                       the contract the replay server validates a
-        #                       request against
-        #
-        # Names are matched whole and spelled out one at a time in the script.
-        # A pattern would admit an unrelated package on a shared prefix.
-        run: node scripts/check-installed-public-deps.mjs
