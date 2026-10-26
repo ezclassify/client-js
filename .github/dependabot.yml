@@ -35,7 +35,7 @@ updates:
     labels:
       - dependencies
     allow:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
           - version-update:semver-minor
           - version-update:semver-patch
@@ -61,7 +61,7 @@ updates:
       - dependencies
       - ci
     allow:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
           - version-update:semver-minor
           - version-update:semver-patch
