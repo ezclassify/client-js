@@ -135,6 +135,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}:
     get:
       operationId: ctxVersions
@@ -171,6 +175,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}:
     get:
       operationId: ctxDescribe
@@ -234,6 +242,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/document/audit:
     post:
       operationId: ctxDocumentAudit
@@ -299,6 +311,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/document/assess-access:
     post:
       operationId: ctxDocumentAssessAccess
@@ -375,6 +391,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme:
     get:
       operationId: ctxSchemeSummary
@@ -427,6 +447,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/concepts:
     get:
       operationId: ctxSchemeConcepts
@@ -481,6 +505,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/categories:
     get:
       operationId: ctxSchemeCategories
@@ -535,6 +563,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/formats:
     get:
       operationId: ctxSchemeFormats
@@ -589,6 +621,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/grammar:
     get:
       operationId: ctxSchemeGrammar
@@ -641,6 +677,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/scopes:
     get:
       operationId: ctxSchemeScopes
@@ -692,6 +732,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/label-presets:
     get:
       operationId: ctxSchemeLabelPresets
@@ -739,6 +783,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/apply-preset:
     post:
       operationId: ctxSchemeApplyPreset
@@ -794,6 +842,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/process:
     post:
       operationId: ctxSchemeProcess
@@ -851,6 +903,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/validate:
     post:
       operationId: ctxSchemeValidate
@@ -911,6 +967,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/explain:
     post:
       operationId: ctxSchemeExplain
@@ -967,6 +1027,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/normalize:
     post:
       operationId: ctxSchemeNormalize
@@ -1019,6 +1083,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/render:
     post:
       operationId: ctxSchemeRender
@@ -1068,6 +1136,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/diff:
     post:
       operationId: ctxSchemeDiff
@@ -1118,6 +1190,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/view:
     post:
       operationId: ctxSchemeView
@@ -1167,6 +1243,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/notices:
     post:
       operationId: ctxSchemeNotices
@@ -1217,6 +1297,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/filter-concepts:
     post:
       operationId: ctxSchemeFilterConcepts
@@ -1265,6 +1349,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/scan:
     post:
       operationId: ctxSchemeScan
@@ -1316,6 +1404,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/aggregate:
     post:
       operationId: ctxSchemeAggregate
@@ -1373,6 +1465,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/suggest:
     post:
       operationId: ctxSchemeSuggest
@@ -1427,6 +1523,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/suggest-for-categories:
     post:
       operationId: ctxSchemeSuggestForCategories
@@ -1486,6 +1586,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/check-coverage:
     post:
       operationId: ctxSchemeCheckCoverage
@@ -1540,6 +1644,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/scheme/describe-concept:
     get:
       operationId: ctxSchemeDescribeConcept
@@ -1605,6 +1713,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/access/check:
     post:
       operationId: ctxAccessCheck
@@ -1666,6 +1778,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/access/describe-rule:
     post:
       operationId: ctxAccessDescribeRule
@@ -1719,6 +1835,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/access/describe-requirements:
     post:
       operationId: ctxAccessDescribeRequirements
@@ -1776,6 +1896,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/access/rules:
     get:
       operationId: ctxAccessRules
@@ -1822,6 +1946,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/guide/scan:
     post:
       operationId: ctxGuideScan
@@ -1876,6 +2004,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/guide/evaluate:
     post:
       operationId: ctxGuideEvaluate
@@ -1934,6 +2066,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/guide/describe-rule:
     post:
       operationId: ctxGuideDescribeRule
@@ -1989,6 +2125,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/guide/filter-rules:
     post:
       operationId: ctxGuideFilterRules
@@ -2041,6 +2181,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/guide/view:
     post:
       operationId: ctxGuideView
@@ -2093,6 +2237,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
   /v1/ctx/{ctxId}/{version}/crosswalk/translate:
     post:
       operationId: ctxCrosswalkTranslate
@@ -2151,6 +2299,10 @@ paths:
           $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalError"
+      security:
+        - bearerAuth: []
+          contextToken: []
+        - applicationCredential: []
 components:
   schemas:
     AccessComparisonResult:
@@ -9379,19 +9531,31 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: >
-        Bearer token presented on every data-path request. A deployment that runs without authentication ignores it. One
-        that requires it answers an unauthenticated request with the same not-found shape a missing resource gets, so a
-        caller learns nothing about what exists from being refused. That is why no operation here declares a 401 or a
-        403: the server does not emit them.
+        Bearer token used with the independent Context token on data-path requests. A deployment that runs without
+        authentication ignores it. One that requires it answers an unauthenticated request with the same not-found shape
+        a missing resource gets, so a caller learns nothing about what exists from being refused. That is why no
+        operation here declares a 401 or a 403: the server does not emit them.
     contextToken:
       type: apiKey
       in: header
       name: x-ezclassify-context-token
       description: >
-        Signed, deployment-scoped Context authorization presented on every Context data-path request. This credential is
-        independent of caller identity: the bearer token identifies the principal, while this token proves that the
-        deployment authorizes the requested Context and version. Refusals use the same constant not-found response as
-        every other authorization failure.
+        Signed, deployment-scoped Context authorization used with bearer authentication on Context data-path requests.
+        This credential is independent of caller identity: the bearer token identifies the principal, while this token
+        proves that the deployment authorizes the requested Context and version. Refusals use the same constant
+        not-found response as every other authorization failure.
+    applicationCredential:
+      type: apiKey
+      in: header
+      name: x-ezclassify-application-grant
+      description: >
+        Opaque credential that the deployment's management plane issues to a registered application as either a browser
+        or a backend credential. This is an alternative to bearer and Context token credentials for Context data-path
+        requests. A request that carries it together with an Authorization header, x-ezclassify-context-token, or
+        credentials accepted by a deployment-configured broker is refused. Browser credentials are admitted only from
+        registered origins. Backend credentials are refused on requests from a browser. The credential identifies the
+        calling application, not an end user. Refusals use the same constant not-found response as other authorization
+        failures.
   headers:
     ResolvedVersion:
       description: >
