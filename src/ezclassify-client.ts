@@ -321,11 +321,16 @@ export interface EzClassifyClientOptions {
      */
     contextToken?: string | ContextTokenSupplier;
     /**
-     * Additional headers to include in every request. An `Authorization` header
-     * here takes precedence over `auth` and is never overwritten.
+     * Additional request headers. In bearer mode an `Authorization` header here
+     * takes precedence over `auth` and is never overwritten.
      *
-     * Read once, at construction. A header whose value changes per request
-     * belongs in an `auth` supplier, which is asked every time.
+     * The `x-ezclassify-application-grant` header, in any casing, carries an
+     * application credential and is sent only on `/v1/ctx` requests. Combining
+     * it with `Authorization`, the Context token header, `auth.token` or
+     * `contextToken` throws at construction.
+     *
+     * Read once, at construction. A bearer token that changes per request
+     * belongs in an `auth.token` supplier, which is asked every time.
      */
     headers?: Record<string, string>;
     /**
@@ -607,6 +612,7 @@ export class EzClassifyClient
     private readonly _onAuthFailure?: ClientAuth['onAuthFailure'];
     private readonly _contextToken?: string | ContextTokenSupplier;
     private readonly _headers: Record<string, string>;
+    private readonly _applicationCredentialHeader?: string;
     /**
      * Caller spelled out an Authorization header, so the client keeps its hands
      * off it.
@@ -800,6 +806,17 @@ export class EzClassifyClient
                 }
             }
         }
+        // URL parsing normalizes these segments before a request is sent,
+        // which would move a credential outside the Context path it authorizes.
+        for (const binding of ['contextId', 'contextVersion'] as const) {
+            const value = options?.[binding];
+            if (value === '.' || value === '..') {
+                throw new EzClassifyError(
+                    `EzClassifyClient: ${binding} must name a Context path segment.`,
+                    ErrorCodes.INVALID_INPUT,
+                );
+            }
+        }
         if (options?.cacheAccessDecisions) {
             // Both refusals are loud on purpose. This option trades away part
             // of the audit trail, so a caller who asked for it has to learn
@@ -876,8 +893,37 @@ export class EzClassifyClient
         this._callerOwnsAuthorization = Object.keys(this._headers).some(
             (name) => name.toLowerCase() === 'authorization',
         );
+        const applicationHeaders = Object.keys(this._headers).filter(
+            (name) => name.toLowerCase() === 'x-ezclassify-application-grant',
+        );
+        this._applicationCredentialHeader = applicationHeaders[0];
+        if (this._applicationCredentialHeader !== undefined) {
+            const mixed =
+                this._callerOwnsAuthorization ||
+                Object.keys(this._headers).some(
+                    (name) =>
+                        name.toLowerCase() === 'x-ezclassify-context-token',
+                ) ||
+                options?.auth?.token !== undefined ||
+                options?.contextToken !== undefined;
+            if (applicationHeaders.length !== 1 || mixed) {
+                throw new EzClassifyError(
+                    'An application credential must use one header and cannot be combined with bearer or Context token credentials.',
+                    ErrorCodes.INVALID_INPUT,
+                );
+            }
+            const credential = this._headers[this._applicationCredentialHeader];
+            if (typeof credential !== 'string' || !credential.trim()) {
+                throw new EzClassifyError(
+                    'An application credential must be a nonempty string.',
+                    ErrorCodes.INVALID_INPUT,
+                );
+            }
+        }
         this._authConfigured =
-            this._callerOwnsAuthorization || !!options?.auth?.token;
+            this._applicationCredentialHeader !== undefined ||
+            this._callerOwnsAuthorization ||
+            !!options?.auth?.token;
         this._heartbeatEnabled = options?.heartbeat !== false;
         this._contextId = options?.contextId;
         // An empty string cannot name a version, so it means the same as
@@ -1912,10 +1958,12 @@ export class EzClassifyClient
         if (accessToken) {
             headers['Authorization'] = `Bearer ${accessToken}`;
         }
-        if (
-            contextToken &&
-            (resolvedPath === '/v1/ctx' || resolvedPath.startsWith('/v1/ctx/'))
-        ) {
+        const isContext =
+            resolvedPath === '/v1/ctx' || resolvedPath.startsWith('/v1/ctx/');
+        if (!isContext && this._applicationCredentialHeader !== undefined) {
+            delete headers[this._applicationCredentialHeader];
+        }
+        if (contextToken && isContext) {
             headers['X-EzClassify-Context-Token'] = contextToken;
         }
         return headers;

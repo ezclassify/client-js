@@ -326,6 +326,34 @@ describe('EzClassifyClient: context-bound URL routing', () => {
             );
         });
 
+        it('sends an opaque application credential on a Context scheme operation', async () => {
+            fetchMock.mockResolvedValue(
+                mockResponse(
+                    200,
+                    JSON.stringify(
+                        contextEnvelope(corpusResult('ctx-scheme-process.ok')),
+                    ),
+                ),
+            );
+            const c = new EzClassifyClient('https://api.example.com', {
+                contextId: 'acme-prod-marking',
+                headers: {
+                    'x-ezclassify-application-grant':
+                        'opaque-application-credential',
+                },
+            });
+            await c.scheme.process('TEST', {});
+            const headers = fetchMock.mock.calls[0]![1].headers as Record<
+                string,
+                string
+            >;
+            expect(headers['x-ezclassify-application-grant']).toBe(
+                'opaque-application-credential',
+            );
+            expect(headers['Authorization']).toBeUndefined();
+            expect(headers['X-EzClassify-Context-Token']).toBeUndefined();
+        });
+
         it('sends caller identity and Context authorization in separate headers', async () => {
             fetchMock.mockResolvedValue(
                 mockResponse(

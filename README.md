@@ -259,7 +259,8 @@ connect or call `describeContext()`.
 
 ## Authentication
 
-Two credentials, and they are not interchangeable.
+Use the caller's bearer token together with independent Context authorization,
+or a credential registered for the calling application.
 
 ```ts
 const client = new EzClassifyClient('https://ezclassify.example', {
@@ -279,6 +280,42 @@ so health probes and other deployment-level requests do not carry it.
 Context token's default, or the newest published. A client with no version is
 unpinned, the same as one bound to `latest`; see
 [Caching](#caching-and-the-connection-heartbeat).
+
+### Application credentials
+
+Get an application credential from your deployment's management plane. A browser
+application uses a browser credential registered for the page's exact origin. Supply it through the existing headers option:
+
+```ts
+const client = new EzClassifyClient('https://runtime.example', {
+    contextId: 'mission',
+    headers: {
+        'x-ezclassify-application-grant': '<browser application credential>',
+    },
+});
+```
+
+A backend application reads its own backend credential from protected server
+configuration:
+
+```ts
+const credential = process.env.EZC_APPLICATION_CREDENTIAL;
+if (!credential) throw new Error('Set EZC_APPLICATION_CREDENTIAL');
+
+const client = new EzClassifyClient('https://runtime.example', {
+    contextId: 'mission',
+    headers: {
+        'x-ezclassify-application-grant': credential,
+    },
+});
+```
+
+The client treats the credential as opaque and sends it only on `/v1/ctx`
+requests. Health probes do not carry it. A configured application credential
+cannot be combined with Authorization, a Context token, or their suppliers.
+Browser credentials are visible to the application's users. The runtime refuses
+backend credentials on browser requests. The credential identifies the application.
+Your application continues handling user sign-in and access policy.
 
 ### Where the token comes from
 
