@@ -17,12 +17,24 @@
 import type { Assertion } from '@ezclassify/types';
 import { EzClassifyClient } from '../src/ezclassify-client';
 import { EzClassifyError } from '../src/errors';
-import type { WireCase } from './wire-corpus';
+import { loadWireCorpus, type WireCase } from './wire-corpus';
 import type { RequestAssertion } from './wire-replay-transport';
 import { REPLAY_BASE_URL } from './wire-replay-transport';
 
 /** The Context authorization carrier a context-bound replay client sends. */
 const CONTEXT_CARRIER = 'conformance-context-carrier';
+
+const corpus = loadWireCorpus();
+
+/** Caller-supplied Context metadata is an input to the public operation. */
+function requestContext(caseId: string): Record<string, unknown> | undefined {
+    const recorded = corpus.byId.get(caseId);
+    if (!recorded) throw new Error(`missing wire case ${caseId}`);
+    return (
+        recorded.request.body as
+            { context?: Record<string, unknown> } | undefined
+    )?.context;
+}
 
 /**
  * A caller credential no deployment issues, for the cases recorded against a
@@ -43,6 +55,7 @@ const OPEN_ASSERTION: Assertion = {
 export type BindingName =
     | 'open'
     | 'open-with-credential'
+    | 'open-with-recorded-route-credential'
     | 'discovery'
     | 'ctx:ez-controls'
     | 'ctx:ez-crosswalk'
@@ -82,6 +95,15 @@ export function buildClient(
     switch (binding) {
         case 'open':
             return new EzClassifyClient(baseUrl, shared);
+        case 'open-with-recorded-route-credential':
+            return new EzClassifyClient(baseUrl, {
+                ...shared,
+                headers:
+                    corpus.byId.get('route-miss.route-not-found')?.auth
+                        .credential === 'context-token'
+                        ? { 'X-EzClassify-Context-Token': CONTEXT_CARRIER }
+                        : {},
+            });
         case 'open-with-credential':
             return new EzClassifyClient(baseUrl, {
                 ...shared,
@@ -554,6 +576,7 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
                 responseProfile: 'standard',
                 text: 'OPEN\nThis document is releasable.',
                 userAttributes: { clearance: 'OPEN' },
+                context: requestContext('ctx-document-assess-access.ok'),
             }),
         verify: (outcome, recorded) =>
             equals(
@@ -919,7 +942,11 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
         binding: 'ctx:ez-full',
         cases: ['ctx-access-check.marking'],
         run: (client) =>
-            client.context.checkAccess('OPEN', { clearance: 'OPEN' }),
+            client.context.checkAccess(
+                'OPEN',
+                { clearance: 'OPEN' },
+                requestContext('ctx-access-check.marking'),
+            ),
         verify: (outcome, recorded) =>
             equals(
                 resolved(outcome),
@@ -934,10 +961,14 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
         binding: 'ctx:ez-full',
         cases: ['ctx-access-check.two-attributes'],
         run: (client) =>
-            client.context.checkAccess('OPEN', {
-                clearance: 'OPEN',
-                organization: 'records',
-            }),
+            client.context.checkAccess(
+                'OPEN',
+                {
+                    clearance: 'OPEN',
+                    organization: 'records',
+                },
+                requestContext('ctx-access-check.two-attributes'),
+            ),
         verify: (outcome, recorded) =>
             equals(
                 resolved(outcome),
@@ -950,7 +981,11 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
         'ctx:ez-full',
         'ctx-access-check.assertions',
         (client) =>
-            client.access.check([OPEN_ASSERTION], { clearance: 'OPEN' }),
+            client.access.check(
+                [OPEN_ASSERTION],
+                { clearance: 'OPEN' },
+                requestContext('ctx-access-check.assertions'),
+            ),
     ),
 
     'ctx-access-describe-rule.ok': passthrough(
@@ -1509,7 +1544,7 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
     ),
 
     'route-miss.route-not-found': failure(
-        'open',
+        'open-with-recorded-route-credential',
         'route-miss.route-not-found',
         (client) => client._request('GET', '/v1/no-such-route'),
         (error) => {
