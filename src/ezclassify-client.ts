@@ -326,7 +326,7 @@ export interface EzClassifyClientOptions {
      *
      * The `x-ezclassify-application-grant` header, in any casing, carries an
      * application credential and is sent only on `/v1/ctx` requests. Combining
-     * it with `Authorization`, the Context token header, `auth.token` or
+     * it with caller-written `Authorization`, the Context token header or
      * `contextToken` throws at construction.
      *
      * Read once, at construction. A bearer token that changes per request
@@ -904,11 +904,10 @@ export class EzClassifyClient
                     (name) =>
                         name.toLowerCase() === 'x-ezclassify-context-token',
                 ) ||
-                options?.auth?.token !== undefined ||
                 options?.contextToken !== undefined;
             if (applicationHeaders.length !== 1 || mixed) {
                 throw new EzClassifyError(
-                    'An application credential must use one header and cannot be combined with bearer or Context token credentials.',
+                    'An application credential must use one header and cannot be combined with caller-written Authorization or Context token credentials.',
                     ErrorCodes.INVALID_INPUT,
                 );
             }

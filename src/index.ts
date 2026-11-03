@@ -33,3 +33,6 @@ export type {
     SuggestResultsByCategory,
     ValidateResult,
 } from '@ezclassify/types';
+
+export { clientFromConnection, readClientConnection } from './connection';
+export type { ClientConnection, ConnectionCaller } from './connection';

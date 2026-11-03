@@ -312,16 +312,57 @@ const client = new EzClassifyClient('https://runtime.example', {
 
 The client treats the credential as opaque and sends it only on `/v1/ctx`
 requests. Health probes do not carry it. A configured application credential
-cannot be combined with Authorization, a Context token, or their suppliers.
+can be combined with `auth.token` when its registered user policy requires a
+user access token. Supply that token through `auth`, not a handwritten
+Authorization header. A Context token cannot be combined with an application
+credential.
 Browser credentials are visible to the application's users. The runtime refuses
 backend credentials on browser requests. The credential identifies the application.
 Your application continues handling user sign-in and access policy.
 
+### Using a saved client connection
+
+Studio can provide connection JSON containing the Runtime URL, Context,
+application credential and configured user policy. Keep this configuration
+separate from each user's session:
+
+```ts
+import { clientFromConnection } from '@ezclassify/rest-client';
+
+const connection = {
+    baseUrl: 'https://runtime.example',
+    contextId: 'mission',
+    contextVersion: '1.0.0',
+    headers: {
+        'x-ezclassify-application-grant': applicationCredential,
+    },
+    auth: {
+        issuer: 'https://identity.example',
+        audience: 'runtime',
+        required: true,
+    },
+};
+
+const client = clientFromConnection(connection, {
+    auth: { token: () => currentUserAccessToken() },
+});
+```
+
+Create a client for each caller so credentials and cached responses stay scoped
+to that caller. The helper validates the JSON and applies the supplied session;
+it does not sign users in or acquire tokens. For a configured asserted-user
+policy, the connection instead names `userHeader` and optional `userHeaders`
+attribute mappings. Pass that caller's `user` and `attributes` to the helper.
+Only send identity obtained through your application's configured authentication.
+The Runtime enforces its registered policy; connection JSON cannot change it.
+Protected standalone Runtime configuration supports the same application
+definition without Studio.
+
 ### Where the token comes from
 
-A deployment running authentication sits behind an OpenID Connect provider, and
-in the EzClassify reference deployment that provider is EzClassify SSO. Your app
-signs the user in there, gets an access token back, and sends it to this API.
+A deployment configured to verify user tokens trusts your OpenID Connect
+provider, such as your existing Okta or Keycloak installation. Your app signs
+the user in there, gets an access token back, and sends it to this API.
 The client is not part of that exchange: it never talks to the provider, never
 refreshes anything, and never stores a token. It sends the one you hand it.
 

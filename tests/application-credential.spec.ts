@@ -27,6 +27,41 @@ describe('application credential transport', () => {
         globalThis.fetch = originalFetch;
     });
 
+    it('carries an application credential and the caller-scoped user token together', async () => {
+        const c = client({
+            headers: { [header]: credential },
+            auth: { token: () => 'user-token' },
+        });
+        await c._request('GET', '/v1/ctx');
+        const sent = transport.mock.lastCall![1]!.headers as Record<
+            string,
+            string
+        >;
+        expect(sent[header]).toBe(credential);
+        expect(sent.Authorization).toBe('Bearer user-token');
+    });
+
+    it('keeps interleaved callers and immutable DN headers isolated', async () => {
+        const a = client({
+            headers: { [header]: credential, 'x-customer-user-dn': 'caller-a' },
+        });
+        const b = client({
+            headers: { [header]: credential, 'x-customer-user-dn': 'caller-b' },
+        });
+        await Promise.all([
+            a._request('GET', '/v1/ctx'),
+            b._request('GET', '/v1/ctx'),
+        ]);
+        expect(
+            transport.mock.calls.map(
+                (call) =>
+                    (call[1]!.headers as Record<string, string>)[
+                        'x-customer-user-dn'
+                    ],
+            ),
+        ).toEqual(['caller-a', 'caller-b']);
+    });
+
     it.each([
         header,
         'X-EzClassify-Application-Grant',
@@ -73,11 +108,6 @@ describe('application credential transport', () => {
                 [header]: credential,
                 'x-ezclassify-context-token': 'context',
             },
-        },
-        { headers: { [header]: credential }, auth: { token: 'identity' } },
-        {
-            headers: { [header]: credential },
-            auth: { token: () => 'identity' },
         },
         { headers: { [header]: credential }, contextToken: 'context' },
         { headers: { [header]: credential }, contextToken: () => 'context' },

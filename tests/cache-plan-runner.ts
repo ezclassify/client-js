@@ -45,6 +45,10 @@ const OPEN_ASSERTION: Assertion = {
     source: 'explicit',
 };
 
+const AUDIT_CONTEXT = {
+    audit: { resourceId: 'comparison-resource', userId: 'comparison-user' },
+};
+
 // ---------------------------------------------------------------------------
 // Plan file shape
 // ---------------------------------------------------------------------------
@@ -257,13 +261,25 @@ const DRIVERS: Readonly<Record<string, CaseDriver>> = {
         client.access.describeAllAccessRules(),
     ),
     'access.check|ctx-access-check.assertions': noSignal((client) =>
-        client.access.check([OPEN_ASSERTION], { clearance: 'OPEN' }),
+        client.access.check(
+            [OPEN_ASSERTION],
+            { clearance: 'OPEN' },
+            AUDIT_CONTEXT,
+        ),
     ),
     'context.checkAccess|ctx-access-check.assertions': noSignal((client) =>
-        client.context.checkAccess([OPEN_ASSERTION], { clearance: 'OPEN' }),
+        client.context.checkAccess(
+            [OPEN_ASSERTION],
+            { clearance: 'OPEN' },
+            AUDIT_CONTEXT,
+        ),
     ),
     'context.checkAccess|ctx-access-check.marking': noSignal((client) =>
-        client.context.checkAccess('OPEN', { clearance: 'OPEN' }),
+        client.context.checkAccess(
+            'OPEN',
+            { clearance: 'OPEN' },
+            AUDIT_CONTEXT,
+        ),
     ),
     'context.checkAccess|ctx-access-check.two-attributes': (
         client,
@@ -274,7 +290,7 @@ const DRIVERS: Readonly<Record<string, CaseDriver>> = {
             options.variant === 'reorderedMembers'
                 ? { organization: 'records', clearance: 'OPEN' }
                 : { clearance: 'OPEN', organization: 'records' };
-        return client.context.checkAccess('OPEN', attributes);
+        return client.context.checkAccess('OPEN', attributes, AUDIT_CONTEXT);
     },
     'context.audit|ctx-document-audit.ok': noSignal((client) =>
         client.context.audit({
@@ -288,6 +304,7 @@ const DRIVERS: Readonly<Record<string, CaseDriver>> = {
                 responseProfile: 'standard',
                 text: 'OPEN\nThis document is releasable.',
                 userAttributes: { clearance: 'OPEN' },
+                context: AUDIT_CONTEXT,
             }),
     ),
     'context.accessRequirements|ctx-access-describe-requirements.ok': noSignal(

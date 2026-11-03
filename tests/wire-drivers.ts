@@ -39,9 +39,14 @@ const OPEN_ASSERTION: Assertion = {
     source: 'explicit',
 };
 
+const AUDIT_CONTEXT = {
+    audit: { resourceId: 'comparison-resource', userId: 'comparison-user' },
+};
+
 /** How a replay client is bound for the cases a driver covers. */
 export type BindingName =
     | 'open'
+    | 'open-with-context-carrier'
     | 'open-with-credential'
     | 'discovery'
     | 'ctx:ez-controls'
@@ -82,6 +87,13 @@ export function buildClient(
     switch (binding) {
         case 'open':
             return new EzClassifyClient(baseUrl, shared);
+        case 'open-with-context-carrier':
+            // This raw route-miss request explicitly carries the recorded
+            // header; normal Context-token options stay off non-Context routes.
+            return new EzClassifyClient(baseUrl, {
+                ...shared,
+                headers: { 'X-EzClassify-Context-Token': CONTEXT_CARRIER },
+            });
         case 'open-with-credential':
             return new EzClassifyClient(baseUrl, {
                 ...shared,
@@ -554,6 +566,7 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
                 responseProfile: 'standard',
                 text: 'OPEN\nThis document is releasable.',
                 userAttributes: { clearance: 'OPEN' },
+                context: AUDIT_CONTEXT,
             }),
         verify: (outcome, recorded) =>
             equals(
@@ -919,7 +932,11 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
         binding: 'ctx:ez-full',
         cases: ['ctx-access-check.marking'],
         run: (client) =>
-            client.context.checkAccess('OPEN', { clearance: 'OPEN' }),
+            client.context.checkAccess(
+                'OPEN',
+                { clearance: 'OPEN' },
+                AUDIT_CONTEXT,
+            ),
         verify: (outcome, recorded) =>
             equals(
                 resolved(outcome),
@@ -934,10 +951,14 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
         binding: 'ctx:ez-full',
         cases: ['ctx-access-check.two-attributes'],
         run: (client) =>
-            client.context.checkAccess('OPEN', {
-                clearance: 'OPEN',
-                organization: 'records',
-            }),
+            client.context.checkAccess(
+                'OPEN',
+                {
+                    clearance: 'OPEN',
+                    organization: 'records',
+                },
+                AUDIT_CONTEXT,
+            ),
         verify: (outcome, recorded) =>
             equals(
                 resolved(outcome),
@@ -950,7 +971,11 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
         'ctx:ez-full',
         'ctx-access-check.assertions',
         (client) =>
-            client.access.check([OPEN_ASSERTION], { clearance: 'OPEN' }),
+            client.access.check(
+                [OPEN_ASSERTION],
+                { clearance: 'OPEN' },
+                AUDIT_CONTEXT,
+            ),
     ),
 
     'ctx-access-describe-rule.ok': passthrough(
@@ -1509,7 +1534,7 @@ export const WIRE_DRIVERS: Readonly<Record<string, WireDriver>> = {
     ),
 
     'route-miss.route-not-found': failure(
-        'open',
+        'open-with-context-carrier',
         'route-miss.route-not-found',
         (client) => client._request('GET', '/v1/no-such-route'),
         (error) => {
