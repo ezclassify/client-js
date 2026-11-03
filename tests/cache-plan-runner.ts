@@ -152,6 +152,7 @@ export const CAPABILITIES: Readonly<Record<string, boolean>> = {
 /** How one call departs from the case's recorded request. */
 interface CallOptions {
     signal?: AbortSignal;
+    context?: Record<string, unknown>;
     variant?: Variant;
     member?: string;
 }
@@ -164,13 +165,13 @@ type CaseDriver = (
 
 /** A driver that takes no signal; a plan that cancels it is a harness error. */
 function noSignal(
-    run: (client: EzClassifyClient) => Promise<unknown>,
+    run: (client: EzClassifyClient, options: CallOptions) => Promise<unknown>,
 ): CaseDriver {
     return (client, options) => {
         if (options.signal) {
             throw new Error('this driver has no cancellation surface');
         }
-        return run(client);
+        return run(client, options);
     };
 }
 
@@ -256,14 +257,28 @@ const DRIVERS: Readonly<Record<string, CaseDriver>> = {
     'access.describeAllAccessRules|ctx-access-rules.ok': noSignal((client) =>
         client.access.describeAllAccessRules(),
     ),
-    'access.check|ctx-access-check.assertions': noSignal((client) =>
-        client.access.check([OPEN_ASSERTION], { clearance: 'OPEN' }),
+    'access.check|ctx-access-check.assertions': noSignal((client, options) =>
+        client.access.check(
+            [OPEN_ASSERTION],
+            { clearance: 'OPEN' },
+            options.context,
+        ),
     ),
-    'context.checkAccess|ctx-access-check.assertions': noSignal((client) =>
-        client.context.checkAccess([OPEN_ASSERTION], { clearance: 'OPEN' }),
+    'context.checkAccess|ctx-access-check.assertions': noSignal(
+        (client, options) =>
+            client.context.checkAccess(
+                [OPEN_ASSERTION],
+                { clearance: 'OPEN' },
+                options.context,
+            ),
     ),
-    'context.checkAccess|ctx-access-check.marking': noSignal((client) =>
-        client.context.checkAccess('OPEN', { clearance: 'OPEN' }),
+    'context.checkAccess|ctx-access-check.marking': noSignal(
+        (client, options) =>
+            client.context.checkAccess(
+                'OPEN',
+                { clearance: 'OPEN' },
+                options.context,
+            ),
     ),
     'context.checkAccess|ctx-access-check.two-attributes': (
         client,
@@ -274,7 +289,7 @@ const DRIVERS: Readonly<Record<string, CaseDriver>> = {
             options.variant === 'reorderedMembers'
                 ? { organization: 'records', clearance: 'OPEN' }
                 : { clearance: 'OPEN', organization: 'records' };
-        return client.context.checkAccess('OPEN', attributes);
+        return client.context.checkAccess('OPEN', attributes, options.context);
     },
     'context.audit|ctx-document-audit.ok': noSignal((client) =>
         client.context.audit({
@@ -283,11 +298,12 @@ const DRIVERS: Readonly<Record<string, CaseDriver>> = {
         }),
     ),
     'context.assessDocumentAccess|ctx-document-assess-access.ok': noSignal(
-        (client) =>
+        (client, options) =>
             client.context.assessDocumentAccess({
                 responseProfile: 'standard',
                 text: 'OPEN\nThis document is releasable.',
                 userAttributes: { clearance: 'OPEN' },
+                context: options.context,
             }),
     ),
     'context.accessRequirements|ctx-access-describe-requirements.ok': noSignal(
@@ -537,6 +553,11 @@ export async function runPlan(plan: Plan, file: PlanFile): Promise<void> {
                             ...(step.preCanceled
                                 ? { signal: controller.signal }
                                 : {}),
+                            context: (
+                                corpus.byId.get(step.case)?.request.body as
+                                    | { context?: Record<string, unknown> }
+                                    | undefined
+                            )?.context,
                             variant: step.variant,
                             member: step.member,
                         };
@@ -570,7 +591,13 @@ export async function runPlan(plan: Plan, file: PlanFile): Promise<void> {
                     const driver = driverFor(step.operation, step.case);
                     const waitingBefore = client._cache?.pendingWaiters ?? 0;
                     for (const name of step.callers) {
-                        const options: CallOptions = {};
+                        const options: CallOptions = {
+                            context: (
+                                corpus.byId.get(step.case)?.request.body as
+                                    | { context?: Record<string, unknown> }
+                                    | undefined
+                            )?.context,
+                        };
                         if (step.cancelable?.includes(name)) {
                             const controller = new AbortController();
                             controllers.set(name, controller);
