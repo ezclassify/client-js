@@ -255,3 +255,95 @@ describe('the CI install lane', () => {
         expect(npmrc).not.toContain('npm.pkg.github.com');
     });
 });
+
+describe('qualified native mirror publication', () => {
+    const workflow = readFileSync(
+        path.join(ROOT, '.github/workflows/publish-mirror.yml'),
+        'utf8',
+    );
+    it('requires full source qualification before installation and rechecks before publishing', () => {
+        const document = load(workflow) as {
+            jobs: {
+                publish: { steps: Array<{ name?: string; run?: string }> };
+            };
+        };
+        const steps = document.jobs.publish.steps;
+        const first = steps.findIndex(
+            (step) =>
+                step.run?.includes('require-mirror-qualification.mjs') &&
+                !step.run.includes('--recheck'),
+        );
+        const install = steps.findIndex((step) => step.name === 'Install');
+        const recheck = steps.findIndex((step) =>
+            step.run?.includes('require-mirror-qualification.mjs --recheck'),
+        );
+        const publish = steps.findIndex(
+            (step) => step.name === 'Publish to GitHub Packages',
+        );
+        expect(first).toBeGreaterThan(-1);
+        expect(install).toBeGreaterThan(first);
+        expect(recheck).toBeGreaterThan(install);
+        expect(publish).toBe(recheck + 1);
+    });
+    it('audits the freshly installed public graph before stamp, build, and registry writes', () => {
+        const document = load(workflow) as {
+            jobs: {
+                publish: {
+                    steps: Array<{ name?: string; run?: string; if?: string }>;
+                };
+            };
+        };
+        const steps = document.jobs.publish.steps;
+        const install = steps.findIndex((step) => step.name === 'Install');
+        const guards = steps.flatMap((step, index) =>
+            step.run === 'node scripts/check-installed-public-deps.mjs'
+                ? [index]
+                : [],
+        );
+        expect(guards).toEqual([install + 1]);
+        expect(steps[guards[0]].if).toBe("steps.gate.outputs.run == 'yes'");
+        for (const name of [
+            'Stamp mirror version',
+            'Build',
+            'Publish to GitHub Packages',
+        ]) {
+            expect(
+                steps.findIndex((step) => step.name === name),
+            ).toBeGreaterThan(guards[0]);
+        }
+    });
+    it('uses ephemeral native identity at all three registry boundaries and never relies on an absent PAT', () => {
+        const document = load(workflow) as {
+            permissions: Record<string, string>;
+            jobs: {
+                publish: {
+                    if: string;
+                    steps: Array<{ env?: Record<string, string> }>;
+                };
+            };
+        };
+        expect(document.permissions).toMatchObject({
+            actions: 'read',
+            contents: 'read',
+            packages: 'write',
+        });
+        expect(document.jobs.publish.if).toContain(
+            "github.repository == 'ezclassify/client-js'",
+        );
+        expect(document.jobs.publish.if).toContain(
+            "github.ref == 'refs/heads/main'",
+        );
+        const tokens = document.jobs.publish.steps.flatMap((step) =>
+            step.env?.NODE_AUTH_TOKEN ? [step.env.NODE_AUTH_TOKEN] : [],
+        );
+        expect(tokens).toEqual(Array(3).fill('${{ github.token }}'));
+        expect(workflow).not.toContain('secrets.EZ_GHPKG_TOKEN');
+    });
+    it('proves both connection exports in installed CJS, ESM, and declarations', () => {
+        expect(workflow).toContain('clientFromConnection');
+        expect(workflow).toContain('readClientConnection');
+        expect(workflow).toContain(
+            'for (const name of ["EzClassifyClient", "clientFromConnection", "readClientConnection"])',
+        );
+    });
+});
