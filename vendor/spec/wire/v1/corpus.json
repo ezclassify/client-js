@@ -424,6 +424,12 @@
             "operationId": "ctxDocumentAssessAccess",
             "request": {
                 "body": {
+                    "context": {
+                        "audit": {
+                            "resourceId": "comparison-resource",
+                            "userId": "comparison-user"
+                        }
+                    },
                     "responseProfile": "standard",
                     "text": "OPEN\nThis document is releasable.",
                     "userAttributes": {
@@ -4219,6 +4225,12 @@
             "operationId": "ctxAccessCheck",
             "request": {
                 "body": {
+                    "context": {
+                        "audit": {
+                            "resourceId": "comparison-resource",
+                            "userId": "comparison-user"
+                        }
+                    },
                     "marking": "OPEN",
                     "userAttributes": {
                         "clearance": "OPEN"
@@ -4341,6 +4353,12 @@
                             "source": "explicit"
                         }
                     ],
+                    "context": {
+                        "audit": {
+                            "resourceId": "comparison-resource",
+                            "userId": "comparison-user"
+                        }
+                    },
                     "userAttributes": {
                         "clearance": "OPEN"
                     }
@@ -4454,6 +4472,12 @@
             "operationId": "ctxAccessCheck",
             "request": {
                 "body": {
+                    "context": {
+                        "audit": {
+                            "resourceId": "comparison-resource",
+                            "userId": "comparison-user"
+                        }
+                    },
                     "marking": "OPEN",
                     "userAttributes": {
                         "clearance": "OPEN",
@@ -7173,7 +7197,7 @@
         },
         {
             "auth": {
-                "credential": "none",
+                "credential": "context-token",
                 "deployment": "open"
             },
             "id": "route-miss.route-not-found",
