@@ -23,6 +23,7 @@ on:
 permissions:
   packages: write
   contents: read
+  actions: read
 
 concurrency:
   group: publish-mirror
@@ -30,14 +31,15 @@ concurrency:
 
 jobs:
   publish:
-    # Publication authority is repository configuration, not repository
-    # identity: only a repository that sets this variable, alongside the token
-    # below, runs the job.
-    if: vars.EZ_DEVELOPMENT_MIRROR_PUBLISHER == 'true'
+    # Designation is explicit; a fork or a non-main dispatch never publishes.
+    if: github.repository == 'ezclassify/client-js' && github.ref == 'refs/heads/main' && vars.EZ_DEVELOPMENT_MIRROR_PUBLISHER == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Gate on a commit in the last 24h
         id: gate
@@ -52,11 +54,14 @@ jobs:
             echo "HEAD is ${age}s old (>=24h): nothing landed today, skipping"; echo "run=no" >> "$GITHUB_OUTPUT"
           fi
 
-      # `scope` + `registry-url` is what routes @ezclassify to GitHub Packages:
-      # setup-node writes `@ezclassify:registry` and the auth line into a
-      # runner-local npmrc. Third-party packages keep coming from npmjs, and the
-      # tracked .npmrc is left alone, so `ignore-scripts=true` still holds.
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - name: Require full qualification of this official source
+        if: steps.gate.outputs.run == 'yes'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/require-mirror-qualification.mjs
+
+      # Native setup routes only the first-party scope; project npm settings stay.
+      - uses: ezclassify/.github/actions/setup-node-npm@a42ece80f520858a2926723d12bba2af2dca0474
         if: steps.gate.outputs.run == 'yes'
         with:
           node-version: '24'
@@ -64,17 +69,17 @@ jobs:
           scope: '@ezclassify'
 
       - name: Install
-        # The same two commands CI runs: `deps:relock` resolves a lockfile
-        # from an empty dependency tree and `npm ci` installs those exact
-        # bytes.
-        #
-        # The token is required: the five contracts packages this tree needs
-        # live on the mirror at 1.0.0-mirror.N, and an unauthenticated read of
-        # GitHub Packages fails outright rather than falling through to npmjs.
         if: steps.gate.outputs.run == 'yes'
+        uses: ezclassify/.github/actions/install-node-dependencies@a42ece80f520858a2926723d12bba2af2dca0474
+        with:
+          mode: generated
+          relock-installs: 'false'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN }}
-        run: npm run deps:relock && npm ci
+          NODE_AUTH_TOKEN: ${{ github.token }}
+
+      - name: No proprietary dependency crept in
+        if: steps.gate.outputs.run == 'yes'
+        run: node scripts/check-installed-public-deps.mjs
 
       - name: Resolve the mirror version
         id: plan
@@ -104,16 +109,22 @@ jobs:
       # `--access restricted`: on GitHub Packages a public package reads as
       # organization-public, which is not what a development mirror is for.
       # The flag describes the mirror, not the license.
+      - name: Recheck source and qualification before registry write
+        if: steps.gate.outputs.run == 'yes'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/require-mirror-qualification.mjs --recheck
+
       - name: Publish to GitHub Packages
         if: steps.gate.outputs.run == 'yes'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ github.token }}
         run: npm publish --tag dev --access restricted
 
       - name: Install what was just published and run it
         if: steps.gate.outputs.run == 'yes'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.EZ_GHPKG_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ github.token }}
         # The step that makes a silent no-op impossible. Everything above can
         # succeed while producing something no consumer can use: a tarball whose
         # `files` missed dist/, an export map pointing at a path that was never
@@ -160,13 +171,15 @@ jobs:
             const manifest = JSON.parse(fs.readFileSync(path.join(home, "package.json"), "utf8"));
             const dts = path.join(home, manifest.types);
             if (!fs.existsSync(dts)) throw new Error(`published types entry is missing: ${dts}`);
-            if (!fs.readFileSync(dts, "utf8").includes("EzClassifyClient")) {
-              throw new Error("published .d.ts does not declare EzClassifyClient");
+            for (const name of ["EzClassifyClient", "clientFromConnection", "readClientConnection"]) {
+              if (!fs.readFileSync(dts, "utf8").includes(name)) {
+                throw new Error(`published .d.ts does not declare ${name}`);
+              }
             }
-            console.log("types entry present and declares EzClassifyClient");
+            console.log("types entry declares the client and connection helpers");
 
             const cjs = require("@ezclassify/rest-client");
-            for (const name of ["EzClassifyClient", "connectContext", "isDenialShapedBody", "EzClassifyError"]) {
+            for (const name of ["EzClassifyClient", "connectContext", "clientFromConnection", "readClientConnection", "isDenialShapedBody", "EzClassifyError"]) {
               if (typeof cjs[name] !== "function") throw new Error(`CJS entry does not export ${name}`);
             }
             if (!cjs.ErrorCodes || cjs.ErrorCodes.NETWORK !== "NETWORK") {
@@ -184,8 +197,8 @@ jobs:
           '
 
           node --input-type=module -e '
-            import { EzClassifyClient, connectContext } from "@ezclassify/rest-client";
-            if (typeof EzClassifyClient !== "function" || typeof connectContext !== "function") {
+            import { EzClassifyClient, connectContext, clientFromConnection, readClientConnection } from "@ezclassify/rest-client";
+            if (typeof EzClassifyClient !== "function" || typeof connectContext !== "function" || typeof clientFromConnection !== "function" || typeof readClientConnection !== "function") {
               throw new Error("ESM entry does not export the public surface");
             }
             console.log("ESM entry exports the public surface");

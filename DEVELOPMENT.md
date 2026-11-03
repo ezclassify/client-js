@@ -50,7 +50,32 @@ a GitHub Packages development mirror every night a commit landed, and
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) installs the contracts packages from the same
 mirror. The routing is written to a throwaway user config on the runner, so the
 committed [`.npmrc`](.npmrc), and the `ignore-scripts=true` in it, stay as they are. The
-publish job runs only where a repository variable allows it.
+publish job runs only on official `ezclassify/client-js` main when its nonsecret
+`EZ_DEVELOPMENT_MIRROR_PUBLISHER` repository variable is deliberately set to
+`true`. A maintainer assigns that native publisher role after reviewing and
+qualifying its source; forks and non-main dispatches cannot publish.
+
+Before dependency installation, the publisher requires a completed successful
+full `.github/workflows/ci.yml` run at the exact checked-out official main SHA.
+Run that existing workflow manually on the final merged source: ordinary push
+and PR CI are not full qualification. The guard checks both Node 22 and 24,
+`policy / plan`, `qualification / accept`, and `ci / accept` in the same run
+attempt. It refuses missing, skipped, failed, duplicate, or truncated evidence
+and a newer unsuccessful full run. Immediately before publication it rechecks
+main and the same qualification tuple. `force` bypasses only the 24-hour age
+check. Scheduled publication uses the same qualification gate; it does not
+create new qualification runs automatically.
+
+The job uses its ephemeral `github.token` for dependency reads, restricted
+publication, and the cold-install proof, with `contents: read`, `actions: read`,
+and `packages: write`. It needs no PAT or additional secret. The existing
+package must also authorize this repository's workflow token to write it;
+successful dependency reads do not prove that package write ACL. Actual native
+publication followed by the exact-version cold install is the write/readback
+proof. A permission failure requires maintainer diagnosis, not an automatic
+credential or access fallback. The qualification record contains source SHA,
+run/attempt, and required job IDs; SDK CI does not emit a qualified package
+artifact.
 
 The mirror carries prerelease versions only, stamped `1.0.0-mirror.N` from the
 run number. A range of `^1.0.0` does not match `1.0.0-mirror.7`, because npm
